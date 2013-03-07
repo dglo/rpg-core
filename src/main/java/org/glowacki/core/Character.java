@@ -11,7 +11,7 @@ public class Character
 
     private double timeLeft;
 
-    Character(String name, int str, int dex, int qik)
+    public Character(String name, int str, int dex, int qik)
     {
         this.name = name;
         this.str = str;
