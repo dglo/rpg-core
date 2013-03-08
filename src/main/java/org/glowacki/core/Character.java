@@ -2,7 +2,7 @@ package org.glowacki.core;
 
 public class Character
 {
-    private static final double SQRT_2 = 1.41421356;
+    public static final double SQRT_2 = 1.41421356;
 
     private String name;
     private int str;
@@ -31,7 +31,12 @@ public class Character
 
     public int move(Terrain terrain, boolean diagonal)
     {
-        double cost = 10.0 * terrain.getCost();
+        double rawCost = terrain.getCost();
+        if (rawCost == Terrain.IMPASSABLE) {
+            return Integer.MAX_VALUE;
+        }
+
+        double cost = 10.0 * rawCost;
         if (diagonal) {
             cost *= SQRT_2;
         }
@@ -39,7 +44,7 @@ public class Character
         int turns = 0;
         while (cost > timeLeft) {
             timeLeft += (double) qik;
-            turns += 1;
+            turns++;
         }
 
         timeLeft -= cost;
@@ -48,7 +53,7 @@ public class Character
 
     public String toString()
     {
-        return String.format("%s[%d/%d/%d mv=%4.2f]", name, str, dex, qik,
+        return String.format("%s[%d/%d/%d tm=%4.2f]", name, str, dex, qik,
                              timeLeft);
     }
 }
