@@ -19,6 +19,11 @@ class LevelCharacter
         this.y = y;
     }
 
+    public String getName()
+    {
+        return ch.getName();
+    }
+
     public int getX()
     {
         return x;
@@ -30,9 +35,12 @@ class LevelCharacter
     }
 
     public int move(Direction dir)
+        throws LevelException
     {
         int newX = x;
         int newY = y;
+
+        Terrain t;
 
         switch (dir) {
         case LEFT:
@@ -59,15 +67,23 @@ class LevelCharacter
                 return -1;
             }
             break;
+        case CLIMB:
+            t = lvl.get(newX, newY);
+            if (t != Terrain.UPSTAIRS) {
+                throw new LevelException("You cannot climb here");
+            }
+
+            return ch.move(t, false);
+        case DESCEND:
+            t = lvl.get(newX, newY);
+            if (t != Terrain.DOWNSTAIRS) {
+                throw new LevelException("You cannot descend here");
+            }
+
+            return ch.move(t, false);
         }
 
-        Terrain t;
-        try {
-            t = lvl.get(newX, newY);
-        } catch (LevelException le) {
-            le.printStackTrace();
-            return -1;
-        }
+        t = lvl.get(newX, newY);
 
         if (!t.isMovable()) {
             return -1;
@@ -79,15 +95,17 @@ class LevelCharacter
         return ch.move(t, false);
     }
 
-    public void position(int x, int y)
+    public void position(Level l, int x, int y)
     {
+        this.lvl = l;
         this.x = x;
         this.y = y;
     }
 
     public String toString()
     {
-        return ch.toString() + "@[" + x + "," + y + "]";
+        return String.format("%s->%s[%d,%d]", ch.getName(), lvl.getName(), x,
+                             y);
     }
 }
 
@@ -107,16 +125,25 @@ class Point
         this.x = x;
         this.y = y;
     }
+
+    public String toString()
+    {
+        return String.format("(%d,%d)", x, y);
+    }
 }
 
 public class Level
 {
+    private String name;
     private Terrain[][] map;
 
-    private ArrayList<LevelCharacter> characters =
-        new ArrayList<LevelCharacter>();
+    private Level prevLevel;
+    private Level nextLevel;
 
-    public Level(String[] rawMap)
+    private ArrayList<MovableCharacter> characters =
+        new ArrayList<MovableCharacter>();
+
+    public Level(String name, String[] rawMap)
         throws LevelException
     {
         if (rawMap == null || rawMap.length == 0 || rawMap[0].length() == 0) {
@@ -133,6 +160,25 @@ public class Level
             }
         }
 
+        this.name = name;
+        map = buildTerrainFromMap(rawMap);
+    }
+
+    public void addNextLevel(Level l)
+        throws LevelException
+    {
+        if (nextLevel != null) {
+            throw new LevelException("Cannot overwrite existing level");
+        } else if (l.prevLevel != null) {
+            throw new LevelException("Cannot overwrite previous level");
+        }
+
+        nextLevel = l;
+        l.prevLevel = this;
+    }
+
+    private static Terrain[][] buildTerrainFromMap(String[] rawMap)
+    {
         int width = 0;
         for (int i = 0; i < rawMap.length; i++) {
             if (rawMap[i].length() > width) {
@@ -140,7 +186,7 @@ public class Level
             }
         }
 
-        map = new Terrain[rawMap.length][width];
+        Terrain[][] map = new Terrain[rawMap.length][width];
 
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
@@ -179,9 +225,19 @@ public class Level
                 map[y][x] = t;
             }
         }
+
+        return map;
     }
 
     public MovableCharacter enterDown(Character ch)
+        throws LevelException
+    {
+        MovableCharacter mch = new LevelCharacter(this, ch, 0, 0);
+        enterDown(mch);
+        return mch;
+    }
+
+    public void enterDown(MovableCharacter ch)
         throws LevelException
     {
         Point p = find(Terrain.UPSTAIRS);
@@ -189,12 +245,19 @@ public class Level
             throw new LevelException("Map has no up staircase");
         }
 
-        LevelCharacter lch = new LevelCharacter(this, ch, p.x, p.y);
-        characters.add(lch);
-        return lch;
+        ch.position(this, p.x, p.y);
+        characters.add(ch);
     }
 
     public MovableCharacter enterUp(Character ch)
+        throws LevelException
+    {
+        MovableCharacter mch = new LevelCharacter(this, ch, 0, 0);
+        enterUp(mch);
+        return mch;
+    }
+
+    public void enterUp(MovableCharacter ch)
         throws LevelException
     {
         Point p = find(Terrain.DOWNSTAIRS);
@@ -202,9 +265,16 @@ public class Level
             throw new LevelException("Map has no down staircase");
         }
 
-        LevelCharacter lch = new LevelCharacter(this, ch, p.x, p.y);
-        characters.add(lch);
-        return lch;
+        ch.position(this, p.x, p.y);
+        characters.add(ch);
+    }
+
+    public void exit(MovableCharacter ch)
+        throws LevelException
+    {
+        if (!characters.remove(ch)) {
+            throw new LevelException(ch.getName() + " was not on this level");
+        }
     }
 
     private Point find(Terrain t)
@@ -224,9 +294,11 @@ public class Level
         throws LevelException
     {
         if (y < 0 || y >= map.length) {
-            throw new LevelException("Bad Y coordinate " + y);
+            throw new LevelException("Bad Y coordinate in (" + x + "," + y +
+                                     "), max is " + map.length);
         } else if (x < 0 || x >= map[y].length) {
-            throw new LevelException("Bad X coordinate " + x);
+            throw new LevelException("Bad X coordinate in (" + x + "," + y +
+                                     "), max is " + map[y].length);
         }
 
         return map[y][x];
@@ -247,7 +319,17 @@ public class Level
         return map.length - 1;
     }
 
-    public String toString()
+    public String getName()
+    {
+        return name;
+    }
+
+    public Level getNextLevel()
+    {
+        return nextLevel;
+    }
+
+    public String getPicture()
     {
         StringBuilder buf = new StringBuilder();
 
@@ -300,6 +382,17 @@ public class Level
         }
 
         return buf.toString();
+    }
+
+    public Level getPreviousLevel()
+    {
+        return prevLevel;
+    }
+
+    public String toString()
+    {
+        return String.format("Level[%s %dx%d ch*%d]", name, map.length,
+                             map[0].length, characters.size());
     }
 }
 

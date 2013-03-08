@@ -24,6 +24,11 @@ public class Character
         throw new UnimplementedError();
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
     public int move(Terrain terrain, boolean diagonal)
     {
         double cost = 10.0 * terrain.getCost();

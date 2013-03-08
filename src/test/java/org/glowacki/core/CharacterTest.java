@@ -18,10 +18,20 @@ public class CharacterTest
         return new TestSuite(CharacterTest.class);
     }
 
-    public void testBasic()
+    public void testCreate()
     {
-        Character ch1 = new Character("foo", 10, 10, 10);
+        final String name = "foo";
+        final int str = 9;
+        final int dex = 10;
+        final int qik = 11;
 
+        Character ch1 = new Character(name, str, dex, qik);
+        String expStr = String.format("%s[%d/%d/%d", name, str, dex, qik);
+        assertTrue("Bad character string", ch1.toString().startsWith(expStr));
+    }
+
+    private void foo(Character ch1)
+    {
         Terrain[] allTerrain = new Terrain[] {
             Terrain.FLOOR, Terrain.WATER, Terrain.DOOR
         };
