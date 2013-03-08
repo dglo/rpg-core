@@ -15,9 +15,6 @@ import org.glowacki.core.Terrain;
 
 class AsciiTerm
 {
-    private static final int maxX = 20;
-    private static final int maxY = 10;
-
     private Screen screen;
     private int maxRows;
     private int maxCols;

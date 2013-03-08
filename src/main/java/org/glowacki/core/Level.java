@@ -120,7 +120,17 @@ public class Level
         throws LevelException
     {
         if (rawMap == null || rawMap.length == 0 || rawMap[0].length() == 0) {
-            throw new LevelException("Illegal map " + rawMap);
+            if (rawMap == null) {
+                throw new LevelException("Null map");
+            } else {
+                String hgt = Integer.toString(rawMap.length);
+                String wid = "?";
+                if (rawMap.length > 0 && rawMap[0] != null) {
+                    wid = Integer.toString(rawMap[0].length());
+                }
+                throw new LevelException("Bad map dimensions [" + hgt + ", " +
+                                         wid + "]");
+            }
         }
 
         int width = 0;
