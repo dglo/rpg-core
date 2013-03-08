@@ -1,5 +1,11 @@
 package org.glowacki.core;
 
+interface TerrainConst
+{
+    public static final double IMPASSABLE = Double.MAX_VALUE;
+
+}
+
 public enum Terrain
 {
     DOOR(1.0),
@@ -7,11 +13,9 @@ public enum Terrain
     FLOOR(1.0),
     TUNNEL(1.0),
     UPSTAIRS(1.0),
-    WALL(Double.MAX_VALUE),
+    WALL(TerrainConst.IMPASSABLE),
     WATER(1.2),
-    UNKNOWN(Double.MAX_VALUE);
-
-    public static final double IMPASSABLE = Double.MAX_VALUE;
+    UNKNOWN(TerrainConst.IMPASSABLE);
 
     private double cost;
 
@@ -29,5 +33,5 @@ public enum Terrain
 
     public double getCost() { return cost; }
 
-    public boolean isMovable() { return cost != Double.MAX_VALUE; }
+    public boolean isMovable() { return cost != TerrainConst.IMPASSABLE; }
 }

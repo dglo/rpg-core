@@ -31,12 +31,11 @@ public class Character
 
     public int move(Terrain terrain, boolean diagonal)
     {
-        double rawCost = terrain.getCost();
-        if (rawCost == Terrain.IMPASSABLE) {
+        if (!terrain.isMovable()) {
             return Integer.MAX_VALUE;
         }
 
-        double cost = 10.0 * rawCost;
+        double cost = 10.0 * terrain.getCost();
         if (diagonal) {
             cost *= SQRT_2;
         }

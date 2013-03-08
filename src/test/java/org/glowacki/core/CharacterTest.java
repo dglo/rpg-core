@@ -53,7 +53,7 @@ public class CharacterTest
 
                 int expTurns;
 
-                if (allTerrain[i].getCost() == Terrain.IMPASSABLE) {
+                if (!allTerrain[i].isMovable()) {
                     expTurns = Integer.MAX_VALUE;
                 } else {
                     double myCost = allTerrain[i].getCost() * 10.0 * mult;
