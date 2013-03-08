@@ -24,13 +24,6 @@ public enum Terrain
         this.cost = cost;
     }
 
-    public static Terrain[] getAll()
-    {
-        return new Terrain[] {
-            DOOR, DOWNSTAIRS, FLOOR, TUNNEL, UPSTAIRS, WALL, WATER, UNKNOWN,
-        };
-    }
-
     public double getCost() { return cost; }
 
     public boolean isMovable() { return cost != TerrainConst.IMPASSABLE; }

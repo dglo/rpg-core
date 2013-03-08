@@ -36,11 +36,7 @@ public class CharacterTest
     {
         int speed = 10;
 
-        Terrain[] allTerrain = new Terrain[] {
-            Terrain.DOOR, Terrain.DOWNSTAIRS, Terrain.FLOOR, Terrain.TUNNEL,
-            Terrain.UPSTAIRS, Terrain.WALL, Terrain.WATER, Terrain.UNKNOWN,
-        };
-
+        Terrain[] allTerrain = Terrain.values();
         for (int i = 0; i < allTerrain.length; i++) {
             for (int b = 0; b < 2; b++) {
                 Character ch = new Character("foo", 1, 2, speed);
