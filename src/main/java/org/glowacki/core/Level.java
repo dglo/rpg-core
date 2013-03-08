@@ -146,7 +146,9 @@ public class Level
     public Level(String name, String[] rawMap)
         throws LevelException
     {
-        if (rawMap == null || rawMap.length == 0 || rawMap[0].length() == 0) {
+        if (rawMap == null || rawMap.length == 0 || rawMap[0] == null ||
+            rawMap[0].length() == 0)
+        {
             if (rawMap == null) {
                 throw new LevelException("Null map");
             } else {
@@ -167,7 +169,9 @@ public class Level
     public void addNextLevel(Level l)
         throws LevelException
     {
-        if (nextLevel != null) {
+        if (l == null) {
+            throw new LevelException("Next level cannot be null");
+        } else if (nextLevel != null) {
             throw new LevelException("Cannot overwrite existing level");
         } else if (l.prevLevel != null) {
             throw new LevelException("Cannot overwrite previous level");
@@ -181,7 +185,7 @@ public class Level
     {
         int width = 0;
         for (int i = 0; i < rawMap.length; i++) {
-            if (rawMap[i].length() > width) {
+            if (rawMap[i] != null && rawMap[i].length() > width) {
                 width = rawMap[i].length();
             }
         }
@@ -191,7 +195,7 @@ public class Level
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
                 Terrain t;
-                if (x >= rawMap[y].length()) {
+                if (rawMap[y] == null || x >= rawMap[y].length()) {
                     t = Terrain.UNKNOWN;
                 } else {
                     t = Terrain.getTerrain(rawMap[y].charAt(x));
@@ -249,6 +253,8 @@ public class Level
         if (!characters.remove(ch)) {
             throw new LevelException(ch.getName() + " was not on this level");
         }
+
+        ch.position(null, -1, -1);
     }
 
     private Point find(Terrain t)
@@ -269,10 +275,10 @@ public class Level
     {
         if (y < 0 || y >= map.length) {
             throw new LevelException("Bad Y coordinate in (" + x + "," + y +
-                                     "), max is " + map.length);
+                                     "), max is " + getMaxY());
         } else if (x < 0 || x >= map[y].length) {
             throw new LevelException("Bad X coordinate in (" + x + "," + y +
-                                     "), max is " + map[y].length);
+                                     "), max is " + getMaxX());
         }
 
         return map[y][x];
