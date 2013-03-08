@@ -50,7 +50,7 @@ class AsciiTerm
             for (int x = 0; x <= maxX; x++) {
                 char ch;
                 try {
-                    ch = getTerrainCharacter(level.get(x, y));
+                    ch = Terrain.getCharacter(level.get(x, y));
                 } catch (CoreException ce) {
                     ce.printStackTrace();
                     ch = '?';
@@ -101,43 +101,6 @@ class AsciiTerm
         }
 
         screen.refresh();
-    }
-
-    private static char getTerrainCharacter(Terrain t)
-    {
-        char ch;
-
-        switch (t) {
-        case DOOR:
-            ch = '+';
-            break;
-        case DOWNSTAIRS:
-            ch = '>';
-            break;
-        case FLOOR:
-            ch = '.';
-            break;
-        case TUNNEL:
-            ch = '#';
-            break;
-        case UPSTAIRS:
-            ch = '<';
-            break;
-        case WALL:
-            ch = '-';
-            break;
-        case WATER:
-            ch = '~';
-            break;
-        case UNKNOWN:
-            ch = ' ';
-            break;
-        default:
-            ch = '?';
-            break;
-        }
-
-        return ch;
     }
 
     private boolean handleInput(Key key)

@@ -194,33 +194,7 @@ public class Level
                 if (x >= rawMap[y].length()) {
                     t = Terrain.UNKNOWN;
                 } else {
-                    switch (rawMap[y].charAt(x)) {
-                    case '+':
-                        t = Terrain.DOOR;
-                        break;
-                    case '>':
-                        t = Terrain.DOWNSTAIRS;
-                        break;
-                    case '.':
-                        t = Terrain.FLOOR;
-                        break;
-                    case '#':
-                        t = Terrain.TUNNEL;
-                        break;
-                    case '<':
-                        t = Terrain.UPSTAIRS;
-                        break;
-                    case '-':
-                    case '|':
-                        t = Terrain.WALL;
-                        break;
-                    case '~':
-                        t = Terrain.WATER;
-                        break;
-                    default:
-                        t = Terrain.UNKNOWN;
-                        break;
-                    }
+                    t = Terrain.getTerrain(rawMap[y].charAt(x));
                 }
                 map[y][x] = t;
             }
@@ -340,23 +314,9 @@ public class Level
 
             for (int x = 0; x < map[y].length; x++) {
                 char ch;
-                switch (map[y][x]) {
-                case DOOR:
-                    ch = '+';
-                    break;
-                case DOWNSTAIRS:
-                    ch = '>';
-                    break;
-                case FLOOR:
-                    ch = '.';
-                    break;
-                case TUNNEL:
-                    ch = '#';
-                    break;
-                case UPSTAIRS:
-                    ch = '<';
-                    break;
-                case WALL:
+                if (map[y][x] != Terrain.WALL) {
+                    ch = Terrain.getCharacter(map[y][x]);
+                } else {
                     if ((x > 0 && map[y][x-1] == Terrain.WALL) ||
                         (x < map[y].length - 1 &&
                          map[y][x+1] == Terrain.WALL))
@@ -365,13 +325,6 @@ public class Level
                     } else {
                         ch = '|';
                     }
-                    break;
-                case WATER:
-                    ch = '~';
-                    break;
-                default:
-                    ch = ' ';
-                    break;
                 }
 
                 buf.append(ch);
