@@ -345,7 +345,7 @@ public class Level
                     ch = '+';
                     break;
                 case DOWNSTAIRS:
-                    ch = '<';
+                    ch = '>';
                     break;
                 case FLOOR:
                     ch = '.';
@@ -354,7 +354,7 @@ public class Level
                     ch = '#';
                     break;
                 case UPSTAIRS:
-                    ch = '>';
+                    ch = '<';
                     break;
                 case WALL:
                     if ((x > 0 && map[y][x-1] == Terrain.WALL) ||
@@ -369,11 +369,8 @@ public class Level
                 case WATER:
                     ch = '~';
                     break;
-                case UNKNOWN:
-                    ch = ' ';
-                    break;
                 default:
-                    ch = '?';
+                    ch = ' ';
                     break;
                 }
 
