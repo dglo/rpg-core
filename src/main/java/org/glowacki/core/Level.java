@@ -3,6 +3,9 @@ package org.glowacki.core;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Internal class describing a movable character.
+ */
 class LevelCharacter
     implements MovableCharacter
 {
@@ -109,12 +112,26 @@ class LevelCharacter
     }
 }
 
+/**
+ * Exceptions for this class.
+ */
 class LevelException
     extends CoreException
 {
-    LevelException(String msg) { super(msg); }
+    /**
+     * Create a level exception.
+     *
+     * @param msg error message
+     */
+    LevelException(String msg)
+    {
+        super(msg);
+    }
 }
 
+/**
+ * A single point.
+ */
 class Point
 {
     int x;
@@ -132,6 +149,9 @@ class Point
     }
 }
 
+/**
+ * Description of a level.
+ */
 public class Level
 {
     private String name;
@@ -143,6 +163,14 @@ public class Level
     private ArrayList<MovableCharacter> characters =
         new ArrayList<MovableCharacter>();
 
+    /**
+     * Create a level.
+     *
+     * @param name level name
+     * @param rawMap string description of this level
+     *
+     * @throws LevelException if there is a problem
+     */
     public Level(String name, String[] rawMap)
         throws LevelException
     {
@@ -166,6 +194,13 @@ public class Level
         map = buildTerrainFromMap(rawMap);
     }
 
+    /**
+     * Add the level below this one.
+     *
+     * @param l lower level
+     *
+     * @throws LevelException if there is a problem
+     */
     public void addNextLevel(Level l)
         throws LevelException
     {
@@ -181,6 +216,11 @@ public class Level
         l.prevLevel = this;
     }
 
+    /**
+     * Build a terrain map.
+     *
+     * @param rawMap map of Strings describing the level
+     */
     private static Terrain[][] buildTerrainFromMap(String[] rawMap)
     {
         int width = 0;
@@ -207,6 +247,15 @@ public class Level
         return map;
     }
 
+    /**
+     * This character is entering this level from above.
+     *
+     * @param ch character
+     *
+     * @return wrapped character
+     *
+     * @throws LevelException if the level doesn't have an up staircase
+     */
     public MovableCharacter enterDown(Character ch)
         throws LevelException
     {
@@ -215,6 +264,13 @@ public class Level
         return mch;
     }
 
+    /**
+     * This character is entering this level from above.
+     *
+     * @param ch character
+     *
+     * @throws LevelException if the level doesn't have an up staircase
+     */
     public void enterDown(MovableCharacter ch)
         throws LevelException
     {
@@ -227,14 +283,13 @@ public class Level
         characters.add(ch);
     }
 
-    public MovableCharacter enterUp(Character ch)
-        throws LevelException
-    {
-        MovableCharacter mch = new LevelCharacter(this, ch, 0, 0);
-        enterUp(mch);
-        return mch;
-    }
-
+    /**
+     * This character is entering this level from below.
+     *
+     * @param ch character
+     *
+     * @throws LevelException if the level doesn't have a down staircase
+     */
     public void enterUp(MovableCharacter ch)
         throws LevelException
     {
@@ -247,6 +302,13 @@ public class Level
         characters.add(ch);
     }
 
+    /**
+     * Remove the character from this level.
+     *
+     * @param ch character to remove
+     *
+     * @throws LevelException if the character is not on this level
+     */
     public void exit(MovableCharacter ch)
         throws LevelException
     {
@@ -257,6 +319,13 @@ public class Level
         ch.position(null, -1, -1);
     }
 
+    /**
+     * Find the first occurrence of the specified terrain.
+     *
+     * @param t terrain to find
+     *
+     * @return null if the terrain cannot be found on this level
+     */
     private Point find(Terrain t)
     {
         for (int y = 0; y < map.length; y++) {
@@ -270,6 +339,16 @@ public class Level
         return null;
     }
 
+    /**
+     * Get the terrain found at the specified coordinates.
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return terrain at the specified point
+     *
+     * @throws LevelException if the point is not valid
+     */
     public Terrain get(int x, int y)
         throws LevelException
     {
@@ -284,31 +363,61 @@ public class Level
         return map[y][x];
     }
 
+    /**
+     * Get a list of characters on this level.
+     *
+     * @return list of characters
+     */
     public List<MovableCharacter> getCharacters()
     {
         return new ArrayList<MovableCharacter>(characters);
     }
 
+    /**
+     * Get maximum X coordinate for this level.
+     *
+     * @return maximum addressable X coordinate
+     */
     public int getMaxX()
     {
         return map[0].length - 1;
     }
 
+    /**
+     * Get maximum Y coordinate for this level.
+     *
+     * @return maximum addressable Y coordinate
+     */
     public int getMaxY()
     {
         return map.length - 1;
     }
 
+    /**
+     * Get level name
+     *
+     * @return name
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Get next level
+     *
+     * @return next level (may be null)
+     */
     public Level getNextLevel()
     {
         return nextLevel;
     }
 
+    /**
+     * Get a graphic representation of this level.
+     *
+     * @return string representation of level with embedded newlines
+     */
     public String getPicture()
     {
         StringBuilder buf = new StringBuilder();
@@ -323,9 +432,9 @@ public class Level
                 if (map[y][x] != Terrain.WALL) {
                     ch = Terrain.getCharacter(map[y][x]);
                 } else {
-                    if ((x > 0 && map[y][x-1] == Terrain.WALL) ||
+                    if ((x > 0 && map[y][x - 1] == Terrain.WALL) ||
                         (x < map[y].length - 1 &&
-                         map[y][x+1] == Terrain.WALL))
+                         map[y][x + 1] == Terrain.WALL))
                     {
                         ch = '-';
                     } else {
@@ -340,11 +449,21 @@ public class Level
         return buf.toString();
     }
 
+    /**
+     * Get previous level
+     *
+     * @return previous level (may be null)
+     */
     public Level getPreviousLevel()
     {
         return prevLevel;
     }
 
+    /**
+     * Return debugging string.
+     *
+     * @return debugging string
+     */
     public String toString()
     {
         return String.format("Level[%s %dx%d ch*%d]", name, map.length,

@@ -13,6 +13,9 @@ import org.glowacki.core.MovableCharacter;
 import org.glowacki.core.MovableCharacter.Direction;
 import org.glowacki.core.Terrain;
 
+/**
+ * ASCII terminal interface
+ */
 class AsciiTerm
 {
     private Screen screen;
@@ -262,9 +265,12 @@ class AsciiTerm
     }
 }
 
+/**
+ * Class which runs the code.
+ */
 public class Runner
 {
-    private static final String[] level1 = new String[] {
+    private static final String[] LEVEL_1 = new String[] {
         "           ---------",
         "           |.......|",
         "           |.......|",
@@ -282,7 +288,7 @@ public class Runner
         "------                  ----------",
     };
 
-    private static final String[] level2 = new String[] {
+    private static final String[] LEVEL_2 = new String[] {
         "----------------------------",
         "|.....................>....|",
         "|..........................|     -----",
@@ -293,7 +299,7 @@ public class Runner
         "----------------------------",
     };
 
-    private static final String[] level3 = new String[] {
+    private static final String[] LEVEL_3 = new String[] {
         "-----",
         "|...|",
         "|...----",
@@ -309,18 +315,25 @@ public class Runner
         "        -------",
     };
 
+    /**
+     * Main method
+     *
+     * @param args command-line arguments
+     *
+     * @throws CoreException if there is an unexpected problem
+     */
     public static final void main(String[] args)
         throws CoreException
     {
         AsciiTerm display = new AsciiTerm();
 
-        Level lvl = new Level("Top", level1);
+        Level lvl = new Level("Top", LEVEL_1);
         display.setLevel(lvl);
 
-        Level l2 = new Level("Middle", level2);
+        Level l2 = new Level("Middle", LEVEL_2);
         lvl.addNextLevel(l2);
 
-        Level l3 = new Level("Bottom", level3);
+        Level l3 = new Level("Bottom", LEVEL_3);
         l2.addNextLevel(l3);
 
         Character ch = new Character("me", 10, 10, 10);

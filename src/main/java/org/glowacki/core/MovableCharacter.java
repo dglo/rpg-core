@@ -1,7 +1,13 @@
 package org.glowacki.core;
 
+/**
+ * Methods required by a movable character.
+ */
 public interface MovableCharacter
 {
+    /**
+     * Directions which can be moved
+     */
     enum Direction { UNKNOWN, LEFT, UP, RIGHT, DOWN, CLIMB, DESCEND };
 
     /**

@@ -103,7 +103,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
          <configuration>
            <configLocation>
-             src/test/resources/checkstyle/normal.xml
+             src/test/resources/checkstyle/picky.xml
            </configLocation>
          </configuration>
       </plugin>

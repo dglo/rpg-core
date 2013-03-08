@@ -1,11 +1,16 @@
 package org.glowacki.core;
 
+/**
+ * Terrain-related constant value
+ */
 interface TerrainConst
 {
-    public static final double IMPASSABLE = Double.MAX_VALUE;
-
+    double IMPASSABLE = Double.MAX_VALUE;
 }
 
+/**
+ * Terrain types.
+ */
 public enum Terrain
 {
     DOOR(1.0),
@@ -19,11 +24,23 @@ public enum Terrain
 
     private double cost;
 
+    /**
+     * Create a terrain value.
+     *
+     * @param cost movement cost
+     */
     Terrain(double cost)
     {
         this.cost = cost;
     }
 
+    /**
+     * Get the character associated with this Terrain.
+     *
+     * @param t terrain
+     *
+     * @return associated character
+     */
     public static char getCharacter(Terrain t)
     {
         switch (t) {
@@ -46,8 +63,23 @@ public enum Terrain
         }
     }
 
-    public double getCost() { return cost; }
+    /**
+     * Get the terrain's movement cost
+     *
+     * @return cost
+     */
+    public double getCost()
+    {
+        return cost;
+    }
 
+    /**
+     * Get the Terrain value associated with this character.
+     *
+     * @param ch character
+     *
+     * @return associated terrain
+     */
     public static Terrain getTerrain(char ch)
     {
         switch (ch) {
@@ -71,5 +103,13 @@ public enum Terrain
         }
     }
 
-    public boolean isMovable() { return cost != TerrainConst.IMPASSABLE; }
+    /**
+     * Is this a space which can be moved onto?
+     *
+     * @return <tt>true</tt> if this is a movable space
+     */
+    public boolean isMovable()
+    {
+        return cost != TerrainConst.IMPASSABLE;
+    }
 }
