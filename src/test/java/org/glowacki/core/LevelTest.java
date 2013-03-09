@@ -17,6 +17,11 @@ class MockMovable
         this.name = name;
     }
 
+    public Level getLevel()
+    {
+        throw new Error("Unimplemented");
+    }
+
     public String getName()
     {
         return name;

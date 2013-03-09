@@ -11,6 +11,13 @@ public interface MovableCharacter
     enum Direction { UNKNOWN, LEFT, UP, RIGHT, DOWN, CLIMB, DESCEND };
 
     /**
+     * Get the level this character is on.
+     *
+     * @return level
+     */
+    Level getLevel();
+
+    /**
      * Get this character's name.
      *
      * @return name

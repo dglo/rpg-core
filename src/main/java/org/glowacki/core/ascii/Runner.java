@@ -119,23 +119,7 @@ class AsciiTerm
                     break;
                 }
 
-                if (turns >= 0) {
-                    Level nextLevel = level.getPreviousLevel();
-                    if (nextLevel == null) {
-                        errMsg = "You cannot exit this dungeon";
-                        break;
-                    }
-
-                    try {
-                        level.exit(character);
-                        nextLevel.enterUp(character);
-                    } catch (CoreException ce) {
-                        ce.printStackTrace();
-                        errMsg = "Something is seriously hosed";
-                    }
-
-                    level = nextLevel;
-                }
+                level = character.getLevel();
 
                 break;
             case '>':
@@ -146,23 +130,7 @@ class AsciiTerm
                     break;
                 }
 
-                if (turns >= 0) {
-                    Level nextLevel = level.getNextLevel();
-                    if (nextLevel == null) {
-                        errMsg = "You are at the bottom of this dungeon";
-                        break;
-                    }
-
-                    try {
-                        level.exit(character);
-                        nextLevel.enterDown(character);
-                    } catch (CoreException ce) {
-                        ce.printStackTrace();
-                        errMsg = "Something is seriously hosed";
-                    }
-
-                    level = nextLevel;
-                }
+                level = character.getLevel();
 
                 break;
             case 'h':

@@ -22,6 +22,11 @@ class LevelCharacter
         this.y = y;
     }
 
+    public Level getLevel()
+    {
+        return lvl;
+    }
+
     public String getName()
     {
         return ch.getName();
@@ -76,12 +81,28 @@ class LevelCharacter
                 throw new LevelException("You cannot climb here");
             }
 
+            Level prevLevel = lvl.getPreviousLevel();
+            if (prevLevel == null) {
+                throw new LevelException("You cannot exit here");
+            }
+
+            lvl.exit(this);
+            prevLevel.enterUp(this);
+
             return ch.move(t, false);
         case DESCEND:
             t = lvl.get(newX, newY);
             if (t != Terrain.DOWNSTAIRS) {
                 throw new LevelException("You cannot descend here");
             }
+
+            Level nextLevel = lvl.getNextLevel();
+            if (nextLevel == null) {
+                throw new LevelException("You are at the bottom");
+            }
+
+            lvl.exit(this);
+            nextLevel.enterDown(this);
 
             return ch.move(t, false);
         }
