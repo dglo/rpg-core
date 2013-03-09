@@ -43,7 +43,7 @@ class MockMovable
         throw new Error("Unimplemented");
     }
 
-    public void position(Level lvl, int x, int y)
+    public void position(int x, int y)
     {
         this.x = x;
         this.y = y;

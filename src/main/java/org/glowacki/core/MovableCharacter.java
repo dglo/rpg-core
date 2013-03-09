@@ -58,5 +58,5 @@ public interface MovableCharacter
      * @param x x coordinate
      * @param y y coordinate
      */
-    void position(Level l, int x, int y);
+    void position(int x, int y);
 }

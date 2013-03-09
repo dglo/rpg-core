@@ -89,6 +89,8 @@ class LevelCharacter
             lvl.exit(this);
             prevLevel.enterUp(this);
 
+            lvl = prevLevel;
+
             return ch.move(t, false);
         case DESCEND:
             t = lvl.get(newX, newY);
@@ -103,6 +105,8 @@ class LevelCharacter
 
             lvl.exit(this);
             nextLevel.enterDown(this);
+
+            lvl = nextLevel;
 
             return ch.move(t, false);
         }
@@ -119,9 +123,8 @@ class LevelCharacter
         return ch.move(t, false);
     }
 
-    public void position(Level l, int x, int y)
+    public void position(int x, int y)
     {
-        this.lvl = l;
         this.x = x;
         this.y = y;
     }
@@ -300,7 +303,7 @@ public class Level
             throw new LevelException("Map has no up staircase");
         }
 
-        ch.position(this, p.x, p.y);
+        ch.position(p.x, p.y);
         characters.add(ch);
     }
 
@@ -319,7 +322,7 @@ public class Level
             throw new LevelException("Map has no down staircase");
         }
 
-        ch.position(this, p.x, p.y);
+        ch.position(p.x, p.y);
         characters.add(ch);
     }
 
@@ -337,7 +340,7 @@ public class Level
             throw new LevelException(ch.getName() + " was not on this level");
         }
 
-        ch.position(null, -1, -1);
+        ch.position(-1, -1);
     }
 
     /**
