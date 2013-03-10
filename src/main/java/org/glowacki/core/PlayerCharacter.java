@@ -8,6 +8,7 @@ public class PlayerCharacter
     /**
      * Create a character.
      *
+     * @param view view
      * @param name name
      * @param str strength
      * @param dex dexterity

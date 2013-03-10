@@ -158,7 +158,9 @@ class AsciiView
         display.drawScreen(player);
 
         while (running) {
-            player.takeTurn();
+            for (MovableCharacter ch : player.getLevel().getCharacters()) {
+                ch.takeTurn();
+            }
 
             display.drawScreen(player);
         }
