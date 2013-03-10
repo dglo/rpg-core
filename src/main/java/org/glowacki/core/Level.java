@@ -43,7 +43,7 @@ class LevelCharacter
     }
 
     public int move(Direction dir)
-        throws LevelException
+        throws CoreException
     {
         int newX = x;
         int newY = y;
@@ -59,7 +59,7 @@ class LevelCharacter
             break;
         case RIGHT:
             newX += 1;
-            if (newX > lvl.getMaxX()) {
+            if (newX > lvl.getMap().getMaxX()) {
                 return -1;
             }
             break;
@@ -71,12 +71,12 @@ class LevelCharacter
             break;
         case DOWN:
             newY += 1;
-            if (newY > lvl.getMaxY()) {
+            if (newY > lvl.getMap().getMaxY()) {
                 return -1;
             }
             break;
         case CLIMB:
-            t = lvl.get(newX, newY);
+            t = lvl.getMap().get(newX, newY);
             if (t != Terrain.UPSTAIRS) {
                 throw new LevelException("You cannot climb here");
             }
@@ -93,7 +93,7 @@ class LevelCharacter
 
             return ch.move(t, false);
         case DESCEND:
-            t = lvl.get(newX, newY);
+            t = lvl.getMap().get(newX, newY);
             if (t != Terrain.DOWNSTAIRS) {
                 throw new LevelException("You cannot descend here");
             }
@@ -111,7 +111,7 @@ class LevelCharacter
             return ch.move(t, false);
         }
 
-        t = lvl.get(newX, newY);
+        t = lvl.getMap().get(newX, newY);
 
         if (!t.isMovable()) {
             return -1;
@@ -187,7 +187,7 @@ class Point
 public class Level
 {
     private String name;
-    private Terrain[][] map;
+    private TerrainMap map;
 
     private Level prevLevel;
     private Level nextLevel;
@@ -201,29 +201,13 @@ public class Level
      * @param name level name
      * @param rawMap string description of this level
      *
-     * @throws LevelException if there is a problem
+     * @throws CoreException if there is a problem
      */
     public Level(String name, String[] rawMap)
-        throws LevelException
+        throws CoreException
     {
-        if (rawMap == null || rawMap.length == 0 || rawMap[0] == null ||
-            rawMap[0].length() == 0)
-        {
-            if (rawMap == null) {
-                throw new LevelException("Null map");
-            } else {
-                String hgt = Integer.toString(rawMap.length);
-                String wid = "?";
-                if (rawMap.length > 0 && rawMap[0] != null) {
-                    wid = Integer.toString(rawMap[0].length());
-                }
-                throw new LevelException("Bad map dimensions [" + hgt + ", " +
-                                         wid + "]");
-            }
-        }
-
         this.name = name;
-        map = buildTerrainFromMap(rawMap);
+        this.map = new TerrainMap(rawMap);
     }
 
     /**
@@ -246,37 +230,6 @@ public class Level
 
         nextLevel = l;
         l.prevLevel = this;
-    }
-
-    /**
-     * Build a terrain map.
-     *
-     * @param rawMap map of Strings describing the level
-     */
-    private static Terrain[][] buildTerrainFromMap(String[] rawMap)
-    {
-        int width = 0;
-        for (int i = 0; i < rawMap.length; i++) {
-            if (rawMap[i] != null && rawMap[i].length() > width) {
-                width = rawMap[i].length();
-            }
-        }
-
-        Terrain[][] map = new Terrain[rawMap.length][width];
-
-        for (int y = 0; y < map.length; y++) {
-            for (int x = 0; x < map[y].length; x++) {
-                Terrain t;
-                if (rawMap[y] == null || x >= rawMap[y].length()) {
-                    t = Terrain.UNKNOWN;
-                } else {
-                    t = Terrain.getTerrain(rawMap[y].charAt(x));
-                }
-                map[y][x] = t;
-            }
-        }
-
-        return map;
     }
 
     /**
@@ -306,7 +259,7 @@ public class Level
     public void enterDown(MovableCharacter ch)
         throws LevelException
     {
-        Point p = find(Terrain.UPSTAIRS);
+        Point p = map.find(Terrain.UPSTAIRS);
         if (p == null) {
             throw new LevelException("Map has no up staircase");
         }
@@ -325,7 +278,7 @@ public class Level
     public void enterUp(MovableCharacter ch)
         throws LevelException
     {
-        Point p = find(Terrain.DOWNSTAIRS);
+        Point p = map.find(Terrain.DOWNSTAIRS);
         if (p == null) {
             throw new LevelException("Map has no down staircase");
         }
@@ -352,50 +305,6 @@ public class Level
     }
 
     /**
-     * Find the first occurrence of the specified terrain.
-     *
-     * @param t terrain to find
-     *
-     * @return null if the terrain cannot be found on this level
-     */
-    private Point find(Terrain t)
-    {
-        for (int y = 0; y < map.length; y++) {
-            for (int x = 0; x < map[y].length; x++) {
-                if (map[y][x] == t) {
-                    return new Point(x, y);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the terrain found at the specified coordinates.
-     *
-     * @param x X coordinate
-     * @param y Y coordinate
-     *
-     * @return terrain at the specified point
-     *
-     * @throws LevelException if the point is not valid
-     */
-    public Terrain get(int x, int y)
-        throws LevelException
-    {
-        if (y < 0 || y >= map.length) {
-            throw new LevelException("Bad Y coordinate in (" + x + "," + y +
-                                     "), max is " + getMaxY());
-        } else if (x < 0 || x >= map[y].length) {
-            throw new LevelException("Bad X coordinate in (" + x + "," + y +
-                                     "), max is " + getMaxX());
-        }
-
-        return map[y][x];
-    }
-
-    /**
      * Get a list of characters on this level.
      *
      * @return list of characters
@@ -406,23 +315,13 @@ public class Level
     }
 
     /**
-     * Get maximum X coordinate for this level.
+     * Get terrain map.
      *
-     * @return maximum addressable X coordinate
+     * @return map
      */
-    public int getMaxX()
+    public TerrainMap getMap()
     {
-        return map[0].length - 1;
-    }
-
-    /**
-     * Get maximum Y coordinate for this level.
-     *
-     * @return maximum addressable Y coordinate
-     */
-    public int getMaxY()
-    {
-        return map.length - 1;
+        return map;
     }
 
     /**
@@ -446,42 +345,6 @@ public class Level
     }
 
     /**
-     * Get a graphic representation of this level.
-     *
-     * @return string representation of level with embedded newlines
-     */
-    public String getPicture()
-    {
-        StringBuilder buf = new StringBuilder();
-
-        for (int y = 0; y < map.length; y++) {
-            if (y > 0) {
-                buf.append('\n');
-            }
-
-            for (int x = 0; x < map[y].length; x++) {
-                char ch;
-                if (map[y][x] != Terrain.WALL) {
-                    ch = Terrain.getCharacter(map[y][x]);
-                } else {
-                    if ((x > 0 && map[y][x - 1] == Terrain.WALL) ||
-                        (x < map[y].length - 1 &&
-                         map[y][x + 1] == Terrain.WALL))
-                    {
-                        ch = '-';
-                    } else {
-                        ch = '|';
-                    }
-                }
-
-                buf.append(ch);
-            }
-        }
-
-        return buf.toString();
-    }
-
-    /**
      * Get previous level
      *
      * @return previous level (may be null)
@@ -498,8 +361,7 @@ public class Level
      */
     public String toString()
     {
-        return String.format("Level[%s %dx%d ch*%d]", name, map.length,
-                             map[0].length, characters.size());
+        return String.format("Level[%s %s ch*%d]", name, map,
+                             characters.size());
     }
 }
-

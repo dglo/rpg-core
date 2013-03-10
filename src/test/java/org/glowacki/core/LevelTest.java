@@ -140,8 +140,6 @@ public class LevelTest
 
         Level lvl = new Level(name, map);
         assertEquals("Bad name", name, lvl.getName());
-        assertEquals("Bad max X", map[0].length() - 1, lvl.getMaxX());
-        assertEquals("Bad max Y", map.length - 1, lvl.getMaxY());
         assertNotNull("Null character list", lvl.getCharacters());
         assertEquals("Non-empty character list",
                      0, lvl.getCharacters().size());
@@ -184,38 +182,6 @@ public class LevelTest
             assertNotNull("Null exception message", ce.getMessage());
             assertEquals("Bad exception message",
                          "Bad map dimensions [1, 0]", ce.getMessage());
-        }
-    }
-
-    public void testBuild()
-        throws CoreException
-    {
-        String[] map = new String[] {
-            "------",
-            "|....|                  ----------",
-            "|....+#######           |.....>..|",
-            "|.<..|      ############+......~.|",
-            "|....|                  |.X....~~|",
-            "------                  ----------",
-            null,
-        };
-
-        Level lvl = new Level("Sample", map);
-
-        String[] pic = lvl.getPicture().split("\n");
-        assertEquals("Bad number of lines", pic.length, map.length);
-
-        for (int i = 0; i < pic.length; i++) {
-            String mtrim;
-            if (map[i] == null) {
-                mtrim = "";
-            } else {
-                mtrim = map[i].replaceAll("\\s+$", "").replaceAll("X", " ");
-            }
-
-            String ptrim = pic[i].replaceAll("\\s+$", "");
-
-            assertEquals("Bad line #" + i, ptrim, mtrim);
         }
     }
 
@@ -326,76 +292,6 @@ public class LevelTest
             assertNotNull("Null exception message", ce.getMessage());
             assertEquals("Bad exception message",
                          "Cannot overwrite previous level", ce.getMessage());
-        }
-    }
-
-    public void testGet()
-        throws CoreException
-    {
-        StringBuilder buf = new StringBuilder();
-        for (Terrain t : Terrain.values()) {
-            buf.append(Terrain.getCharacter(t));
-        }
-
-        String[] map = new String[] { buf.toString(), };
-
-        Level lvl = new Level("MapValues", map);
-
-        int n = 0;
-        for (Terrain t : Terrain.values()) {
-            Terrain actual = lvl.get(n, 0);
-            assertEquals("Bad terrain for " + map[0].charAt(n), t, actual);
-            n++;
-        }
-
-        for (int i = 0; i < 4; i++) {
-            int x, y;
-            String expMsg;
-            switch (i) {
-            case 0:
-                x = 0;
-                y = -1;
-                expMsg = String.format("Bad Y coordinate in (%d,%d)," +
-                                       " max is %d", x, y, lvl.getMaxY());
-                break;
-            case 1:
-                x = 0;
-                y = 99;
-                expMsg = String.format("Bad Y coordinate in (%d,%d)," +
-                                       " max is %d", x, y, lvl.getMaxY());
-                break;
-            case 2:
-                x = -1;
-                y = 0;
-                expMsg = String.format("Bad X coordinate in (%d,%d)," +
-                                       " max is %d", x, y, lvl.getMaxX());
-                break;
-            case 3:
-                x = 99;
-                y = 0;
-                expMsg = String.format("Bad X coordinate in (%d,%d)," +
-                                       " max is %d", x, y, lvl.getMaxX());
-                break;
-            default:
-                fail("There is no choice for " + i);
-                // not reachable, but compiler doesn't know that
-                x = -1;
-                y = -1;
-                expMsg = null;
-                break;
-            }
-
-            final String coordStr = "(" + x + "," + y + ")";
-
-            try {
-                lvl.get(x, y);
-                fail("Should not have terrain for " + coordStr);
-            } catch (CoreException ce) {
-                assertNotNull("Null exception message when getting " +
-                              coordStr, ce.getMessage());
-                assertEquals("Bad exception when getting " + coordStr,
-                             expMsg, ce.getMessage());
-            }
         }
     }
 

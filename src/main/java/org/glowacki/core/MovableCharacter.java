@@ -46,10 +46,10 @@ public interface MovableCharacter
      * @return number of turns required to make the move, or
      *         <tt>-1</tt> if the move is not valid
      *
-     * @throws LevelException if the move is not valid
+     * @throws CoreException if the move is not valid
      */
     int move(Direction dir)
-        throws LevelException;
+        throws CoreException;
 
     /**
      * Move the character to the specified position on the level.

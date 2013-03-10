@@ -44,8 +44,8 @@ class AsciiTerm
     {
         Level level = player.getLevel();
 
-        final int maxX = level.getMaxX();
-        final int maxY = level.getMaxY();
+        final int maxX = level.getMap().getMaxX();
+        final int maxY = level.getMap().getMaxY();
 
         char[][] map = new char[maxY + 1][maxX + 1];
 
@@ -53,7 +53,7 @@ class AsciiTerm
             for (int x = 0; x <= maxX; x++) {
                 char ch;
                 try {
-                    ch = Terrain.getCharacter(level.get(x, y));
+                    ch = Terrain.getCharacter(level.getMap().get(x, y));
                 } catch (CoreException ce) {
                     ce.printStackTrace();
                     ch = '?';
