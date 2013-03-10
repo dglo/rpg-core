@@ -76,12 +76,12 @@ public class TerrainMap
      *
      * @return null if the terrain cannot be found on this level
      */
-    public Point find(Terrain t)
+    public MapPoint find(Terrain t)
     {
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
                 if (map[y][x] == t) {
-                    return new Point(x, y);
+                    return new MapPoint(x, y);
                 }
             }
         }

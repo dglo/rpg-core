@@ -162,26 +162,6 @@ class LevelException
 }
 
 /**
- * A single point.
- */
-class Point
-{
-    int x;
-    int y;
-
-    Point(int x, int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-
-    public String toString()
-    {
-        return String.format("(%d,%d)", x, y);
-    }
-}
-
-/**
  * Description of a level.
  */
 public class Level
@@ -259,7 +239,7 @@ public class Level
     public void enterDown(MovableCharacter ch)
         throws LevelException
     {
-        Point p = map.find(Terrain.UPSTAIRS);
+        MapPoint p = map.find(Terrain.UPSTAIRS);
         if (p == null) {
             throw new LevelException("Map has no up staircase");
         }
@@ -278,7 +258,7 @@ public class Level
     public void enterUp(MovableCharacter ch)
         throws LevelException
     {
-        Point p = map.find(Terrain.DOWNSTAIRS);
+        MapPoint p = map.find(Terrain.DOWNSTAIRS);
         if (p == null) {
             throw new LevelException("Map has no down staircase");
         }
