@@ -25,7 +25,7 @@ public class CharacterTest
         final int dex = 10;
         final int qik = 11;
 
-        Character ch = new Character(name, str, dex, qik);
+        Character ch = new MockCharacter(name, str, dex, qik);
         assertEquals("Bad name", ch.getName(), name);
 
         String expStr = String.format("%s[%d/%d/%d", name, str, dex, qik);
@@ -39,7 +39,7 @@ public class CharacterTest
         Terrain[] allTerrain = Terrain.values();
         for (int i = 0; i < allTerrain.length; i++) {
             for (int b = 0; b < 2; b++) {
-                Character ch = new Character("foo", 1, 2, speed);
+                Character ch = new MockCharacter("foo", 1, 2, speed);
 
                 boolean diagonal = b == 1;
 

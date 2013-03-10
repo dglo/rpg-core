@@ -11,7 +11,9 @@ import org.glowacki.core.CoreException;
 import org.glowacki.core.Level;
 import org.glowacki.core.MovableCharacter;
 import org.glowacki.core.MovableCharacter.Direction;
+import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.Terrain;
+import org.glowacki.core.View;
 
 /**
  * ASCII terminal interface
@@ -22,12 +24,8 @@ class AsciiTerm
     private int maxRows;
     private int maxCols;
 
-    private boolean running;
-
-    private Level level;
-    private MovableCharacter character;
-
     private String errMsg;
+    private boolean changed;
 
     AsciiTerm()
     {
@@ -42,8 +40,10 @@ class AsciiTerm
         screen.startScreen();
     }
 
-    private char[][] buildMap()
+    private char[][] buildMap(MovableCharacter player)
     {
+        Level level = player.getLevel();
+
         final int maxX = level.getMaxX();
         final int maxY = level.getMaxY();
 
@@ -76,26 +76,28 @@ class AsciiTerm
         //terminal.exitPrivateMode();
     }
 
-    private void drawScreen()
+    public void drawScreen(MovableCharacter player)
     {
+        if (!changed && !screen.resizePending()) {
+            return;
+        }
+
         screen.clear();
 
-        if (level != null) {
-            char[][] map = buildMap();
+        char[][] map = buildMap(player);
 
-            int padX = (maxCols - map[0].length) / 2;
-            int padY = (maxRows - map.length) / 2;
+        int padX = (maxCols - map[0].length) / 2;
+        int padY = (maxRows - map.length) / 2;
 
-            StringBuilder buf = new StringBuilder(map[0].length);
-            for (int y = 0; y < map.length; y++) {
-                buf.setLength(0);
-                for (int x = 0; x < map[y].length; x++) {
-                    buf.append(map[y][x]);
-                }
-
-                screen.putString(padX, padY + y, buf.toString(),
-                                 Terminal.Color.WHITE,  Terminal.Color.BLACK);
+        StringBuilder buf = new StringBuilder(map[0].length);
+        for (int y = 0; y < map.length; y++) {
+            buf.setLength(0);
+            for (int x = 0; x < map[y].length; x++) {
+                buf.append(map[y][x]);
             }
+
+            screen.putString(padX, padY + y, buf.toString(),
+                             Terminal.Color.WHITE,  Terminal.Color.BLACK);
         }
 
         if (errMsg != null) {
@@ -106,66 +108,118 @@ class AsciiTerm
         screen.refresh();
     }
 
-    private boolean handleInput(Key key)
+    public void logError(String msg)
+    {
+        errMsg = msg;
+    }
+
+    public void markChanged()
+    {
+        changed = true;
+    }
+
+    public Key readInput()
+    {
+        return screen.readInput();
+    }
+}
+
+class AsciiView
+    implements View
+{
+    private AsciiTerm display;
+    private MovableCharacter player;
+
+    private boolean running;
+
+    AsciiView()
+    {
+        display = new AsciiTerm();
+    }
+
+    void close()
+    {
+        display.close();
+    }
+
+    public void handleInput()
+    {
+        Key key = display.readInput();
+        if (key != null) {
+            processKey(key);
+        }
+    }
+
+    void loop()
+    {
+        running = true;
+
+        display.markChanged();
+        display.drawScreen(player);
+
+        while (running) {
+            player.takeTurn();
+
+            display.drawScreen(player);
+        }
+    }
+
+    private void processKey(Key key)
     {
         int turns;
         if (key.getKind() == Key.Kind.NormalKey) {
             switch (key.getCharacter()) {
             case '<':
                 try {
-                    turns = character.move(Direction.CLIMB);
+                    turns = player.move(Direction.CLIMB);
                 } catch (CoreException ce) {
-                    errMsg = ce.getMessage();
+                    display.logError(ce.getMessage());
                     break;
                 }
-
-                level = character.getLevel();
 
                 break;
             case '>':
                 try {
-                    turns = character.move(Direction.DESCEND);
+                    turns = player.move(Direction.DESCEND);
                 } catch (CoreException ce) {
-                    errMsg = ce.getMessage();
+                    display.logError(ce.getMessage());
                     break;
                 }
-
-                level = character.getLevel();
 
                 break;
             case 'h':
                 try {
-                    turns = character.move(Direction.LEFT);
+                    turns = player.move(Direction.LEFT);
                 } catch (CoreException ce) {
-                    errMsg = ce.getMessage();
+                    display.logError(ce.getMessage());
                 }
                 break;
             case 'j':
                 try {
-                    turns = character.move(Direction.DOWN);
+                    turns = player.move(Direction.DOWN);
                 } catch (CoreException ce) {
-                    errMsg = ce.getMessage();
+                    display.logError(ce.getMessage());
                 }
                 break;
             case 'k':
                 try {
-                    turns = character.move(Direction.UP);
+                    turns = player.move(Direction.UP);
                 } catch (CoreException ce) {
-                    errMsg = ce.getMessage();
+                    display.logError(ce.getMessage());
                 }
                 break;
             case 'l':
                 try {
-                    turns = character.move(Direction.RIGHT);
+                    turns = player.move(Direction.RIGHT);
                 } catch (CoreException ce) {
-                    errMsg = ce.getMessage();
+                    display.logError(ce.getMessage());
                 }
                 break;
             case 'q':
                 running = false;
                 break;
             default:
-                errMsg = "Unknown key " + key;
+                display.logError("Unknown key " + key);
                 break;
             }
         } else {
@@ -184,52 +238,26 @@ class AsciiTerm
                 dir = Direction.DOWN;
                 break;
             default:
-                errMsg = "Unknown key " + key;
+                display.logError("Unknown key " + key);
                 dir = Direction.UNKNOWN;
                 break;
             }
 
             if (dir != Direction.UNKNOWN) {
                 try {
-                    turns = character.move(dir);
+                    turns = player.move(dir);
                 } catch (CoreException ce) {
-                    errMsg = ce.getMessage();
+                    display.logError(ce.getMessage());
                 }
             }
         }
 
-        return true;
+        display.markChanged();
     }
 
-    public void loop()
+    void setPlayer(MovableCharacter mch)
     {
-        running = true;
-
-        drawScreen();
-        while (running) {
-            boolean changed = false;
-
-            Key key = screen.readInput();
-            if (key != null) {
-                errMsg = null;
-                changed = handleInput(key);
-            }
-
-            if (changed || screen.resizePending()) {
-                drawScreen();
-            }
-        }
-    }
-
-    public void setCharacter(Character c)
-        throws CoreException
-    {
-        character = level.enterDown(c);
-    }
-
-    public void setLevel(Level l)
-    {
-        level = l;
+        player = mch;
     }
 }
 
@@ -293,10 +321,9 @@ public class Runner
     public static final void main(String[] args)
         throws CoreException
     {
-        AsciiTerm display = new AsciiTerm();
+        AsciiView view = new AsciiView();
 
         Level lvl = new Level("Top", LEVEL_1);
-        display.setLevel(lvl);
 
         Level l2 = new Level("Middle", LEVEL_2);
         lvl.addNextLevel(l2);
@@ -304,13 +331,14 @@ public class Runner
         Level l3 = new Level("Bottom", LEVEL_3);
         l2.addNextLevel(l3);
 
-        Character ch = new Character("me", 10, 10, 10);
-        display.setCharacter(ch);
+        PlayerCharacter ch = new PlayerCharacter(view, "me", 10, 10, 10);
+        MovableCharacter mch = lvl.enterDown(ch);
+        view.setPlayer(mch);
 
         try {
-            display.loop();
+            view.loop();
         } finally {
-            display.close();
+            view.close();
         }
     }
 }

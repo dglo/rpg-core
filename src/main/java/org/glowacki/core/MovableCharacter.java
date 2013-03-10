@@ -59,4 +59,9 @@ public interface MovableCharacter
      * @param y y coordinate
      */
     void position(int x, int y);
+
+    /**
+     * Perform this turn's action(s).
+     */
+    void takeTurn();
 }

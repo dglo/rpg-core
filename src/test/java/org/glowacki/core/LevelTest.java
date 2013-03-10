@@ -48,6 +48,14 @@ class MockMovable
         this.x = x;
         this.y = y;
     }
+
+    /**
+     * Perform this turn's action(s).
+     */
+    public void takeTurn()
+    {
+        throw new Error("Unimplemented");
+    }
 }
 
 public class LevelTest
@@ -485,7 +493,7 @@ public class LevelTest
         assertEquals("Non-empty character list",
                      0, lvl.getCharacters().size());
 
-        Character real = new Character("joe", 3, 4, 5);
+        Character real = new MockCharacter("joe", 3, 4, 5);
 
         MovableCharacter ch = lvl.enterDown(real);
         assertEquals("Bad X from enterDown", upX, ch.getX());
@@ -521,7 +529,7 @@ public class LevelTest
         Level bottom = new Level("bottom", buildMap(upX, row, downX, row));
         top.addNextLevel(bottom);
 
-        Character real = new Character("joe", 3, 4, 5);
+        Character real = new MockCharacter("joe", 3, 4, 5);
 
         MovableCharacter ch = top.enterDown(real);
         assertEquals("Bad X from enterDown", upX, ch.getX());

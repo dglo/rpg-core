@@ -129,6 +129,14 @@ class LevelCharacter
         this.y = y;
     }
 
+    /**
+     * Perform this turn's action(s).
+     */
+    public void takeTurn()
+    {
+        ch.takeTurn();
+    }
+
     public String toString()
     {
         return String.format("%s->%s[%d,%d]", ch.getName(), lvl.getName(), x,

@@ -3,7 +3,7 @@ package org.glowacki.core;
 /**
  * Core character description.
  */
-public class Character
+public abstract class Character
 {
     /** Used to compute movement cost */
     public static final double SQRT_2 = 1.41421356;
@@ -29,16 +29,6 @@ public class Character
         this.str = str;
         this.dex = dex;
         this.spd = spd;
-    }
-
-    /**
-     * Unimplemented.
-     *
-     * @param ch unused
-     */
-    public void attack(Character ch)
-    {
-        throw new UnimplementedError();
     }
 
     /**
@@ -79,6 +69,11 @@ public class Character
         timeLeft -= cost;
         return turns;
     }
+
+    /**
+     * Perform this turns action(s).
+     */
+    public abstract void takeTurn();
 
     /**
      * Return debugging string.
