@@ -5,74 +5,19 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-public class TerrainMapTest
+import org.glowacki.core.test.MapBuilder;
+
+public class MapTest
     extends TestCase
 {
-    public TerrainMapTest(String name)
+    public MapTest(String name)
     {
         super(name);
     }
 
-    private String[] buildMap(int upX, int upY, int downX, int downY)
-        throws CoreException
-    {
-        if (upX == 0) {
-            throw new CoreException("Up X " + upX +
-                                    " would be embedded in the wall");
-        } else if (downX == 0) {
-            throw new CoreException("Down X " + downX +
-                                    " would be embedded in the wall");
-        } else if (upY == 0) {
-            throw new CoreException("Up Y " + upY +
-                                    " would be embedded in the wall");
-        } else if (downY == 0) {
-            throw new CoreException("Down Y " + downY +
-                                    " would be embedded in the wall");
-        } else if (upX == downX && upY == downY) {
-            final String fmt = "Up (%d,%d) and down (%d,%d) are the same";
-            throw new CoreException(String.format(fmt, upX, upY, downX, downY));
-        }
-
-        int maxX = (upX > downX ? upX : downX);
-        int maxY = (upY > downY ? upY : downY);
-
-        String[] map = new String[maxY + 3];
-
-        final String wallFmt = String.format("%%%ds", maxX + 3);
-        final String allWall = String.format(wallFmt, "").replace(' ', '-');
-
-        StringBuilder buf = new StringBuilder(maxX + 3);
-        for (int i = 0; i < map.length; i++) {
-            if (i == 0 || i == map.length - 1) {
-                map[i] = allWall;
-                continue;
-            }
-
-            buf.setLength(0);
-            buf.append('|');
-
-            int floorEnd = maxX + 1;
-            for (int j = 1; j < maxX + 2; j++) {
-                if (i == upY && upX == j) {
-                    buf.append('<');
-                } else if (i == downY && downX == j) {
-                    buf.append('>');
-                } else {
-                    buf.append('.');
-                }
-            }
-
-            buf.append('|');
-
-            map[i] = buf.toString();
-        }
-
-        return map;
-    }
-
     public static Test suite()
     {
-        return new TestSuite(TerrainMapTest.class);
+        return new TestSuite(MapTest.class);
     }
 
     public void testCreate()
@@ -84,7 +29,7 @@ public class TerrainMapTest
             "---",
         };
 
-        TerrainMap tmap = new TerrainMap(map);
+        Map tmap = new Map(map);
         assertEquals("Bad max X", map[0].length() - 1, tmap.getMaxX());
         assertEquals("Bad max Y", map.length - 1, tmap.getMaxY());
         assertNotNull("Null string", tmap.toString());
@@ -94,38 +39,39 @@ public class TerrainMapTest
         throws CoreException
     {
         try {
-            new TerrainMap(null);
+            new Map(null);
             fail("Should not be able to create level from null map");
         } catch (CoreException ce) {
             assertNotNull("Null exception message", ce.getMessage());
-            assertEquals("Bad exception message", "Null map", ce.getMessage());
+            assertEquals("Bad exception message",
+                         "Map template cannot be null", ce.getMessage());
         }
 
         try {
-            new TerrainMap(new String[0]);
+            new Map(new String[0]);
             fail("Should not be able to create level from empty map");
         } catch (CoreException ce) {
             assertNotNull("Null exception message", ce.getMessage());
             assertEquals("Bad exception message",
-                         "Bad map dimensions [0, ?]", ce.getMessage());
+                         "Map template cannot be empty", ce.getMessage());
         }
 
         try {
-            new TerrainMap(new String[] { null, });
+            new Map(new String[] { null, });
             fail("Should not be able to create level from empty map");
         } catch (CoreException ce) {
             assertNotNull("Null exception message", ce.getMessage());
             assertEquals("Bad exception message",
-                         "Bad map dimensions [1, ?]", ce.getMessage());
+                         "Map template cannot be empty", ce.getMessage());
         }
 
         try {
-            new TerrainMap(new String[] { "", });
+            new Map(new String[] { "", });
             fail("Should not be able to create level from empty map");
         } catch (CoreException ce) {
             assertNotNull("Null exception message", ce.getMessage());
             assertEquals("Bad exception message",
-                         "Bad map dimensions [1, 0]", ce.getMessage());
+                         "Map template cannot be empty", ce.getMessage());
         }
     }
 
@@ -142,7 +88,7 @@ public class TerrainMapTest
             null,
         };
 
-        TerrainMap tmap = new TerrainMap(map);
+        Map tmap = new Map(map);
 
         String[] pic = tmap.getPicture().split("\n");
         assertEquals("Bad number of lines", pic.length, map.length);
@@ -176,7 +122,7 @@ public class TerrainMapTest
         final int upX = 2;
         final int downX = 3;
 
-        String[] built = buildMap(upX, row, downX, row);
+        String[] built = MapBuilder.buildMap(upX, row, downX, row);
         assertNotNull("buildMap() returned null", built);
         assertEquals("Bad map size", map.length, built.length);
 
@@ -192,7 +138,7 @@ public class TerrainMapTest
             "-----",
         };
 
-        String[] built1 = buildMap(-1, -1, 2, 2);
+        String[] built1 = MapBuilder.buildMap(-1, -1, 2, 2);
         assertNotNull("buildMap() returned null", built1);
         assertEquals("Bad map size", map1.length, built1.length);
 
@@ -208,7 +154,7 @@ public class TerrainMapTest
             "-----",
         };
 
-        String[] built2 = buildMap(2, 2, -1, -1);
+        String[] built2 = MapBuilder.buildMap(2, 2, -1, -1);
         assertNotNull("buildMap() returned null", built2);
         assertEquals("Bad map size", map2.length, built2.length);
 
@@ -222,12 +168,12 @@ public class TerrainMapTest
     {
         StringBuilder buf = new StringBuilder();
         for (Terrain t : Terrain.values()) {
-            buf.append(Terrain.getCharacter(t));
+            buf.append(MapCharRepresentation.getCharacter(t));
         }
 
         String[] map = new String[] { buf.toString(), };
 
-        TerrainMap tmap = new TerrainMap(map);
+        Map tmap = new Map(map);
 
         int n = 0;
         for (Terrain t : Terrain.values()) {

@@ -8,6 +8,14 @@ public class CoreException
 {
     /**
      * Create a core exception.
+     */
+    public CoreException()
+    {
+        super();
+    }
+
+    /**
+     * Create a core exception.
      *
      * @param msg error message
      */

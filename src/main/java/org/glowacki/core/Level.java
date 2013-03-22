@@ -3,213 +3,40 @@ package org.glowacki.core;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Internal class describing a movable character.
- */
-class LevelCharacter
-    implements MovableCharacter
-{
-    private Level lvl;
-    private Character ch;
-    private int x;
-    private int y;
-
-    LevelCharacter(Level lvl, Character ch, int x, int y)
-    {
-        this.lvl = lvl;
-        this.ch = ch;
-        this.x = x;
-        this.y = y;
-    }
-
-    public Level getLevel()
-    {
-        return lvl;
-    }
-
-    public String getName()
-    {
-        return ch.getName();
-    }
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-
-    public int move(Direction dir)
-        throws CoreException
-    {
-        int newX = x;
-        int newY = y;
-
-        Terrain t;
-
-        switch (dir) {
-        case LEFT:
-            newX -= 1;
-            if (newX < 0) {
-                return -1;
-            }
-            break;
-        case RIGHT:
-            newX += 1;
-            if (newX > lvl.getMap().getMaxX()) {
-                return -1;
-            }
-            break;
-        case UP:
-            newY -= 1;
-            if (newY < 0) {
-                return -1;
-            }
-            break;
-        case DOWN:
-            newY += 1;
-            if (newY > lvl.getMap().getMaxY()) {
-                return -1;
-            }
-            break;
-        case CLIMB:
-            t = lvl.getMap().get(newX, newY);
-            if (t != Terrain.UPSTAIRS) {
-                throw new LevelException("You cannot climb here");
-            }
-
-            Level prevLevel = lvl.getPreviousLevel();
-            if (prevLevel == null) {
-                throw new LevelException("You cannot exit here");
-            }
-
-            lvl.exit(this);
-            prevLevel.enterUp(this);
-
-            lvl = prevLevel;
-
-            return ch.move(t, false);
-        case DESCEND:
-            t = lvl.getMap().get(newX, newY);
-            if (t != Terrain.DOWNSTAIRS) {
-                throw new LevelException("You cannot descend here");
-            }
-
-            Level nextLevel = lvl.getNextLevel();
-            if (nextLevel == null) {
-                throw new LevelException("You are at the bottom");
-            }
-
-            lvl.exit(this);
-            nextLevel.enterDown(this);
-
-            lvl = nextLevel;
-
-            return ch.move(t, false);
-        }
-
-        t = lvl.getMap().get(newX, newY);
-
-        if (!t.isMovable()) {
-            return -1;
-        }
-
-        x = newX;
-        y = newY;
-
-        return ch.move(t, false);
-    }
-
-    public void position(int x, int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-
-    /**
-     * Perform this turn's action(s).
-     */
-    public void takeTurn()
-    {
-        ch.takeTurn();
-    }
-
-    public String toString()
-    {
-        return String.format("%s->%s[%d,%d]", ch.getName(), lvl.getName(), x,
-                             y);
-    }
-}
-
-/**
- * Exceptions for this class.
- */
 class LevelException
     extends CoreException
 {
-    /**
-     * Create a level exception.
-     *
-     * @param msg error message
-     */
     LevelException(String msg)
     {
         super(msg);
     }
 }
 
-/**
- * Description of a level.
- */
 public class Level
 {
     private String name;
-    private TerrainMap map;
+    private Map map;
 
     private Level prevLevel;
     private Level nextLevel;
 
-    private ArrayList<MovableCharacter> characters =
-        new ArrayList<MovableCharacter>();
+    private List<ICharacter> players = new ArrayList<ICharacter>();
+    private List<ICharacter> nonplayers = new ArrayList<ICharacter>();
 
-    /**
-     * Create a level.
-     *
-     * @param name level name
-     * @param rawMap string description of this level
-     *
-     * @throws CoreException if there is a problem
-     */
-    public Level(String name, String[] rawMap)
-        throws CoreException
+    public Level(String name, Map map)
     {
         this.name = name;
-        this.map = new TerrainMap(rawMap);
+        this.map = map;
     }
 
-    /**
-     * Add the level below this one.
-     *
-     * @param l lower level
-     *
-     * @throws LevelException if there is a problem
-     */
-    public void addNextLevel(Level l)
-        throws LevelException
+    public void addNextLevel(Level lvl)
     {
-        if (l == null) {
-            throw new LevelException("Next level cannot be null");
-        } else if (nextLevel != null) {
-            throw new LevelException("Cannot overwrite existing level");
-        } else if (l.prevLevel != null) {
-            throw new LevelException("Cannot overwrite previous level");
-        }
+        this.nextLevel = lvl;
+    }
 
-        nextLevel = l;
-        l.prevLevel = this;
+    public void addPreviousLevel(Level lvl)
+    {
+        this.prevLevel = lvl;
     }
 
     /**
@@ -217,35 +44,20 @@ public class Level
      *
      * @param ch character
      *
-     * @return wrapped character
-     *
-     * @throws LevelException if the level doesn't have an up staircase
+     * @throws CoreException if the level doesn't have an up staircase
      */
-    public MovableCharacter enterDown(Character ch)
-        throws LevelException
+    public void enterDown(ICharacter ch)
+        throws CoreException
     {
-        MovableCharacter mch = new LevelCharacter(this, ch, 0, 0);
-        enterDown(mch);
-        return mch;
-    }
+        MapPoint p = map.enterDown(ch);
 
-    /**
-     * This character is entering this level from above.
-     *
-     * @param ch character
-     *
-     * @throws LevelException if the level doesn't have an up staircase
-     */
-    public void enterDown(MovableCharacter ch)
-        throws LevelException
-    {
-        MapPoint p = map.find(Terrain.UPSTAIRS);
-        if (p == null) {
-            throw new LevelException("Map has no up staircase");
+        if (ch.isPlayer()) {
+            players.add(ch);
+        } else {
+            nonplayers.add(ch);
         }
 
-        ch.position(p.x, p.y);
-        characters.add(ch);
+        ch.setLevel(this);
     }
 
     /**
@@ -253,18 +65,20 @@ public class Level
      *
      * @param ch character
      *
-     * @throws LevelException if the level doesn't have a down staircase
+     * @throws CoreException if the level doesn't have a down staircase
      */
-    public void enterUp(MovableCharacter ch)
-        throws LevelException
+    public void enterUp(ICharacter ch)
+        throws CoreException
     {
-        MapPoint p = map.find(Terrain.DOWNSTAIRS);
-        if (p == null) {
-            throw new LevelException("Map has no down staircase");
+        MapPoint p = map.enterUp(ch);
+
+        if (ch.isPlayer()) {
+            players.add(ch);
+        } else {
+            nonplayers.add(ch);
         }
 
-        ch.position(p.x, p.y);
-        characters.add(ch);
+        ch.setLevel(this);
     }
 
     /**
@@ -274,14 +88,21 @@ public class Level
      *
      * @throws LevelException if the character is not on this level
      */
-    public void exit(MovableCharacter ch)
+    public void exit(ICharacter ch)
         throws LevelException
     {
-        if (!characters.remove(ch)) {
+        boolean result;
+        if (ch.isPlayer()) {
+            result = players.remove(ch);
+        } else {
+            result = nonplayers.remove(ch);
+        }
+
+        if (!result) {
             throw new LevelException(ch.getName() + " was not on this level");
         }
 
-        ch.position(-1, -1);
+        //ch.position(-1, -1);
     }
 
     /**
@@ -289,59 +110,66 @@ public class Level
      *
      * @return list of characters
      */
-    public List<MovableCharacter> getCharacters()
+    public List<ICharacter> getCharacters()
     {
-        return new ArrayList<MovableCharacter>(characters);
+        List<ICharacter> characters =
+            new ArrayList<ICharacter>(players);
+        characters.addAll(nonplayers);
+        return characters;
     }
 
-    /**
-     * Get terrain map.
-     *
-     * @return map
-     */
-    public TerrainMap getMap()
+    public Terrain get(int x, int y)
+        throws MapException
     {
-        return map;
+        return map.get(x, y);
     }
 
-    /**
-     * Get level name
-     *
-     * @return name
-     */
+    public int getMaxX()
+    {
+        return map.getMaxX();
+    }
+
+    public int getMaxY()
+    {
+        return map.getMaxY();
+    }
+
     public String getName()
     {
         return name;
     }
 
-    /**
-     * Get next level
-     *
-     * @return next level (may be null)
-     */
     public Level getNextLevel()
     {
         return nextLevel;
     }
 
-    /**
-     * Get previous level
-     *
-     * @return previous level (may be null)
-     */
+    public String getPicture()
+    {
+        return map.getPicture();
+    }
+
     public Level getPreviousLevel()
     {
         return prevLevel;
     }
 
-    /**
-     * Return debugging string.
-     *
-     * @return debugging string
-     */
     public String toString()
     {
-        return String.format("Level[%s %s ch*%d]", name, map,
-                             characters.size());
+        String pStr;
+        if (players.size() == 0) {
+            pStr = "";
+        } else {
+            pStr = " p*" + players.size();
+        }
+
+        String nStr;
+        if (nonplayers.size() == 0) {
+            nStr = "";
+        } else {
+            nStr = " n*" + nonplayers.size();
+        }
+
+        return name + "|" + map + "|" + pStr + nStr;
     }
 }

@@ -6,14 +6,18 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.TerminalSize;
 
-import org.glowacki.core.Character;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.glowacki.core.CoreException;
+import org.glowacki.core.Direction;
+import org.glowacki.core.ICharacter;
 import org.glowacki.core.Level;
-import org.glowacki.core.MovableCharacter;
-import org.glowacki.core.MovableCharacter.Direction;
+import org.glowacki.core.MapCharRepresentation;
 import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.Terrain;
-import org.glowacki.core.View;
+import org.glowacki.core.Map;
 
 /**
  * ASCII terminal interface
@@ -40,12 +44,10 @@ class AsciiTerm
         screen.startScreen();
     }
 
-    private char[][] buildMap(MovableCharacter player)
+    private char[][] buildMap(Level level)
     {
-        Level level = player.getLevel();
-
-        final int maxX = level.getMap().getMaxX();
-        final int maxY = level.getMap().getMaxY();
+        final int maxX = level.getMaxX();
+        final int maxY = level.getMaxY();
 
         char[][] map = new char[maxY + 1][maxX + 1];
 
@@ -53,7 +55,8 @@ class AsciiTerm
             for (int x = 0; x <= maxX; x++) {
                 char ch;
                 try {
-                    ch = Terrain.getCharacter(level.getMap().get(x, y));
+                    Terrain t = level.get(x, y);
+                    ch = MapCharRepresentation.getCharacter(t);
                 } catch (CoreException ce) {
                     ce.printStackTrace();
                     ch = '?';
@@ -63,7 +66,7 @@ class AsciiTerm
             }
         }
 
-        for (MovableCharacter c : level.getCharacters()) {
+        for (ICharacter c : level.getCharacters()) {
             map[c.getY()][c.getX()] = '*';
         }
 
@@ -76,7 +79,7 @@ class AsciiTerm
         //terminal.exitPrivateMode();
     }
 
-    public void drawScreen(MovableCharacter player)
+    public void drawScreen(Level level)
     {
         if (!changed && !screen.resizePending()) {
             return;
@@ -84,7 +87,7 @@ class AsciiTerm
 
         screen.clear();
 
-        char[][] map = buildMap(player);
+        char[][] map = buildMap(level);
 
         int padX = (maxCols - map[0].length) / 2;
         int padY = (maxRows - map.length) / 2;
@@ -125,16 +128,12 @@ class AsciiTerm
 }
 
 class AsciiView
-    implements View
 {
     private AsciiTerm display;
-    private MovableCharacter player;
 
-    private boolean running;
-
-    AsciiView()
+    AsciiView(AsciiTerm display)
     {
-        display = new AsciiTerm();
+        this.display = display;
     }
 
     void close()
@@ -142,11 +141,52 @@ class AsciiView
         display.close();
     }
 
-    public void handleInput()
+    void drawScreen(ICharacter ch)
     {
-        Key key = display.readInput();
+        display.drawScreen(ch.getLevel());
+    }
+
+    public void logError(String msg)
+    {
+        display.logError(msg);
+    }
+
+    void markChanged()
+    {
+        display.markChanged();
+    }
+}
+
+class AsciiController
+{
+    private AsciiView view;
+    private AsciiTerm terminal;
+
+    private List<PlayerCharacter> players = new ArrayList<PlayerCharacter>();
+
+    private boolean running;
+
+    AsciiController()
+    {
+        this.terminal = new AsciiTerm();
+        this.view = new AsciiView(terminal);
+    }
+
+    public void addPlayer(PlayerCharacter ch)
+    {
+        players.add(ch);
+    }
+
+    public void close()
+    {
+        view.close();
+    }
+
+    public void handleInput(ICharacter ch)
+    {
+        Key key = terminal.readInput();
         if (key != null) {
-            processKey(key);
+            processKey(key, ch);
         }
     }
 
@@ -154,19 +194,29 @@ class AsciiView
     {
         running = true;
 
-        display.markChanged();
-        display.drawScreen(player);
+        view.markChanged();
 
         while (running) {
-            for (MovableCharacter ch : player.getLevel().getCharacters()) {
-                ch.takeTurn();
+            HashMap<ICharacter, ICharacter> npcs =
+                new HashMap<ICharacter, ICharacter>();
+            for (PlayerCharacter ch : players) {
+                view.drawScreen(ch);
+                handleInput(ch);
+
+                for (ICharacter npc : ch.getLevel().getCharacters()) {
+                    if (!npc.isPlayer()) {
+                        npcs.put(npc, npc);
+                    }
+                }
             }
 
-            display.drawScreen(player);
+            for (ICharacter ch : npcs.keySet()) {
+                ch.takeTurn();
+            }
         }
     }
 
-    private void processKey(Key key)
+    private void processKey(Key key, ICharacter player)
     {
         int turns;
         if (key.getKind() == Key.Kind.NormalKey) {
@@ -175,7 +225,7 @@ class AsciiView
                 try {
                     turns = player.move(Direction.CLIMB);
                 } catch (CoreException ce) {
-                    display.logError(ce.getMessage());
+                    view.logError(ce.getMessage());
                     break;
                 }
 
@@ -184,7 +234,7 @@ class AsciiView
                 try {
                     turns = player.move(Direction.DESCEND);
                 } catch (CoreException ce) {
-                    display.logError(ce.getMessage());
+                    view.logError(ce.getMessage());
                     break;
                 }
 
@@ -193,35 +243,35 @@ class AsciiView
                 try {
                     turns = player.move(Direction.LEFT);
                 } catch (CoreException ce) {
-                    display.logError(ce.getMessage());
+                    view.logError(ce.getMessage());
                 }
                 break;
             case 'j':
                 try {
                     turns = player.move(Direction.DOWN);
                 } catch (CoreException ce) {
-                    display.logError(ce.getMessage());
+                    view.logError(ce.getMessage());
                 }
                 break;
             case 'k':
                 try {
                     turns = player.move(Direction.UP);
                 } catch (CoreException ce) {
-                    display.logError(ce.getMessage());
+                    view.logError(ce.getMessage());
                 }
                 break;
             case 'l':
                 try {
                     turns = player.move(Direction.RIGHT);
                 } catch (CoreException ce) {
-                    display.logError(ce.getMessage());
+                    view.logError(ce.getMessage());
                 }
                 break;
             case 'q':
                 running = false;
                 break;
             default:
-                display.logError("Unknown key " + key);
+                view.logError("Unknown key " + key);
                 break;
             }
         } else {
@@ -240,7 +290,7 @@ class AsciiView
                 dir = Direction.DOWN;
                 break;
             default:
-                display.logError("Unknown key " + key);
+                view.logError("Unknown key " + key);
                 dir = Direction.UNKNOWN;
                 break;
             }
@@ -249,17 +299,12 @@ class AsciiView
                 try {
                     turns = player.move(dir);
                 } catch (CoreException ce) {
-                    display.logError(ce.getMessage());
+                    view.logError(ce.getMessage());
                 }
             }
         }
 
-        display.markChanged();
-    }
-
-    void setPlayer(MovableCharacter mch)
-    {
-        player = mch;
+        view.markChanged();
     }
 }
 
@@ -323,24 +368,25 @@ public class Runner
     public static final void main(String[] args)
         throws CoreException
     {
-        AsciiView view = new AsciiView();
+        Level lvl = new Level("Top", new Map(LEVEL_1));
 
-        Level lvl = new Level("Top", LEVEL_1);
-
-        Level l2 = new Level("Middle", LEVEL_2);
+        Level l2 = new Level("Middle", new Map(LEVEL_2));
         lvl.addNextLevel(l2);
 
-        Level l3 = new Level("Bottom", LEVEL_3);
+        Level l3 = new Level("Bottom", new Map(LEVEL_3));
         l2.addNextLevel(l3);
 
-        PlayerCharacter ch = new PlayerCharacter(view, "me", 10, 10, 10);
-        MovableCharacter mch = lvl.enterDown(ch);
-        view.setPlayer(mch);
+        AsciiController controller = new AsciiController();
+
+        PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10);
+        controller.addPlayer(ch);
+
+        lvl.enterDown(ch);
 
         try {
-            view.loop();
+            controller.loop();
         } finally {
-            view.close();
+            controller.close();
         }
     }
 }
