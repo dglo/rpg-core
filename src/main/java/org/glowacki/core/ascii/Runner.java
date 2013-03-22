@@ -252,6 +252,13 @@ class AsciiController
                     view.logError(ce.getMessage());
                 }
                 break;
+            case 'i':
+                try {
+                    turns = player.move(Direction.RIGHT_UP);
+                } catch (CoreException ce) {
+                    view.logError(ce.getMessage());
+                }
+                break;
             case 'j':
                 try {
                     turns = player.move(Direction.DOWN);
@@ -273,8 +280,29 @@ class AsciiController
                     view.logError(ce.getMessage());
                 }
                 break;
+            case 'm':
+                try {
+                    turns = player.move(Direction.RIGHT_DOWN);
+                } catch (CoreException ce) {
+                    view.logError(ce.getMessage());
+                }
+                break;
+            case 'n':
+                try {
+                    turns = player.move(Direction.LEFT_DOWN);
+                } catch (CoreException ce) {
+                    view.logError(ce.getMessage());
+                }
+                break;
             case 'q':
                 running = false;
+                break;
+            case 'u':
+                try {
+                    turns = player.move(Direction.LEFT_UP);
+                } catch (CoreException ce) {
+                    view.logError(ce.getMessage());
+                }
                 break;
             default:
                 view.logError("Unknown key " + key);
