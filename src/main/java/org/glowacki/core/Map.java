@@ -279,8 +279,16 @@ public class Map
     public void moveTo(ICharacter ch, int x, int y)
         throws MapException
     {
+        final int oldX = ch.getX();
+        final int oldY = ch.getY();
+
         removeCharacter(ch);
-        insertCharacter(ch, x, y);
+        try {
+            insertCharacter(ch, x, y);
+        } catch (MapException me) {
+            insertCharacter(ch, oldX, oldY);
+            throw me;
+        }
     }
 
     void removeCharacter(ICharacter ch)

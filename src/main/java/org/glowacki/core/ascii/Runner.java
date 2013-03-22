@@ -224,13 +224,14 @@ class AsciiController
 
     private void processKey(Key key, ICharacter player)
     {
-        int turns;
+        int turns = -1;
         if (key.getKind() == Key.Kind.NormalKey) {
             switch (key.getCharacter()) {
             case '<':
                 try {
                     turns = player.move(Direction.CLIMB);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                     break;
                 }
@@ -240,6 +241,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.DESCEND);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                     break;
                 }
@@ -249,6 +251,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.LEFT);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
@@ -256,6 +259,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.RIGHT_UP);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
@@ -263,6 +267,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.DOWN);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
@@ -270,6 +275,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.UP);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
@@ -277,6 +283,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.RIGHT);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
@@ -284,6 +291,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.RIGHT_DOWN);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
@@ -291,6 +299,7 @@ class AsciiController
                 try {
                     turns = player.move(Direction.LEFT_DOWN);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
@@ -301,10 +310,12 @@ class AsciiController
                 try {
                     turns = player.move(Direction.LEFT_UP);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
                 break;
             default:
+                turns = -1;
                 view.logError("Unknown key " + key);
                 break;
             }
@@ -329,10 +340,13 @@ class AsciiController
                 break;
             }
 
-            if (dir != Direction.UNKNOWN) {
+            if (dir == Direction.UNKNOWN) {
+                turns = -1;
+            } else {
                 try {
                     turns = player.move(dir);
                 } catch (CoreException ce) {
+                    turns = -1;
                     view.logError(ce.getMessage());
                 }
             }
