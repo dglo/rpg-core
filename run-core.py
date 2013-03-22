@@ -21,10 +21,10 @@ if __name__ == "__main__":
     runner.add_repo_jars(REPO_PKGS)
 
     try:
-        foo = JAVA_ARGS
+        java_args = JAVA_ARGS
     except NameError:
-        JAVA_ARGS = None
+        java_args = None
 
-    rundata = runner.run(sys.argv[1:], JAVA_ARGS)
+    rundata = runner.run(java_args, sys.argv[1:])
     if rundata.returncode() is not None and rundata.returncode() != 0:
         raise SystemExit(rundata.returncode())
