@@ -34,6 +34,13 @@ public class Level
         this.nextLevel = lvl;
     }
 
+    public void addNonplayer(ComputerCharacter ch, int x, int y)
+        throws CoreException
+    {
+        map.insertCharacter(ch, x, y);
+        nonplayers.add(ch);
+    }
+
     public void addPreviousLevel(Level lvl)
     {
         this.prevLevel = lvl;
@@ -86,11 +93,13 @@ public class Level
      *
      * @param ch character to remove
      *
-     * @throws LevelException if the character is not on this level
+     * @throws CoreException if the character is not on this level
      */
     public void exit(ICharacter ch)
-        throws LevelException
+        throws CoreException
     {
+        map.removeCharacter(ch);
+
         boolean result;
         if (ch.isPlayer()) {
             result = players.remove(ch);
@@ -101,8 +110,6 @@ public class Level
         if (!result) {
             throw new LevelException(ch.getName() + " was not on this level");
         }
-
-        //ch.position(-1, -1);
     }
 
     /**
@@ -118,10 +125,10 @@ public class Level
         return characters;
     }
 
-    public Terrain get(int x, int y)
+    public Terrain getTerrain(int x, int y)
         throws MapException
     {
-        return map.get(x, y);
+        return map.getTerrain(x, y);
     }
 
     public int getMaxX()
@@ -152,6 +159,18 @@ public class Level
     public Level getPreviousLevel()
     {
         return prevLevel;
+    }
+
+    public boolean isOccupied(int x, int y)
+        throws MapException
+    {
+        return map.isOccupied(x, y);
+    }
+
+    public void moveTo(ICharacter ch, int x, int y)
+        throws MapException
+    {
+        map.moveTo(ch, x, y);
     }
 
     public String toString()

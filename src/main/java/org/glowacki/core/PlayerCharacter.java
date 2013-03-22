@@ -43,7 +43,7 @@ public class PlayerCharacter
         throws CoreException
     {
         if (dir == Direction.CLIMB) {
-            Terrain t = level.get(getX(), getY());
+            Terrain t = level.getTerrain(getX(), getY());
             if (t != Terrain.UPSTAIRS) {
                 throw new CharacterException("You cannot climb here");
             }
@@ -60,7 +60,7 @@ public class PlayerCharacter
 
             return moveInternal(t, false);
         } else if (dir == Direction.DESCEND) {
-            Terrain t = level.get(getX(), getY());
+            Terrain t = level.getTerrain(getX(), getY());
             if (t != Terrain.DOWNSTAIRS) {
                 throw new CharacterException("You cannot descend here");
             }

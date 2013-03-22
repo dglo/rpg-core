@@ -65,44 +65,42 @@ public abstract class BaseCharacter
 
         Terrain t;
 
-        switch (dir) {
-        case LEFT:
+        boolean moved = false;
+        if (dir == Direction.LEFT_UP || dir == Direction.LEFT ||
+            dir == Direction.LEFT_DOWN)
+        {
             newX -= 1;
-            if (newX < 0) {
-                return -1;
-            }
-            break;
-        case RIGHT:
+            moved = (newX >= 0);
+        } else if (dir == Direction.RIGHT_UP || dir == Direction.RIGHT ||
+                   dir == Direction.RIGHT_DOWN)
+        {
             newX += 1;
-            if (newX > level.getMaxX()) {
-                return -1;
-            }
-            break;
-        case UP:
+            moved = (newX <= level.getMaxX());
+        }
+
+        if (dir == Direction.LEFT_UP || dir == Direction.UP ||
+            dir == Direction.RIGHT_UP)
+        {
             newY -= 1;
-            if (newY < 0) {
-                return -1;
-            }
-            break;
-        case DOWN:
+            moved = (newY >= 0);
+        } else if (dir == Direction.LEFT_DOWN || dir == Direction.DOWN ||
+                   dir == Direction.RIGHT_DOWN)
+        {
             newY += 1;
-            if (newY > level.getMaxY()) {
-                return -1;
-            }
-            break;
-        case CLIMB:
-            // non-players cannot roam the dungeon freely
-            return -1;
-        case DESCEND:
-            // non-players cannot roam the dungeon freely
+            moved = (newY <= level.getMaxY());
+        }
+
+        if (!moved) {
             return -1;
         }
 
-        t = level.get(newX, newY);
-
-        if (!t.isMovable()) {
+        try {
+            level.moveTo(this, newX, newY);
+        } catch (CoreException ce) {
             return -1;
         }
+
+        t = level.getTerrain(newX, newY);
 
         x = newX;
         y = newY;
@@ -132,6 +130,6 @@ public abstract class BaseCharacter
 
     public String toString()
     {
-        return String.format("[%d/%d/%d]", str, dex, spd);
+        return String.format("(%d/%d/%d)@[%d,%d]", str, dex, spd, x, y);
     }
 }

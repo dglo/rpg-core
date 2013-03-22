@@ -21,6 +21,11 @@ class OccupiedException
     {
         super();
     }
+
+    OccupiedException(String msg)
+    {
+        super(msg);
+    }
 }
 
 class MapEntry
@@ -35,6 +40,16 @@ class MapEntry
         this.x = x;
         this.y = y;
         this.terrain = t;
+    }
+
+    public void clearCharacter()
+    {
+        character = null;
+    }
+
+    public ICharacter getCharacter()
+    {
+        return character;
     }
 
     public Terrain getTerrain()
@@ -149,7 +164,7 @@ public class Map
      *
      * @throws TerrainMapException if the point is not valid
      */
-    public Terrain get(int x, int y)
+    public Terrain getTerrain(int x, int y)
         throws MapException
     {
         if (y < 0 || y >= map.length) {
@@ -161,6 +176,20 @@ public class Map
         }
 
         return map[y][x].getTerrain();
+    }
+
+    public boolean isOccupied(int x, int y)
+        throws MapException
+    {
+        if (y < 0 || y >= map.length) {
+            throw new MapException("Bad Y coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxY());
+        } else if (x < 0 || x >= map[y].length) {
+            throw new MapException("Bad X coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxX());
+        }
+
+        return map[y][x].getCharacter() != null;
     }
 
     /**
@@ -219,6 +248,62 @@ public class Map
         }
 
         return buf.toString();
+    }
+
+    void insertCharacter(ICharacter ch, int x, int y)
+        throws MapException
+    {
+        if (y < 0 || y > map.length || x < 0 || x > map[0].length) {
+            final String msg =
+                String.format("Bad insert position [%d,%d] for %s", x, y, ch);
+            throw new MapException(msg);
+        }
+
+        MapEntry entry = map[y][x];
+        if (entry.getCharacter() != null) {
+            final String msg =
+                String.format("%s is at [%d, %d]", entry.getCharacter(), x, y);
+            throw new OccupiedException(msg);
+        }
+
+        Terrain t = entry.getTerrain();
+        if (!t.isMovable()) {
+            final String msg =
+                String.format("Terrain %s at [%d,%d] is not movable", t, x, y);
+            throw new MapException(msg);
+        }
+
+        entry.setCharacter(ch);
+    }
+
+    public void moveTo(ICharacter ch, int x, int y)
+        throws MapException
+    {
+        removeCharacter(ch);
+        insertCharacter(ch, x, y);
+    }
+
+    void removeCharacter(ICharacter ch)
+        throws MapException
+    {
+        if (ch.getY() < 0 || ch.getY() > map.length ||
+            ch.getX() < 0 || ch.getX() > map[0].length)
+        {
+            final String msg =
+                String.format("Bad current position [%d,%d] for %s",
+                              ch.getX(), ch.getY(), ch);
+            throw new MapException(msg);
+        }
+
+        MapEntry entry = map[ch.getY()][ch.getX()];
+        if (entry.getCharacter() != ch) {
+            final String msg =
+                String.format("%s is not at [%d, %d]", ch, ch.getX(),
+                              ch.getY());
+            throw new MapException(msg);
+        }
+
+        entry.clearCharacter();
     }
 
     public String toString()

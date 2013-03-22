@@ -177,7 +177,7 @@ public class MapTest
 
         int n = 0;
         for (Terrain t : Terrain.values()) {
-            Terrain actual = tmap.get(n, 0);
+            Terrain actual = tmap.getTerrain(n, 0);
             assertEquals("Bad terrain for " + map[0].charAt(n), t, actual);
             n++;
         }
@@ -222,7 +222,7 @@ public class MapTest
             final String coordStr = "(" + x + "," + y + ")";
 
             try {
-                tmap.get(x, y);
+                tmap.getTerrain(x, y);
                 fail("Should not have terrain for " + coordStr);
             } catch (CoreException ce) {
                 assertNotNull("Null exception message when getting " +

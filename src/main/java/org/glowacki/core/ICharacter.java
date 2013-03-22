@@ -15,7 +15,8 @@ public interface ICharacter
     int move(Direction dir)
         throws CoreException;
 
-    void setLevel(Level l);
+    void setLevel(Level l)
+        throws CoreException;
 
     void setPosition(int x, int y);
 

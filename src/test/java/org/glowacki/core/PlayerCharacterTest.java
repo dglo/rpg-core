@@ -28,7 +28,7 @@ public class PlayerCharacterTest
         ICharacter ch = new PlayerCharacter(name, str, dex, spd);
         assertEquals("Bad name", ch.getName(), name);
 
-        String expStr = String.format("%s[%d/%d/%d", name, str, dex, spd);
+        String expStr = String.format("%s(%d/%d/%d", name, str, dex, spd);
         assertTrue("Bad character string " + ch,
                    ch.toString().startsWith(expStr));
     }

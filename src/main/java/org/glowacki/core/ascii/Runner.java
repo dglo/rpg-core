@@ -9,7 +9,9 @@ import com.googlecode.lanterna.terminal.TerminalSize;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
+import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
@@ -44,50 +46,19 @@ class AsciiTerm
         screen.startScreen();
     }
 
-    private char[][] buildMap(Level level)
-    {
-        final int maxX = level.getMaxX();
-        final int maxY = level.getMaxY();
-
-        char[][] map = new char[maxY + 1][maxX + 1];
-
-        for (int y = 0; y <= maxY; y++) {
-            for (int x = 0; x <= maxX; x++) {
-                char ch;
-                try {
-                    Terrain t = level.get(x, y);
-                    ch = MapCharRepresentation.getCharacter(t);
-                } catch (CoreException ce) {
-                    ce.printStackTrace();
-                    ch = '?';
-                }
-
-                map[y][x] = ch;
-            }
-        }
-
-        for (ICharacter c : level.getCharacters()) {
-            map[c.getY()][c.getX()] = '*';
-        }
-
-        return map;
-    }
-
     public void close()
     {
         screen.stopScreen();
         //terminal.exitPrivateMode();
     }
 
-    public void drawScreen(Level level)
+    public void drawScreen(char[][] map)
     {
         if (!changed && !screen.resizePending()) {
             return;
         }
 
         screen.clear();
-
-        char[][] map = buildMap(level);
 
         int padX = (maxCols - map[0].length) / 2;
         int padY = (maxRows - map.length) / 2;
@@ -136,14 +107,49 @@ class AsciiView
         this.display = display;
     }
 
+    private char[][] buildMap(PlayerCharacter player)
+    {
+        Level level = player.getLevel();
+
+        final int maxX = level.getMaxX();
+        final int maxY = level.getMaxY();
+
+        char[][] map = new char[maxY + 1][maxX + 1];
+
+        for (int y = 0; y <= maxY; y++) {
+            for (int x = 0; x <= maxX; x++) {
+                char ch;
+                try {
+                    if (level.isOccupied(x, y)) {
+                        ch = 'X';
+                    } else {
+                        Terrain t = level.getTerrain(x, y);
+                        ch = MapCharRepresentation.getCharacter(t);
+                    }
+                } catch (CoreException ce) {
+                    ce.printStackTrace();
+                    ch = '?';
+                }
+
+                map[y][x] = ch;
+            }
+        }
+
+        map[player.getY()][player.getX()] = '*';
+
+        return map;
+    }
+
     void close()
     {
         display.close();
     }
 
-    void drawScreen(ICharacter ch)
+    void drawScreen(PlayerCharacter ch)
     {
-        display.drawScreen(ch.getLevel());
+        char[][] map = buildMap(ch);
+
+        display.drawScreen(map);
     }
 
     public void logError(String msg)
@@ -358,6 +364,55 @@ public class Runner
         "        -------",
     };
 
+    private AsciiController controller;
+
+    Runner(long seed)
+        throws CoreException
+    {
+        Random random = new Random(seed);
+
+        int maxNPCs = 3;
+
+        Level lvl = new Level("Top", new Map(LEVEL_1));
+        populate(lvl, random, maxNPCs);
+
+        Level l2 = new Level("Middle", new Map(LEVEL_2));
+        populate(l2, random, maxNPCs + 1);
+
+        lvl.addNextLevel(l2);
+
+        Level l3 = new Level("Bottom", new Map(LEVEL_3));
+        populate(l3, random, maxNPCs + 2);
+
+        l2.addNextLevel(l3);
+
+        controller = new AsciiController();
+
+        PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10);
+        controller.addPlayer(ch);
+
+        lvl.enterDown(ch);
+    }
+
+    private void populate(Level lvl, Random random, int max)
+        throws CoreException
+    {
+        for (int i = 0; i < max; i++) {
+            ComputerCharacter ch = new ComputerCharacter(6, 6, 6,
+                                                         random.nextLong());
+            ch.setLevel(lvl);
+        }
+    }
+
+    private void run()
+    {
+        try {
+            controller.loop();
+        } finally {
+            controller.close();
+        }
+    }
+
     /**
      * Main method
      *
@@ -368,25 +423,7 @@ public class Runner
     public static final void main(String[] args)
         throws CoreException
     {
-        Level lvl = new Level("Top", new Map(LEVEL_1));
-
-        Level l2 = new Level("Middle", new Map(LEVEL_2));
-        lvl.addNextLevel(l2);
-
-        Level l3 = new Level("Bottom", new Map(LEVEL_3));
-        l2.addNextLevel(l3);
-
-        AsciiController controller = new AsciiController();
-
-        PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10);
-        controller.addPlayer(ch);
-
-        lvl.enterDown(ch);
-
-        try {
-            controller.loop();
-        } finally {
-            controller.close();
-        }
+        Runner runner = new Runner(1234L);
+        runner.run();
     }
 }
