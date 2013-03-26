@@ -255,7 +255,8 @@ public class Map
     {
         if (y < 0 || y >= map.length || x < 0 || x >= map[0].length) {
             final String msg =
-                String.format("Bad insert position [%d,%d] for %s", x, y, ch);
+                String.format("Bad insert position [%d,%d] for %s", x, y,
+                              ch.getName());
             throw new MapException(msg);
         }
 
@@ -299,7 +300,7 @@ public class Map
         {
             final String msg =
                 String.format("Bad current position [%d,%d] for %s",
-                              ch.getX(), ch.getY(), ch);
+                              ch.getX(), ch.getY(), ch.getName());
             throw new MapException(msg);
         }
 
@@ -307,7 +308,7 @@ public class Map
         if (entry.getCharacter() != ch) {
             final String msg =
                 String.format("Entry [%d, %d] does not contain %s", ch.getX(),
-                              ch.getY(), ch);
+                              ch.getY(), ch.getName());
             throw new MapException(msg);
         }
 

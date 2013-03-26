@@ -9,17 +9,25 @@ public class MockCharacter
     implements ICharacter
 {
     private String name;
+    private boolean player;
     private int x;
     private int y;
+    private Level level;
 
     public MockCharacter(String name)
     {
+        this(name, false);
+    }
+
+    public MockCharacter(String name, boolean player)
+    {
         this.name = name;
+        this.player = player;
     }
 
     public Level getLevel()
     {
-        throw new Error("Unimplemented");
+        return level;
     }
 
     public String getName()
@@ -39,7 +47,7 @@ public class MockCharacter
 
     public boolean isPlayer()
     {
-        throw new Error("Unimplemented");
+        return player;
     }
 
     public int move(Direction dir)
@@ -48,9 +56,9 @@ public class MockCharacter
         throw new Error("Unimplemented");
     }
 
-    public void setLevel(Level l)
+    public void setLevel(Level level)
     {
-        throw new Error("Unimplemented");
+        this.level = level;
     }
 
     public void setPosition(int x, int y)
@@ -62,5 +70,10 @@ public class MockCharacter
     public void takeTurn()
     {
         throw new Error("Unimplemented");
+    }
+
+    public String toString()
+    {
+        return "Mock:" + name;
     }
 }

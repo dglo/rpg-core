@@ -32,7 +32,9 @@ public class Level
     public void addNextLevel(Level lvl)
         throws LevelException
     {
-        if (nextLevel != null) {
+        if (lvl == null) {
+            throw new LevelException("Next level cannot be null");
+        } else if (nextLevel != null) {
             throw new LevelException("Level " + name +
                                      " already has a next level");
         } else if (lvl.prevLevel != null) {
@@ -54,7 +56,9 @@ public class Level
     public void addPreviousLevel(Level lvl)
         throws LevelException
     {
-        if (prevLevel != null) {
+        if (lvl == null) {
+            throw new LevelException("Previous level cannot be null");
+        } else if (prevLevel != null) {
             throw new LevelException("Level " + name +
                                      " already has a previous level");
         } else if (lvl.nextLevel != null) {
@@ -76,6 +80,12 @@ public class Level
     public void enterDown(ICharacter ch)
         throws CoreException
     {
+        if (ch.getLevel() != null) {
+            throw new LevelException("Character " + ch.getName() +
+                                     " cannot be on level " + ch.getLevel() +
+                                     " and " + name);
+        }
+
         MapPoint p = map.enterDown(ch);
 
         if (ch.isPlayer()) {
@@ -85,6 +95,7 @@ public class Level
         }
 
         ch.setLevel(this);
+        ch.setPosition(p.x, p.y);
     }
 
     /**
@@ -97,6 +108,12 @@ public class Level
     public void enterUp(ICharacter ch)
         throws CoreException
     {
+        if (ch.getLevel() != null) {
+            throw new LevelException("Character " + ch.getName() +
+                                     " cannot be on level " + ch.getLevel() +
+                                     " and " + name);
+        }
+
         MapPoint p = map.enterUp(ch);
 
         if (ch.isPlayer()) {
@@ -106,6 +123,7 @@ public class Level
         }
 
         ch.setLevel(this);
+        ch.setPosition(p.x, p.y);
     }
 
     /**
@@ -118,7 +136,14 @@ public class Level
     public void exit(ICharacter ch)
         throws CoreException
     {
+        if (ch.getLevel() == null) {
+            throw new LevelException("Character " + ch.getName() +
+                                     " is not on level " + name);
+        }
+
         map.removeCharacter(ch);
+        ch.setPosition(-1, -1);
+        ch.setLevel(null);
 
         boolean result;
         if (ch.isPlayer()) {
