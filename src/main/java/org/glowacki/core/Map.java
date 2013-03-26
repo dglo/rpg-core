@@ -253,7 +253,7 @@ public class Map
     void insertCharacter(ICharacter ch, int x, int y)
         throws MapException
     {
-        if (y < 0 || y > map.length || x < 0 || x > map[0].length) {
+        if (y < 0 || y >= map.length || x < 0 || x >= map[0].length) {
             final String msg =
                 String.format("Bad insert position [%d,%d] for %s", x, y, ch);
             throw new MapException(msg);
@@ -294,8 +294,8 @@ public class Map
     void removeCharacter(ICharacter ch)
         throws MapException
     {
-        if (ch.getY() < 0 || ch.getY() > map.length ||
-            ch.getX() < 0 || ch.getX() > map[0].length)
+        if (ch.getY() < 0 || ch.getY() >= map.length ||
+            ch.getX() < 0 || ch.getX() >= map[0].length)
         {
             final String msg =
                 String.format("Bad current position [%d,%d] for %s",
@@ -306,8 +306,8 @@ public class Map
         MapEntry entry = map[ch.getY()][ch.getX()];
         if (entry.getCharacter() != ch) {
             final String msg =
-                String.format("%s is not at [%d, %d]", ch, ch.getX(),
-                              ch.getY());
+                String.format("Entry [%d, %d] does not contain %s", ch.getX(),
+                              ch.getY(), ch);
             throw new MapException(msg);
         }
 
