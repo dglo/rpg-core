@@ -30,8 +30,18 @@ public class Level
     }
 
     public void addNextLevel(Level lvl)
+        throws LevelException
     {
-        this.nextLevel = lvl;
+        if (nextLevel != null) {
+            throw new LevelException("Level " + name +
+                                     " already has a next level");
+        } else if (lvl.prevLevel != null) {
+            throw new LevelException("Level " + lvl.name +
+                                     " already has a previous level");
+        }
+
+        nextLevel = lvl;
+        lvl.prevLevel = this;
     }
 
     public void addNonplayer(ComputerCharacter ch, int x, int y)
@@ -42,8 +52,18 @@ public class Level
     }
 
     public void addPreviousLevel(Level lvl)
+        throws LevelException
     {
-        this.prevLevel = lvl;
+        if (prevLevel != null) {
+            throw new LevelException("Level " + name +
+                                     " already has a previous level");
+        } else if (lvl.nextLevel != null) {
+            throw new LevelException("Level " + lvl.name +
+                                     " already has a next level");
+        }
+
+        prevLevel = lvl;
+        lvl.nextLevel = this;
     }
 
     /**
