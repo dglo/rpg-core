@@ -9,6 +9,8 @@ public class MockCharacter
     implements ICharacter
 {
     private String name;
+    private int x;
+    private int y;
 
     public MockCharacter(String name)
     {
@@ -27,12 +29,12 @@ public class MockCharacter
 
     public int getX()
     {
-        throw new Error("Unimplemented");
+        return x;
     }
 
     public int getY()
     {
-        throw new Error("Unimplemented");
+        return y;
     }
 
     public boolean isPlayer()
@@ -53,7 +55,8 @@ public class MockCharacter
 
     public void setPosition(int x, int y)
     {
-        throw new Error("Unimplemented");
+        this.x = x;
+        this.y = y;
     }
 
     public void takeTurn()

@@ -38,62 +38,6 @@ public class LevelTest
         assertNotNull("Null string", lvl.toString());
     }
 
-    public void testBuildMap()
-        throws CoreException
-    {
-        String[] map = new String[] {
-            "------",
-            "|....|",
-            "|.<>.|",
-            "|....|",
-            "------",
-        };
-
-        final int row = 2;
-        final int upX = 2;
-        final int downX = 3;
-
-        String[] built = MapBuilder.buildMap(upX, row, downX, row);
-        assertNotNull("buildMap() returned null", built);
-        assertEquals("Bad map size", map.length, built.length);
-
-        for (int i = 0; i < map.length; i++) {
-            assertEquals("Bad map line #" + i, map[i], built[i]);
-        }
-
-        String[] map1 = new String[] {
-            "-----",
-            "|...|",
-            "|.>.|",
-            "|...|",
-            "-----",
-        };
-
-        String[] built1 = MapBuilder.buildMap(-1, -1, 2, 2);
-        assertNotNull("buildMap() returned null", built1);
-        assertEquals("Bad map size", map1.length, built1.length);
-
-        for (int i = 0; i < map1.length; i++) {
-            assertEquals("Bad map line #" + i, map1[i], built1[i]);
-        }
-
-        String[] map2 = new String[] {
-            "-----",
-            "|...|",
-            "|.<.|",
-            "|...|",
-            "-----",
-        };
-
-        String[] built2 = MapBuilder.buildMap(2, 2, -1, -1);
-        assertNotNull("buildMap() returned null", built2);
-        assertEquals("Bad map size", map2.length, built2.length);
-
-        for (int i = 0; i < map2.length; i++) {
-            assertEquals("Bad map line #" + i, map2[i], built2[i]);
-        }
-    }
-
 /*
     public void testBadCreate()
         throws CoreException

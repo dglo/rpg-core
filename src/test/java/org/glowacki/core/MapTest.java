@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.glowacki.core.test.MapBuilder;
+import org.glowacki.core.test.MockCharacter;
 
 public class MapTest
     extends TestCase
@@ -107,62 +108,6 @@ public class MapTest
         }
     }
 
-    public void testBuildMap()
-        throws CoreException
-    {
-        String[] map = new String[] {
-            "------",
-            "|....|",
-            "|.<>.|",
-            "|....|",
-            "------",
-        };
-
-        final int row = 2;
-        final int upX = 2;
-        final int downX = 3;
-
-        String[] built = MapBuilder.buildMap(upX, row, downX, row);
-        assertNotNull("buildMap() returned null", built);
-        assertEquals("Bad map size", map.length, built.length);
-
-        for (int i = 0; i < map.length; i++) {
-            assertEquals("Bad map line #" + i, map[i], built[i]);
-        }
-
-        String[] map1 = new String[] {
-            "-----",
-            "|...|",
-            "|.>.|",
-            "|...|",
-            "-----",
-        };
-
-        String[] built1 = MapBuilder.buildMap(-1, -1, 2, 2);
-        assertNotNull("buildMap() returned null", built1);
-        assertEquals("Bad map size", map1.length, built1.length);
-
-        for (int i = 0; i < map1.length; i++) {
-            assertEquals("Bad map line #" + i, map1[i], built1[i]);
-        }
-
-        String[] map2 = new String[] {
-            "-----",
-            "|...|",
-            "|.<.|",
-            "|...|",
-            "-----",
-        };
-
-        String[] built2 = MapBuilder.buildMap(2, 2, -1, -1);
-        assertNotNull("buildMap() returned null", built2);
-        assertEquals("Bad map size", map2.length, built2.length);
-
-        for (int i = 0; i < map2.length; i++) {
-            assertEquals("Bad map line #" + i, map2[i], built2[i]);
-        }
-    }
-
     public void testGet()
         throws CoreException
     {
@@ -230,6 +175,261 @@ public class MapTest
                 assertEquals("Bad exception when getting " + coordStr,
                              expMsg, ce.getMessage());
             }
+        }
+    }
+
+    public void testBadInsertOccupiedRemove()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|..|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockCharacter badguy = new MockCharacter("badguy");
+
+        try {
+            tmap.insertCharacter(badguy, 0, 0);
+            fail("Should not be able to insert character at [0, 0]");
+        } catch (CoreException ce) {
+            // expect this to fail
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int x = 1;
+            int y = 1;
+
+            if (i == 0) {
+                x = -1;
+            } else if (i == 1) {
+                x = tmap.getMaxX() + 1;
+            } else if (i == 2) {
+                y = -1;
+            } else if (i == 3) {
+                y = tmap.getMaxY() + 1;
+            }
+
+            try {
+                tmap.insertCharacter(badguy, x, y);
+                fail(String.format("Should not be able to insert character" +
+                                   " at [%d,%d]", x, y));
+            } catch (CoreException ce) {
+                // expect this to fail
+            }
+
+            try {
+                tmap.isOccupied(x, y);
+                fail(String.format("Should not be able to insert character" +
+                                   " at [%d,%d]", x, y));
+            } catch (CoreException ce) {
+                // expect this to fail
+            }
+
+            badguy.setPosition(x, y);
+
+            try {
+                tmap.removeCharacter(badguy);
+                fail(String.format("Should not be able to remove character" +
+                                   " from [%d,%d]", x, y));
+            } catch (CoreException ce) {
+                // expect this to fail
+            }
+
+        }
+    }
+
+    public void testInsertRemove()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|..|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockCharacter jumpy = new MockCharacter("jumpy");
+
+        try {
+            tmap.removeCharacter(jumpy);
+            fail("Should not be able to remove character from initial map");
+        } catch (CoreException ce) {
+            // expect this to fail
+        }
+
+        int x = 2;
+        int y = 1;
+
+        tmap.insertCharacter(jumpy, x, y);
+        jumpy.setPosition(x, y);
+
+        MockCharacter outie = new MockCharacter("outie");
+
+        try {
+            tmap.insertCharacter(outie, x, y);
+            fail("Should not be able to insert character into occupied space");
+        } catch (CoreException ce) {
+            // expect this to fail
+        }
+
+        tmap.removeCharacter(jumpy);
+    }
+
+    public void testIsOccupied()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|<>|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        for (int y = 0; y < tmap.getMaxY(); y++) {
+            for (int x = 0; x < tmap.getMaxX(); x++) {
+                assertFalse(String.format("[%d,%d] should not be occupied",
+                                          x, y), tmap.isOccupied(x, y));
+            }
+        }
+
+        // character should enter at [1,1]
+        MockCharacter downCh = new MockCharacter("downer");
+        final int downY = 1;
+        final int downX = 1;
+        tmap.enterDown(downCh);
+        assertEquals("Unexpected Y coordinate " + downCh.getY(),
+                     downY, downCh.getY());
+        assertEquals("Unexpected X coordinate " + downCh.getX(),
+                     downX, downCh.getX());
+        for (int y = 0; y < tmap.getMaxY(); y++) {
+            for (int x = 0; x < tmap.getMaxX(); x++) {
+                if (y == downCh.getY() && x == downCh.getX()) {
+                    assertTrue(String.format("[%d,%d] should be occupied",
+                                             x, y), tmap.isOccupied(x, y));
+                } else {
+                    assertFalse(String.format("[%d,%d] should not be occupied",
+                                          x, y), tmap.isOccupied(x, y));
+                }
+            }
+        }
+
+        // character should enter at [1,2]
+        final int upY = 1;
+        final int upX = 2;
+        MockCharacter upCh = new MockCharacter("upper");
+        tmap.enterUp(upCh);
+        assertEquals("Unexpected Y coordinate " + upCh.getY(),
+                     upY, upCh.getY());
+        assertEquals("Unexpected X coordinate " + upCh.getX(),
+                     upX, upCh.getX());
+        for (int y = 0; y < tmap.getMaxY(); y++) {
+            for (int x = 0; x < tmap.getMaxX(); x++) {
+                if ((y == downCh.getY() && x == downCh.getX()) ||
+                    (y == upCh.getY() && x == upCh.getX()))
+                {
+                    assertTrue(String.format("[%d,%d] should be occupied",
+                                             x, y), tmap.isOccupied(x, y));
+                } else {
+                    assertFalse(String.format("[%d,%d] should not be occupied",
+                                          x, y), tmap.isOccupied(x, y));
+                }
+            }
+        }
+    }
+
+    public void testMoveTo()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|..|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockCharacter movie = new MockCharacter("movie");
+
+        final int origX = 1;
+        final int origY = 1;
+
+        movie.setPosition(origX, origY);
+
+        tmap.insertCharacter(movie, origX, origY);
+
+        for (int i = 0; i < 4; i++) {
+            assertEquals("Bad X coordinate", origX, movie.getX());
+            assertEquals("Bad Y coordinate", origY, movie.getY());
+
+            for (int y = 0; y < tmap.getMaxY(); y++) {
+                for (int x = 0; x < tmap.getMaxX(); x++) {
+                    if (y == movie.getY() && x == movie.getX()) {
+                        assertTrue(String.format("[%d,%d] should be occupied",
+                                                 x, y), tmap.isOccupied(x, y));
+                    } else {
+                        final String msg =
+                            String.format("[%d,%d] should not be occupied",
+                                          x, y);
+                        assertFalse(msg, tmap.isOccupied(x, y));
+                    }
+                }
+            }
+
+            int x = origX;
+            int y = origY;
+
+            if (i == 0) {
+                x = -1;
+            } else if (i == 1) {
+                x = tmap.getMaxX() + 1;
+            } else if (i == 2) {
+                y = -1;
+            } else if (i == 3) {
+                y = tmap.getMaxY() + 1;
+            }
+
+            try {
+                tmap.moveTo(movie, x, y);
+                fail(String.format("Should not be able to move character" +
+                                   " to [%d,%d]", x, y));
+            } catch (CoreException ce) {
+                // expect this to fail
+            }
+        }
+
+        tmap.moveTo(movie, 2, 1);
+    }
+
+    public void testBadEnter()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|..|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockCharacter entry = new MockCharacter("entry");
+
+        try {
+            tmap.enterDown(entry);
+            fail("Should not be able to enter with no up staircase");
+        } catch (CoreException ce) {
+            // expect this to fail
+        }
+
+        try {
+            tmap.enterUp(entry);
+            fail("Should not be able to enter with no up staircase");
+        } catch (CoreException ce) {
+            // expect this to fail
         }
     }
 
