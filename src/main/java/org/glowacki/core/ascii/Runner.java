@@ -188,12 +188,14 @@ class AsciiController
         view.close();
     }
 
-    public void handleInput(ICharacter ch)
+    public int handleInput(ICharacter ch)
     {
         Key key = terminal.readInput();
-        if (key != null) {
-            processKey(key, ch);
+        if (key == null) {
+            return -1;
         }
+
+        return processKey(key, ch);
     }
 
     void loop()
@@ -207,12 +209,15 @@ class AsciiController
                 new HashMap<ICharacter, ICharacter>();
             for (PlayerCharacter ch : players) {
                 view.drawScreen(ch);
-                handleInput(ch);
-
-                for (ICharacter npc : ch.getLevel().getCharacters()) {
-                    if (!npc.isPlayer()) {
-                        npcs.put(npc, npc);
+                int turns = handleInput(ch);
+                while (turns > 0) {
+                    for (ICharacter npc : ch.getLevel().getCharacters()) {
+                        if (!npc.isPlayer()) {
+                            npcs.put(npc, npc);
+                        }
                     }
+
+                    turns--;
                 }
             }
 
@@ -222,7 +227,7 @@ class AsciiController
         }
     }
 
-    private void processKey(Key key, ICharacter player)
+    private int processKey(Key key, ICharacter player)
     {
         int turns = -1;
         if (key.getKind() == Key.Kind.NormalKey) {
@@ -353,6 +358,8 @@ class AsciiController
         }
 
         view.markChanged();
+
+        return turns;
     }
 }
 

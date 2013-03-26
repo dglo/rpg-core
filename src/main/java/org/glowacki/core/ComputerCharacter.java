@@ -18,17 +18,13 @@ public class ComputerCharacter
         super(str, dex, spd);
 
         random = new Random(seed);
-        state = generateRandomState();
-    }
 
-    private State generateRandomState()
-    {
         double pct = random.nextDouble();
         if (pct < 0.333) {
-            return State.MEANDER;
+            state = State.MEANDER;
         }
 
-        return State.ASLEEP;
+        state = State.ASLEEP;
     }
 
     public Level getLevel()
@@ -61,6 +57,12 @@ public class ComputerCharacter
 
             Direction dir = startDir;
             do {
+                try {
+                    move(level, dir);
+                    return;
+                } catch (CoreException ce) {
+                    // mot that way!
+                }
                 dir = dir.next();
             } while (dir != startDir);
         }
@@ -79,7 +81,7 @@ public class ComputerCharacter
     public int move(Direction dir)
         throws CoreException
     {
-        throw new Error("Unimplemented");
+        return move(level, dir);
     }
 
     public void setLevel(Level lvl)
@@ -92,6 +94,7 @@ public class ComputerCharacter
 
             try {
                 lvl.addNonplayer(this, cx, cy);
+                setPosition(cx, cy);
                 positioned = true;
             } catch (CoreException ce) {
                 // ignore exceptions
