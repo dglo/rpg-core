@@ -42,6 +42,10 @@ public class PlayerCharacter
     public int move(Direction dir)
         throws CoreException
     {
+        if (level == null) {
+            throw new CharacterException("Level cannot be null");
+        }
+
         if (dir == Direction.CLIMB) {
             Terrain t = level.getTerrain(getX(), getY());
             if (t != Terrain.UPSTAIRS) {
@@ -77,7 +81,7 @@ public class PlayerCharacter
 
             return moveInternal(t, false);
         } else {
-            return move(level, dir);
+            return move(level.getMap(), dir);
         }
     }
 

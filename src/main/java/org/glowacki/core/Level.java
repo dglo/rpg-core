@@ -176,6 +176,11 @@ public class Level
         return map.getTerrain(x, y);
     }
 
+    public Map getMap()
+    {
+        return map;
+    }
+
     public int getMaxX()
     {
         return map.getMaxX();

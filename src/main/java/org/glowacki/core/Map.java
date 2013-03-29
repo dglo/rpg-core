@@ -69,6 +69,7 @@ class MapEntry
 }
 
 public class Map
+    implements IMap
 {
     private MapEntry[][] map;
 

@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.glowacki.core.test.MapBuilder;
+
 public class PlayerCharacterTest
     extends TestCase
 {
@@ -28,68 +30,228 @@ public class PlayerCharacterTest
         ICharacter ch = new PlayerCharacter(name, str, dex, spd);
         assertEquals("Bad name", ch.getName(), name);
 
+        assertTrue("Bad isPlayer() value", ch.isPlayer());
+
         String expStr = String.format("%s(%d/%d/%d", name, str, dex, spd);
         assertTrue("Bad character string " + ch,
                    ch.toString().startsWith(expStr));
     }
 
-/*
-    public void testMove()
+    public void testLevel()
+        throws CoreException
     {
-        int speed = 10;
+        ICharacter ch = new PlayerCharacter("joe", 1, 2, 3);
+        assertNull("Initial level is not null", ch.getLevel());
 
-        Terrain[] allTerrain = Terrain.values();
-        for (int i = 0; i < allTerrain.length; i++) {
-            for (int b = 0; b < 2; b++) {
-                ICharacter ch = new PlayerCharacter("foo", 1, 2, speed);
+        Map map = new Map(MapBuilder.buildMap(-1, -1, -1, -2));
+        Level lvl = new Level("empty", map);
 
-                boolean diagonal = b == 1;
+        ch.setLevel(lvl);
+        assertNotNull("Level is null", ch.getLevel());
+        assertEquals("Bad level", lvl, ch.getLevel());
+    }
 
-                double mult = (diagonal ? Character.SQRT_2 : 1.0);
+    public void testTakeTurn()
+    {
+        ICharacter ch = new PlayerCharacter("bob", 1, 2, 3);
 
-                int turns = ch.move(allTerrain[i], diagonal);
-
-                int expTurns;
-
-                if (!allTerrain[i].isMovable()) {
-                    expTurns = Integer.MAX_VALUE;
-                } else {
-                    double myCost = allTerrain[i].getCost() * 10.0 * mult;
-
-                    expTurns = 0;
-
-                    int myTime = 0;
-                    while (myCost > myTime) {
-                        myTime += (double) speed;
-                        expTurns++;
-                    }
-                }
-
-                assertEquals(String.format("Bad number of turns for %s%s",
-                                           allTerrain[i],
-                                           (diagonal ? " diagonal" : "")),
-                             turns, expTurns);
-            }
+        try {
+            ch.takeTurn();
+            fail("This method should not be implemented");
+        } catch (UnimplementedError err) {
+            // expect this to fail
         }
     }
 
-    private void foo(ICharacter ch1)
+    public void testMoveNoLevel()
     {
-        Terrain[] allTerrain = new Terrain[] {
-            Terrain.FLOOR, Terrain.WATER, Terrain.DOOR
-        };
-        for (Terrain t : allTerrain) {
-            for (int i = 0; i < 2; i++) {
-                boolean diagonal = i == 1;
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 3);
 
-                System.out.print(ch1 + " -> " + t);
-                if (diagonal) System.out.print("(diagonal)");
-                System.out.print(" = " + ch1.move(t, diagonal));
-                System.out.println(" # " + ch1);
-            }
+        try {
+            ch.move(Direction.LEFT);
+            fail("Move without a level should not succeed");
+        } catch (CoreException ex) {
+            assertEquals("Bad exception message",
+                         "Level cannot be null", ex.getMessage());
         }
     }
-*/
+
+    public void testMove2D()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, -1, -1));
+
+        Direction dir = Direction.LEFT;
+        do {
+            ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+            Level lvl = new Level("empty", map);
+            lvl.enterDown(ch);
+
+            int turns;
+            try {
+                turns = ch.move(dir);
+            } catch (CoreException ex) {
+                fail(ch.getName() + " move(" + dir + ") threw " + ex);
+                continue;
+            }
+
+            int expTurns;
+            if (dir == Direction.LEFT_UP || dir == Direction.RIGHT_UP ||
+                dir == Direction.LEFT_DOWN || dir == Direction.RIGHT_DOWN)
+            {
+                expTurns = 2;
+            } else {
+                expTurns = 1;
+            }
+
+            assertEquals("Bad number of turns", expTurns, turns);
+
+            dir = dir.next();
+        } while (dir != Direction.LEFT);
+    }
+
+    public void testClimb()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+        Level bottomLvl = new Level("bottom", map);
+        topLvl.addNextLevel(bottomLvl);
+
+        bottomLvl.enterDown(ch);
+
+        Direction dir = Direction.CLIMB;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+        } catch (CoreException ex) {
+            fail(ch.getName() + " move(" + dir + ") threw " + ex);
+        }
+    }
+
+    public void testNoClimbOnUp()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+        Level bottomLvl = new Level("bottom", map);
+        topLvl.addNextLevel(bottomLvl);
+
+        bottomLvl.enterUp(ch);
+
+        Direction dir = Direction.CLIMB;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+            fail("Should not be able to climb here");
+        } catch (CoreException ex) {
+            final String expMsg = "You cannot climb here";
+            assertEquals("Bad exception", expMsg, ex.getMessage());
+        }
+    }
+
+    public void testNoClimbOnTopLevel()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+
+        topLvl.enterDown(ch);
+
+        Direction dir = Direction.CLIMB;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+            fail("Should not be able to climb here");
+        } catch (CoreException ex) {
+            final String expMsg = "You cannot exit here";
+            assertEquals("Bad exception", expMsg, ex.getMessage());
+        }
+    }
+
+    public void testDescend()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+        Level bottomLvl = new Level("bottom", map);
+        topLvl.addNextLevel(bottomLvl);
+
+        topLvl.enterUp(ch);
+
+        Direction dir = Direction.DESCEND;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+        } catch (CoreException ex) {
+            fail(ch.getName() + " move(" + dir + ") threw " + ex);
+        }
+    }
+
+    public void testNoDescendOnDown()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+        Level bottomLvl = new Level("bottom", map);
+        topLvl.addNextLevel(bottomLvl);
+
+        topLvl.enterDown(ch);
+
+        Direction dir = Direction.DESCEND;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+            fail("Should not be able to descend here");
+        } catch (CoreException ex) {
+            final String expMsg = "You cannot descend here";
+            assertEquals("Bad exception", expMsg, ex.getMessage());
+        }
+    }
+
+    public void testNoDescendOnBottomLevel()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+
+        topLvl.enterUp(ch);
+
+        Direction dir = Direction.DESCEND;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+            fail("Should not be able to descend here");
+        } catch (CoreException ex) {
+            final String expMsg = "You are at the bottom";
+            assertEquals("Bad exception", expMsg, ex.getMessage());
+        }
+    }
 
     public static void main(String[] args)
     {

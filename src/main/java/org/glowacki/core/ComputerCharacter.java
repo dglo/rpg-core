@@ -58,7 +58,7 @@ public class ComputerCharacter
             Direction dir = startDir;
             do {
                 try {
-                    move(level, dir);
+                    move(level.getMap(), dir);
                     return;
                 } catch (CoreException ce) {
                     // mot that way!
@@ -81,7 +81,7 @@ public class ComputerCharacter
     public int move(Direction dir)
         throws CoreException
     {
-        return move(level, dir);
+        return move(level.getMap(), dir);
     }
 
     public void setLevel(Level lvl)
@@ -93,10 +93,10 @@ public class ComputerCharacter
             int cy = random.nextInt(lvl.getMaxY());
 
             try {
-                lvl.addNonplayer(this, cx, cy);
-                setPosition(cx, cy);
+                setLevel(lvl, cx, cy);
                 positioned = true;
             } catch (CoreException ce) {
+                this.level = null;
                 // ignore exceptions
             }
         }
@@ -104,8 +104,16 @@ public class ComputerCharacter
         if (!positioned) {
             throw new CoreException("Failed to position " + toString());
         }
+    }
+
+    public void setLevel(Level lvl, int x, int y)
+        throws CoreException
+    {
+        lvl.addNonplayer(this, x, y);
 
         this.level = lvl;
+
+        setPosition(x, y);
     }
 
     public void takeTurn()

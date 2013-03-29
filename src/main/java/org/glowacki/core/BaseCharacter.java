@@ -57,7 +57,7 @@ public abstract class BaseCharacter
         return y;
     }
 
-    int move(Level level, Direction dir)
+    int move(IMap map, Direction dir)
         throws CoreException
     {
         int newX = x;
@@ -65,29 +65,29 @@ public abstract class BaseCharacter
 
         Terrain t;
 
-        boolean moved = false;
+        boolean moved = true;
         if (dir == Direction.LEFT_UP || dir == Direction.LEFT ||
             dir == Direction.LEFT_DOWN)
         {
             newX -= 1;
-            moved = (newX >= 0);
+            moved &= (newX >= 0);
         } else if (dir == Direction.RIGHT_UP || dir == Direction.RIGHT ||
                    dir == Direction.RIGHT_DOWN)
         {
             newX += 1;
-            moved = (newX <= level.getMaxX());
+            moved &= (newX <= map.getMaxX());
         }
 
         if (dir == Direction.LEFT_UP || dir == Direction.UP ||
             dir == Direction.RIGHT_UP)
         {
             newY -= 1;
-            moved = (newY >= 0);
+            moved &= (newY >= 0);
         } else if (dir == Direction.LEFT_DOWN || dir == Direction.DOWN ||
                    dir == Direction.RIGHT_DOWN)
         {
             newY += 1;
-            moved = (newY <= level.getMaxY());
+            moved &= (newY <= map.getMaxY());
         }
 
         if (!moved) {
@@ -95,22 +95,26 @@ public abstract class BaseCharacter
         }
 
         try {
-            level.moveTo(this, newX, newY);
+            map.moveTo(this, newX, newY);
         } catch (CoreException ce) {
             return -1;
         }
 
-        t = level.getTerrain(newX, newY);
+        t = map.getTerrain(newX, newY);
 
         x = newX;
         y = newY;
 
-        return moveInternal(t, false);
+        boolean diagonal =
+            (dir == Direction.LEFT_UP || dir == Direction.LEFT_DOWN ||
+             dir == Direction.RIGHT_UP || dir == Direction.RIGHT_DOWN);
+
+        return moveInternal(t, diagonal);
     }
 
     int moveInternal(Terrain t, boolean diagonal)
     {
-        final double cost = computeMoveCost(t, false);
+        final double cost = computeMoveCost(t, diagonal);
 
         int turns = 0;
         while (cost > timeLeft) {
