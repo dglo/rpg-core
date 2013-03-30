@@ -127,6 +127,10 @@ public class Map
             throw new MapException("Map has no up staircase");
         }
 
+        if (entry.getCharacter() != null) {
+            throw new OccupiedException("Up staircase is occupied");
+        }
+
         entry.setCharacter(ch);
         ch.setPosition(entry.getX(), entry.getY());
 
@@ -139,6 +143,10 @@ public class Map
         MapEntry entry = find(Terrain.DOWNSTAIRS);
         if (entry == null) {
             throw new MapException("Map has no down staircase");
+        }
+
+        if (entry.getCharacter() != null) {
+            throw new OccupiedException("Down staircase is occupied");
         }
 
         entry.setCharacter(ch);
@@ -155,8 +163,7 @@ public class Map
      *
      * @return null if the terrain cannot be found on this level
      */
-    private MapEntry find(Terrain t)
-        throws OccupiedException
+    public MapEntry find(Terrain t)
     {
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
