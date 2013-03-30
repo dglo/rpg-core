@@ -122,23 +122,29 @@ public class Map
     public MapPoint enterDown(ICharacter ch)
         throws MapException
     {
-        MapPoint pt = enter(ch, Terrain.UPSTAIRS);
-        if (pt == null) {
+        MapEntry entry = find(Terrain.UPSTAIRS);
+        if (entry == null) {
             throw new MapException("Map has no up staircase");
         }
 
-        return pt;
+        entry.setCharacter(ch);
+        ch.setPosition(entry.getX(), entry.getY());
+
+        return entry;
     }
 
     public MapPoint enterUp(ICharacter ch)
         throws MapException
     {
-        MapPoint pt = enter(ch, Terrain.DOWNSTAIRS);
-        if (pt == null) {
+        MapEntry entry = find(Terrain.DOWNSTAIRS);
+        if (entry == null) {
             throw new MapException("Map has no down staircase");
         }
 
-        return pt;
+        entry.setCharacter(ch);
+        ch.setPosition(entry.getX(), entry.getY());
+
+        return entry;
     }
 
     /**
@@ -149,27 +155,12 @@ public class Map
      *
      * @return null if the terrain cannot be found on this level
      */
-    private MapPoint enter(ICharacter ch, Terrain t)
+    private MapEntry find(Terrain t)
         throws OccupiedException
     {
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
-                if (map[y][x].getX() != x) {
-                    final String msg =
-                        String.format("MapEntry [%d,%d]=%s, x != %d", x, y,
-                                      map[y][x], map[y][x].getX());
-                    throw new Error(msg);
-                }
-                if (map[y][x].getY() != y) {
-                    final String msg =
-                        String.format("MapEntry [%d,%d]=%s, y != %d", x, y,
-                                      map[y][x], map[y][x].getY());
-                    throw new Error(msg);
-                }
                 if (map[y][x].getTerrain() == t) {
-                    map[y][x].setCharacter(ch);
-                    ch.setPosition(x, y);
-
                     return map[y][x];
                 }
             }
