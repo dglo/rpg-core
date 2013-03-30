@@ -29,6 +29,7 @@ class OccupiedException
 }
 
 class MapEntry
+    implements MapPoint
 {
     private int x;
     private int y;
@@ -57,6 +58,16 @@ class MapEntry
         return terrain;
     }
 
+    public int getX()
+    {
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
     public void setCharacter(ICharacter ch)
         throws OccupiedException
     {
@@ -81,9 +92,9 @@ public class Map
         }
 
         int maxLen = 0;
-        for (int i = 0; i < template.length; i++) {
-            if (template[i] != null && template[i].length() > maxLen) {
-                maxLen = template[i].length();
+        for (int y = 0; y < template.length; y++) {
+            if (template[y] != null && template[y].length() > maxLen) {
+                maxLen = template[y].length();
             }
         }
 
@@ -93,17 +104,17 @@ public class Map
 
         map = new MapEntry[template.length][maxLen];
 
-        for (int i = 0; i < template.length; i++) {
-            int j;
-            for (j = 0; template[i] != null && j < template[i].length();
-                 j++)
+        for (int y = 0; y < template.length; y++) {
+            int x;
+            for (x = 0; template[y] != null && x < template[y].length();
+                 x++)
             {
                 Terrain t =
-                    MapCharRepresentation.getTerrain(template[i].charAt(j));
-                map[i][j] = new MapEntry(i, j, t);
+                    MapCharRepresentation.getTerrain(template[y].charAt(x));
+                map[y][x] = new MapEntry(x, y, t);
             }
-            for ( ; j < maxLen; j++) {
-                map[i][j] = new MapEntry(i, j, Terrain.UNKNOWN);
+            for ( ; x < maxLen; x++) {
+                map[y][x] = new MapEntry(x, y, Terrain.UNKNOWN);
             }
         }
     }
@@ -143,11 +154,23 @@ public class Map
     {
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
+                if (map[y][x].getX() != x) {
+                    final String msg =
+                        String.format("MapEntry [%d,%d]=%s, x != %d", x, y,
+                                      map[y][x], map[y][x].getX());
+                    throw new Error(msg);
+                }
+                if (map[y][x].getY() != y) {
+                    final String msg =
+                        String.format("MapEntry [%d,%d]=%s, y != %d", x, y,
+                                      map[y][x], map[y][x].getY());
+                    throw new Error(msg);
+                }
                 if (map[y][x].getTerrain() == t) {
                     map[y][x].setCharacter(ch);
                     ch.setPosition(x, y);
 
-                    return new MapPoint(x, y);
+                    return map[y][x];
                 }
             }
         }

@@ -95,7 +95,7 @@ public class Level
         }
 
         ch.setLevel(this);
-        ch.setPosition(p.x, p.y);
+        ch.setPosition(p.getX(), p.getY());
     }
 
     /**
@@ -123,7 +123,7 @@ public class Level
         }
 
         ch.setLevel(this);
-        ch.setPosition(p.x, p.y);
+        ch.setPosition(p.getX(), p.getY());
     }
 
     /**
