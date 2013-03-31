@@ -1,5 +1,7 @@
 package org.glowacki.core;
 
+import java.util.Iterator;
+
 class MapException
     extends CoreException
 {
@@ -123,6 +125,16 @@ public class Map
         }
 
         return null;
+    }
+
+    /**
+     * Iterate through all map entries (used for path-finding).
+     *
+     * @return entry iterator
+     */
+    public Iterable<MapEntry> getEntries()
+    {
+        return new EntryIterable();
     }
 
     /**
@@ -289,5 +301,43 @@ public class Map
     public String toString()
     {
         return String.format("%dx%d", map[0].length, map.length);
+    }
+
+    class EntryIterable
+        implements Iterable, Iterator
+    {
+        private int x;
+        private int y;
+
+        public boolean hasNext()
+        {
+            return y < map.length && x < map[y].length;
+        }
+
+        public java.util.Iterator<MapEntry> iterator()
+        {
+            return this;
+        }
+
+        public MapEntry next()
+        {
+            if (!hasNext()) {
+                return null;
+            }
+
+            MapEntry entry = map[y][x++];
+
+            if (x >= map[y].length) {
+                x = 0;
+                y++;
+            }
+
+            return entry;
+        }
+
+        public  void remove()
+        {
+            throw new Error("Unimplemented");
+        }
     }
 }
