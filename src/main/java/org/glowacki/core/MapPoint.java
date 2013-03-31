@@ -3,7 +3,7 @@ package org.glowacki.core;
 /**
  * A single point.
  */
-interface MapPoint
+public interface MapPoint
 {
     int getX();
     int getY();
