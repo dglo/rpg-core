@@ -29,12 +29,12 @@ public class ComputerCharacter
 
     public Level getLevel()
     {
-        throw new Error("Unimplemented");
+        throw new UnimplementedError();
     }
 
     public String getName()
     {
-        throw new Error("Unimplemented");
+        throw new UnimplementedError();
     }
 
     private void handleAsleepTurn()
