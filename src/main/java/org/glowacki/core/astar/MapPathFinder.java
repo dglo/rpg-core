@@ -1,6 +1,7 @@
 package org.glowacki.core.astar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -206,6 +207,8 @@ public class MapPathFinder
             }
             bestList.add(((MapNode) node).getEntry());
         }
+
+        Collections.reverse(bestList);
 
         return bestList;
     }
