@@ -11,7 +11,7 @@ public class UnimplementedError
      */
     public UnimplementedError()
     {
-        super();
+        super("Unimplemented");
     }
 
     /**
