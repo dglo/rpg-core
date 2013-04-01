@@ -53,7 +53,7 @@ public class MockCharacter
     public int move(Direction dir)
         throws CoreException
     {
-        throw new Error("Unimplemented");
+        throw new UnimplementedError();
     }
 
     public void setLevel(Level level)
@@ -69,7 +69,7 @@ public class MockCharacter
 
     public void takeTurn()
     {
-        throw new Error("Unimplemented");
+        throw new UnimplementedError();
     }
 
     public String toString()

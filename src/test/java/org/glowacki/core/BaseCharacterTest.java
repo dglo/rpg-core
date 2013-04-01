@@ -46,7 +46,7 @@ class MyCharacter
     public int move(Direction dir)
         throws CoreException
     {
-        throw new Error("Unimplemented");
+        throw new UnimplementedError();
     }
 
     public void setLevel(Level level)
@@ -56,7 +56,7 @@ class MyCharacter
 
     public void takeTurn()
     {
-        throw new Error("Unimplemented");
+        throw new UnimplementedError();
     }
 }
 
