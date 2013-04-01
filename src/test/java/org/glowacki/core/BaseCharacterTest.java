@@ -28,6 +28,12 @@ class MyCharacter
         this.player = player;
     }
 
+    public void buildPath(MapPoint goal)
+        throws CoreException
+    {
+        throw new UnimplementedError();
+    }
+
     public Level getLevel()
     {
         return level;
@@ -38,12 +44,23 @@ class MyCharacter
         return name;
     }
 
+    public boolean hasPath()
+    {
+        return false;
+    }
+
     public boolean isPlayer()
     {
         return player;
     }
 
     public int move(Direction dir)
+        throws CoreException
+    {
+        throw new UnimplementedError();
+    }
+
+    public int movePath()
         throws CoreException
     {
         throw new UnimplementedError();

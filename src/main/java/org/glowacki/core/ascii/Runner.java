@@ -17,6 +17,7 @@ import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.Level;
 import org.glowacki.core.MapCharRepresentation;
+import org.glowacki.core.MapPoint;
 import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.Terrain;
 import org.glowacki.core.Map;
@@ -188,14 +189,43 @@ class AsciiController
         view.close();
     }
 
+    private MapPoint findGoal(Map map, Direction dir)
+        throws CoreException
+    {
+        Terrain t;
+        if (dir == Direction.CLIMB) {
+            t = Terrain.UPSTAIRS;
+        } else if (dir == Direction.DESCEND) {
+            t = Terrain.DOWNSTAIRS;
+        } else {
+            throw new CoreException("Bad path direction " + dir);
+        }
+
+        return map.find(t);
+    }
+
     public int handleInput(ICharacter ch)
     {
         Key key = terminal.readInput();
-        if (key == null) {
-            return -1;
+        if (key != null) {
+            return processKey(key, ch);
         }
 
-        return processKey(key, ch);
+        if (ch.hasPath()) {
+            try {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    // ignore interrupts
+                }
+                return ch.movePath();
+            } catch (CoreException ce) {
+                view.logError(ce.getMessage());
+                return -1;
+            }
+        }
+
+        return -1;
     }
 
     void loop()
@@ -251,6 +281,16 @@ class AsciiController
                     break;
                 }
 
+                break;
+            case 'D':
+                try {
+                    MapPoint goal = findGoal(player.getLevel().getMap(),
+                                             Direction.DESCEND);
+                    player.buildPath(goal);
+                } catch (CoreException ce) {
+                    view.logError(ce.getMessage());
+                }
+                turns = -1;
                 break;
             case 'h':
                 try {
@@ -310,6 +350,16 @@ class AsciiController
                 break;
             case 'q':
                 running = false;
+                break;
+            case 'U':
+                try {
+                    MapPoint goal = findGoal(player.getLevel().getMap(),
+                                             Direction.CLIMB);
+                    player.buildPath(goal);
+                } catch (CoreException ce) {
+                    view.logError(ce.getMessage());
+                }
+                turns = -1;
                 break;
             case 'u':
                 try {

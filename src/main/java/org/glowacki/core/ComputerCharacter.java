@@ -27,6 +27,12 @@ public class ComputerCharacter
         state = State.ASLEEP;
     }
 
+    public void buildPath(MapPoint goal)
+        throws CoreException
+    {
+        throw new UnimplementedError();
+    }
+
     public Level getLevel()
     {
         throw new UnimplementedError();
@@ -73,6 +79,11 @@ public class ComputerCharacter
         throw new UnimplementedError();
     }
 
+    public boolean hasPath()
+    {
+        return false;
+    }
+
     public boolean isPlayer()
     {
         return false;
@@ -82,6 +93,12 @@ public class ComputerCharacter
         throws CoreException
     {
         return move(level.getMap(), dir);
+    }
+
+    public int movePath()
+        throws CoreException
+    {
+        throw new UnimplementedError();
     }
 
     public void setLevel(Level lvl)

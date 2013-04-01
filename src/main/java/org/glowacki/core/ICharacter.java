@@ -2,6 +2,9 @@ package org.glowacki.core;
 
 public interface ICharacter
 {
+    void buildPath(MapPoint goal)
+        throws CoreException;
+
     Level getLevel();
 
     String getName();
@@ -10,9 +13,14 @@ public interface ICharacter
 
     int getY();
 
+    boolean hasPath();
+
     boolean isPlayer();
 
     int move(Direction dir)
+        throws CoreException;
+
+    int movePath()
         throws CoreException;
 
     void setLevel(Level l)

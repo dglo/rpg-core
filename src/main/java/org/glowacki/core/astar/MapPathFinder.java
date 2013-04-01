@@ -186,7 +186,7 @@ public class MapPathFinder
         return new BaseNode(x, y);
     }
 
-    List<MapPoint> findBestPath(MapPoint startPt, MapPoint endPt)
+    public List<MapPoint> findBestPath(MapPoint startPt, MapPoint endPt)
     {
         MapNode start = nodes[startPt.getX()][startPt.getY()];
         start.setStart();

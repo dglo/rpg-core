@@ -1,7 +1,21 @@
 package org.glowacki.core;
 
+class PlayerException
+    extends CoreException
+{
+    PlayerException()
+    {
+        super();
+    }
+
+    PlayerException(String msg)
+    {
+        super(msg);
+    }
+}
+
 public abstract class BaseCharacter
-    implements ICharacter
+    implements ICharacter, MapPoint
 {
     /** Used to compute movement cost */
     public static final double SQRT_2 = 1.41421356;

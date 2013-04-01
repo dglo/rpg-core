@@ -1,5 +1,9 @@
 package org.glowacki.core;
 
+import org.glowacki.core.astar.MapPathFinder;
+
+import java.util.List;
+
 class CharacterException
     extends CoreException
 {
@@ -16,12 +20,63 @@ public class PlayerCharacter
 
     private Level level;
 
+    private List<MapPoint> path;
+
     public PlayerCharacter(String name, int str,
                            int dex, int spd)
     {
         super(str, dex, spd);
 
         this.name = name;
+    }
+
+    public void buildPath(MapPoint goal)
+        throws CoreException
+    {
+        MapPathFinder pathFinder = new MapPathFinder(getLevel().getMap());
+        path = pathFinder.findBestPath(this, goal);
+    }
+
+    private Direction findDirection(MapPoint goal)
+        throws PlayerException
+    {
+        final int x = goal.getX() - getX();
+        final int y = goal.getY() - getY();
+
+        if (x == -1) {
+            if (y == -1) {
+                return Direction.LEFT_UP;
+            } else if (y == 0) {
+                return Direction.LEFT;
+            } else if (y == 1) {
+                return Direction.LEFT_DOWN;
+            }
+        } else if (x == 0) {
+            if (y == -1) {
+                return Direction.UP;
+            } else if (y == 1) {
+                return Direction.DOWN;
+            } else if (y == 0) {
+                final String msg =
+                    String.format("Goal [%d,%d] is current position of %s",
+                                  goal.getX(), goal.getY(), name);
+                throw new PlayerException(msg);
+            }
+        } else if (x == 1) {
+            if (y == -1) {
+                return Direction.RIGHT_UP;
+            } else if (y == 0) {
+                return Direction.RIGHT;
+            } else if (y == 1) {
+                return Direction.RIGHT_DOWN;
+            }
+        }
+
+        final String msg =
+            String.format("Goal [%d,%d] for %s is more than one square" +
+                          " from [%d,%d]", goal.getX(), goal.getY(), name,
+                          getX(), getY());
+        throw new PlayerException(msg);
     }
 
     public Level getLevel()
@@ -32,6 +87,11 @@ public class PlayerCharacter
     public String getName()
     {
         return name;
+    }
+
+    public boolean hasPath()
+    {
+        return path != null && path.size() > 0;
     }
 
     public boolean isPlayer()
@@ -83,6 +143,24 @@ public class PlayerCharacter
         } else {
             return move(level.getMap(), dir);
         }
+    }
+
+    public int movePath()
+        throws CoreException
+    {
+        if (path == null || path.size() == 0) {
+            throw new CoreException("No current path");
+        }
+
+        int rtnval;
+        try {
+            rtnval = move(level.getMap(), findDirection(path.remove(0)));
+        } catch (CoreException ce) {
+            path = null;
+            throw ce;
+        }
+
+        return rtnval;
     }
 
     public void setLevel(Level l)
