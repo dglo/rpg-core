@@ -4,10 +4,13 @@ package org.glowacki.core.astar;
  * Adapted from http://memoization.com/2008/11/30/a-star-algorithm-in-java/
  */
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+/**
+ * Find a path.
+ */
 abstract class PathFinder
 {
     private List<INode> opened = new ArrayList<INode>();

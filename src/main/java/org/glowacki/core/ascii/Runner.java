@@ -16,11 +16,11 @@ import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.Level;
+import org.glowacki.core.Map;
 import org.glowacki.core.MapCharRepresentation;
 import org.glowacki.core.MapPoint;
 import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.Terrain;
-import org.glowacki.core.Map;
 
 /**
  * ASCII terminal interface
@@ -99,6 +99,9 @@ class AsciiTerm
     }
 }
 
+/**
+ * ASCII view.
+ */
 class AsciiView
 {
     private AsciiTerm display;
@@ -164,6 +167,9 @@ class AsciiView
     }
 }
 
+/**
+ * ASCII controller .
+ */
 class AsciiController
 {
     private AsciiView view;

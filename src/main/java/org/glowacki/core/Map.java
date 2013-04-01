@@ -2,6 +2,9 @@ package org.glowacki.core;
 
 import java.util.Iterator;
 
+/**
+ * Map-related exception
+ */
 class MapException
     extends CoreException
 {
@@ -16,6 +19,9 @@ class MapException
     }
 }
 
+/**
+ * Exception returned if a position is occupied
+ */
 class OccupiedException
     extends MapException
 {
@@ -30,11 +36,21 @@ class OccupiedException
     }
 }
 
+/**
+ * Map.
+ */
 public class Map
     implements IMap
 {
     private MapEntry[][] map;
 
+    /**
+     * Create a map.
+     *
+     * @param template mape template
+     *
+     * @throws MapException if there is a problem
+     */
     public Map(String[] template)
         throws MapException
     {
@@ -70,6 +86,15 @@ public class Map
         }
     }
 
+    /**
+     * Add this character to the map at the up staircase.
+     *
+     * @param ch character
+     *
+     * @return location of up staircase
+     *
+     * @throws MapException if there is a problem
+     */
     public MapPoint enterDown(ICharacter ch)
         throws MapException
     {
@@ -88,6 +113,15 @@ public class Map
         return entry;
     }
 
+    /**
+     * Add this character to the map at the down staircase.
+     *
+     * @param ch character
+     *
+     * @return location of down staircase
+     *
+     * @throws MapException if there is a problem
+     */
     public MapPoint enterUp(ICharacter ch)
         throws MapException
     {
@@ -109,7 +143,6 @@ public class Map
     /**
      * Find the first occurrence of the specified terrain.
      *
-     * @param ch character entering this map
      * @param t terrain to find
      *
      * @return null if the terrain cannot be found on this level
@@ -145,7 +178,7 @@ public class Map
      *
      * @return terrain at the specified point
      *
-     * @throws TerrainMapException if the point is not valid
+     * @throws MapException if the point is not valid
      */
     public Terrain getTerrain(int x, int y)
         throws MapException
@@ -161,6 +194,16 @@ public class Map
         return map[y][x].getTerrain();
     }
 
+    /**
+     * Is the specified point occupied?
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return <tt>true</tt> if this point is occupied
+     *
+     * @throws MapException if there is a problem
+     */
     public boolean isOccupied(int x, int y)
         throws MapException
     {
@@ -233,6 +276,15 @@ public class Map
         return buf.toString();
     }
 
+    /**
+     * Insert this character into the map.
+     *
+     * @param ch character to add
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @throws MapException if there is a problem
+     */
     void insertCharacter(ICharacter ch, int x, int y)
         throws MapException
     {
@@ -260,6 +312,15 @@ public class Map
         entry.setCharacter(ch);
     }
 
+    /**
+     * Move the character to the specified position.
+     *
+     * @param ch character
+     * @param x X position
+     * @param y Y position
+     *
+     * @throws MapException if there is a problem
+     */
     public void moveTo(ICharacter ch, int x, int y)
         throws MapException
     {
@@ -275,6 +336,13 @@ public class Map
         }
     }
 
+    /**
+     * Remove this character from the map.
+     *
+     * @param ch character to remove
+     *
+     * @throws MapException if there is a problem
+     */
     void removeCharacter(ICharacter ch)
         throws MapException
     {
@@ -298,11 +366,19 @@ public class Map
         entry.clearCharacter();
     }
 
+    /**
+     * Return a debugging string.
+     *
+     * @return debugging string
+     */
     public String toString()
     {
         return String.format("%dx%d", map[0].length, map.length);
     }
 
+    /**
+     * MapEntry iterator.
+     */
     class EntryIterable
         implements Iterable, Iterator
     {

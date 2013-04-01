@@ -13,13 +13,21 @@ interface TerrainConst
  */
 public enum Terrain
 {
+    /** Door */
     DOOR(1.0),
+    /** Down staircase */
     DOWNSTAIRS(1.0),
+    /** Generic floor */
     FLOOR(1.0),
+    /** Tunnel */
     TUNNEL(1.0),
+    /** Up staircase */
     UPSTAIRS(1.0),
+    /** Wall */
     WALL(TerrainConst.IMPASSABLE),
+    /** Water */
     WATER(1.2),
+    /** Unknown terrain */
     UNKNOWN(TerrainConst.IMPASSABLE);
 
     private double cost;

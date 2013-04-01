@@ -1,9 +1,12 @@
 package org.glowacki.core;
 
-import org.glowacki.core.astar.MapPathFinder;
-
 import java.util.List;
 
+import org.glowacki.core.astar.MapPathFinder;
+
+/**
+ * Character-related exception
+ */
 class CharacterException
     extends CoreException
 {
@@ -13,6 +16,9 @@ class CharacterException
     }
 }
 
+/**
+ * Player character
+ */
 public class PlayerCharacter
     extends BaseCharacter
 {
@@ -22,6 +28,14 @@ public class PlayerCharacter
 
     private List<MapPoint> path;
 
+    /**
+     * Create a player character.
+     *
+     * @param name player name
+     * @param str strength
+     * @param dex dexterity
+     * @param spd speed
+     */
     public PlayerCharacter(String name, int str,
                            int dex, int spd)
     {
@@ -30,6 +44,13 @@ public class PlayerCharacter
         this.name = name;
     }
 
+    /**
+     * Build a path from the current position to the goal.
+     *
+     * @param goal target point
+     *
+     * @throws CoreException if there is a problem
+     */
     public void buildPath(MapPoint goal)
         throws CoreException
     {
@@ -79,26 +100,55 @@ public class PlayerCharacter
         throw new PlayerException(msg);
     }
 
+    /**
+     * Get character's current level
+     *
+     * @return level
+     */
     public Level getLevel()
     {
         return level;
     }
 
+    /**
+     * Return character's name.
+     *
+     * @return name
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Does this character have an existing path?
+     *
+     * @return <tt>true</tt> if this character has an ongoing path
+     */
     public boolean hasPath()
     {
         return path != null && path.size() > 0;
     }
 
+    /**
+     * Is this character a player?
+     *
+     * @return <tt>true</tt> if this character is a player
+     */
     public boolean isPlayer()
     {
         return true;
     }
 
+    /**
+     * Move the computer character.
+     *
+     * @param dir direction
+     *
+     * @return number of turns
+     *
+     * @throws CoreException if there is a problem
+     */
     public int move(Direction dir)
         throws CoreException
     {
@@ -145,6 +195,13 @@ public class PlayerCharacter
         }
     }
 
+    /**
+     * Move to the next point in the path.
+     *
+     * @return number of turns
+     *
+     * @throws CoreException always
+     */
     public int movePath()
         throws CoreException
     {
@@ -163,6 +220,11 @@ public class PlayerCharacter
         return rtnval;
     }
 
+    /**
+     * Set character's current level
+     *
+     * @param l level
+     */
     public void setLevel(Level l)
     {
         this.level = l;
@@ -176,6 +238,11 @@ public class PlayerCharacter
         throw new UnimplementedError();
     }
 
+    /**
+     * Return a debugging string.
+     *
+     * @return debugging string
+     */
     public String toString()
     {
         return name + super.toString();

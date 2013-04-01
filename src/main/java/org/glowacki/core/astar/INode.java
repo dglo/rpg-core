@@ -1,7 +1,8 @@
 package org.glowacki.core.astar;
 
-import java.util.Set;
-
+/**
+ * Generic path node interface.
+ */
 interface INode
 {
     int getX();

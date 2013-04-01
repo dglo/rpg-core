@@ -2,7 +2,6 @@ package org.glowacki.core.astar;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,6 +10,9 @@ import org.glowacki.core.Map;
 import org.glowacki.core.MapEntry;
 import org.glowacki.core.MapPoint;
 
+/**
+ * Node base class
+ */
 class BaseNode
     implements Comparable, INode
 {
@@ -35,6 +37,10 @@ class BaseNode
 
     public int compareTo(Object obj)
     {
+        if (obj == null) {
+            return 1;
+        }
+
         INode node = (INode) obj;
 
         int val = x - node.getX();
@@ -56,7 +62,7 @@ class BaseNode
             return 0.0;
         }
 
-        if (localCost == Double.MIN_VALUE) {
+        if (Double.compare(localCost, Double.MIN_VALUE) == 0) {
             localCost = 1.0 * (Math.abs(x - goal.getX()) +
                                Math.abs(y - goal.getY()));
         }
@@ -75,7 +81,7 @@ class BaseNode
             return 0.0;
         }
 
-        if (parentCost == Double.MIN_VALUE) {
+        if (Double.compare(parentCost, Double.MIN_VALUE) == 0) {
             parentCost = 1.0 + .5 * (parent.getParentCost() - 1.0);
         }
 
@@ -88,7 +94,7 @@ class BaseNode
             return 0.0;
         }
 
-        if (passThroughCost == Double.MIN_VALUE) {
+        if (Double.compare(passThroughCost, Double.MIN_VALUE) == 0) {
             passThroughCost = getLocalCost(goal) + getParentCost();
         }
 
@@ -142,10 +148,13 @@ class BaseNode
         final String sStr = (startNode ? "*start" : "");
         final String eStr = (endNode ? "*end" : "");
 
-        return String.format("[%d,%d]", x, y);
+        return String.format("[%d,%d]%s%s", x, y, sStr, eStr);
     }
 }
 
+/**
+ * A map node
+ */
 class MapNode
     extends BaseNode
 {
@@ -164,16 +173,21 @@ class MapNode
     }
 }
 
+/**
+ * Find a path on the specified map.
+ */
 public class MapPathFinder
     extends PathFinder
 {
-    private Map map;
     private MapNode[][] nodes;
 
+    /**
+     * Create a path finder for the specified map
+     *
+     * @param map map
+     */
     public MapPathFinder(Map map)
     {
-        this.map = map;
-
         nodes = new MapNode[map.getMaxX() + 1][map.getMaxY() + 1];
 
         for (MapEntry entry : map.getEntries()) {
@@ -181,11 +195,27 @@ public class MapPathFinder
         }
     }
 
+    /**
+     * Create a temporary node
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return new temporary node
+     */
     public INode createTempNode(int x, int y)
     {
         return new BaseNode(x, y);
     }
 
+    /**
+     * Find the best path from <tt>startPt</tt> to <tt>endPt</tt>.
+     *
+     * @param startPt starting point
+     * @param endPt ending point
+     *
+     * @return list of points in the path
+     */
     public List<MapPoint> findBestPath(MapPoint startPt, MapPoint endPt)
     {
         MapNode start = nodes[startPt.getX()][startPt.getY()];
@@ -213,6 +243,13 @@ public class MapPathFinder
         return bestList;
     }
 
+    /**
+     * Get movable nodes adjacent to the specified node.
+     *
+     * @param node center node
+     *
+     * @return set of adjacent nodes
+     */
     public Set<INode> getAdjacencies(INode node)
     {
         if (!(node instanceof MapNode)) {
@@ -242,10 +279,5 @@ public class MapPathFinder
         }
 
         return sorted;
-    }
-
-    private MapNode getNode(MapEntry entry)
-    {
-        return nodes[entry.getX()][entry.getY()];
     }
 }

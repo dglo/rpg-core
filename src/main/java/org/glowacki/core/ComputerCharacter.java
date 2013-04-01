@@ -2,17 +2,29 @@ package org.glowacki.core;
 
 import java.util.Random;
 
+/**
+ * Computer character.
+ */
 public class ComputerCharacter
     extends BaseCharacter
 {
     private static final int MAX_ATTEMPTS = 20;
 
-    enum State { ASLEEP, MEANDER, IN_PURSUIT };
+    /** Character states */
+    private enum State { ASLEEP, MEANDER, IN_PURSUIT };
 
     private Random random;
     private Level level;
     private State state;
 
+    /**
+     * Create a computer character.
+     *
+     * @param str strength
+     * @param dex dexterity
+     * @param spd speed
+     * @param seed random number seed
+     */
     public ComputerCharacter(int str, int dex, int spd, long seed)
     {
         super(str, dex, spd);
@@ -27,17 +39,34 @@ public class ComputerCharacter
         state = State.ASLEEP;
     }
 
+    /**
+     * Unimplemented
+     *
+     * @param goal target point
+     *
+     * @throws CoreException always
+     */
     public void buildPath(MapPoint goal)
         throws CoreException
     {
         throw new UnimplementedError();
     }
 
+    /**
+     * Unimplemented
+     *
+     * @return never
+     */
     public Level getLevel()
     {
         throw new UnimplementedError();
     }
 
+    /**
+     * Unimplemented
+     *
+     * @return nothing
+     */
     public String getName()
     {
         throw new UnimplementedError();
@@ -79,28 +108,61 @@ public class ComputerCharacter
         throw new UnimplementedError();
     }
 
+    /**
+     * Does this character have an existing path?
+     *
+     * @return <tt>false</tt>
+     */
     public boolean hasPath()
     {
         return false;
     }
 
+    /**
+     * Is this character a player?
+     *
+     * @return <tt>false</tt>
+     */
     public boolean isPlayer()
     {
         return false;
     }
 
+    /**
+     * Move the computer character.
+     *
+     * @param dir direction
+     *
+     * @return number of turns
+     *
+     * @throws CoreException if there is a problem
+     */
     public int move(Direction dir)
         throws CoreException
     {
         return move(level.getMap(), dir);
     }
 
+    /**
+     * Unimplemented
+     *
+     * @return number of turns
+     *
+     * @throws CoreException always
+     */
     public int movePath()
         throws CoreException
     {
         throw new UnimplementedError();
     }
 
+    /**
+     * Set computer character's level
+     *
+     * @param lvl level
+     *
+     * @throws CoreException if there is a problem
+     */
     public void setLevel(Level lvl)
         throws CoreException
     {
@@ -123,6 +185,15 @@ public class ComputerCharacter
         }
     }
 
+    /**
+     * Set computer character's level
+     *
+     * @param lvl level
+     * @param x x coordinate
+     * @param y y coordinate
+     *
+     * @throws CoreException if there is a problem
+     */
     public void setLevel(Level lvl, int x, int y)
         throws CoreException
     {
@@ -133,6 +204,9 @@ public class ComputerCharacter
         setPosition(x, y);
     }
 
+    /**
+     * Take a computer character's turn.
+     */
     public void takeTurn()
     {
         switch (state) {
@@ -145,9 +219,16 @@ public class ComputerCharacter
         case IN_PURSUIT:
             handleInPursuitTurn();
             break;
+        default:
+            throw new Error("Unexpected state " + state);
         }
     }
 
+    /**
+     * Return debugging string.
+     *
+     * @return debugging string
+     */
     public String toString()
     {
         return super.toString() + state;

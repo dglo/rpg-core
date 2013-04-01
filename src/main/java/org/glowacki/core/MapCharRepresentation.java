@@ -1,5 +1,8 @@
 package org.glowacki.core;
 
+/**
+ * Mapping between terrain and ASCII characters.
+ */
 public abstract class MapCharRepresentation
 {
     /**

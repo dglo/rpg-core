@@ -1,5 +1,8 @@
 package org.glowacki.core;
 
+/**
+ * Player-related exceptions
+ */
 class PlayerException
     extends CoreException
 {
@@ -14,6 +17,9 @@ class PlayerException
     }
 }
 
+/**
+ * Base character
+ */
 public abstract class BaseCharacter
     implements ICharacter, MapPoint
 {
@@ -29,6 +35,13 @@ public abstract class BaseCharacter
 
     private double timeLeft;
 
+    /**
+     * Create a character.
+     *
+     * @param str strength
+     * @param dex dexterity
+     * @param spd speed
+     */
     public BaseCharacter(int str, int dex, int spd)
     {
         this.str = str;
@@ -61,11 +74,21 @@ public abstract class BaseCharacter
         return cost;
     }
 
+    /**
+     * Return X coordinate.
+     *
+     * @return x coordinate
+     */
     public int getX()
     {
         return x;
     }
 
+    /**
+     * Return Y coordinate.
+     *
+     * @return y coordinate
+     */
     public int getY()
     {
         return y;
@@ -140,12 +163,23 @@ public abstract class BaseCharacter
         return turns;
     }
 
+    /**
+     * Set the character's position.
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     */
     public void setPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Return debugging string.
+     *
+     * @return debugging string
+     */
     public String toString()
     {
         return String.format("(%d/%d/%d)@[%d,%d]", str, dex, spd, x, y);
