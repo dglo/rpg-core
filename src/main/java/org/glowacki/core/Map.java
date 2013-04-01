@@ -337,7 +337,7 @@ public class Map
 
         public  void remove()
         {
-            throw new Error("Unimplemented");
+            throw new UnimplementedError();
         }
     }
 }
