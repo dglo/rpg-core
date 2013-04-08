@@ -54,6 +54,14 @@ public class PlayerCharacter
     public void buildPath(MapPoint goal)
         throws CoreException
     {
+        if (goal.getX() < 0 || goal.getX() > getLevel().getMap().getMaxX() ||
+            goal.getY() < 0 || goal.getY() > getLevel().getMap().getMaxY())
+        {
+            final String msg =
+                String.format("Bad goal [%d,%d]", goal.getX(), goal.getY());
+            throw new PlayerException(msg);
+        }
+
         MapPathFinder pathFinder = new MapPathFinder(getLevel().getMap());
         path = pathFinder.findBestPath(this, goal);
     }
