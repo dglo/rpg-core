@@ -53,6 +53,14 @@ public class ComputerCharacter
     }
 
     /**
+     * Clear the stored path.
+     */
+    public void clearPath()
+    {
+        throw new UnimplementedError();
+    }
+
+    /**
      * Unimplemented
      *
      * @return never

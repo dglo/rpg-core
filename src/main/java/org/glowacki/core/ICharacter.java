@@ -16,6 +16,11 @@ public interface ICharacter
         throws CoreException;
 
     /**
+     * Clear the stored path.
+     */
+    void clearPath();
+
+    /**
      * Get character's current level
      *
      * @return level

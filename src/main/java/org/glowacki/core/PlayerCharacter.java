@@ -66,6 +66,14 @@ public class PlayerCharacter
         path = pathFinder.findBestPath(this, goal);
     }
 
+    /**
+     * Clear the stored path.
+     */
+    public void clearPath()
+    {
+        path = null;
+    }
+
     private Direction findDirection(MapPoint goal)
         throws PlayerException
     {

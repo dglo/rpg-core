@@ -33,6 +33,14 @@ public class MockCharacter
         throw new UnimplementedError();
     }
 
+    /**
+     * Clear the stored path.
+     */
+    public void clearPath()
+    {
+        throw new UnimplementedError();
+    }
+
     public Level getLevel()
     {
         return level;
