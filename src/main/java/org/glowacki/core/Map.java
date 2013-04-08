@@ -3,23 +3,6 @@ package org.glowacki.core;
 import java.util.Iterator;
 
 /**
- * Map-related exception
- */
-class MapException
-    extends CoreException
-{
-    MapException()
-    {
-        super();
-    }
-
-    MapException(String msg)
-    {
-        super(msg);
-    }
-}
-
-/**
  * Exception returned if a position is occupied
  */
 class OccupiedException
