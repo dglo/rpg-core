@@ -310,7 +310,11 @@ public class Map
         final int oldX = ch.getX();
         final int oldY = ch.getY();
 
-        removeCharacter(ch);
+        // only try to remove character if position is valid
+        if (oldX >= 0 && oldY >= 0) {
+            removeCharacter(ch);
+        }
+
         try {
             insertCharacter(ch, x, y);
         } catch (MapException me) {
