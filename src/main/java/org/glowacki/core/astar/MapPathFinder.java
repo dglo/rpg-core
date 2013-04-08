@@ -8,7 +8,17 @@ import java.util.TreeSet;
 
 import org.glowacki.core.Map;
 import org.glowacki.core.MapEntry;
+import org.glowacki.core.MapException;
 import org.glowacki.core.MapPoint;
+
+class PathException
+    extends MapException
+{
+    PathException(String msg)
+    {
+        super(msg);
+    }
+}
 
 /**
  * Node base class
@@ -217,9 +227,28 @@ public class MapPathFinder
      * @return list of points in the path
      */
     public List<MapPoint> findBestPath(MapPoint startPt, MapPoint endPt)
+        throws PathException
     {
+        if (startPt.getX() < 0 || startPt.getX() >= nodes.length ||
+            startPt.getY() < 0 || startPt.getY() >= nodes[0].length)
+        {
+            final String msg =
+                String.format("Bad start point [%d,%d]", startPt.getX(),
+                              startPt.getY());
+            throw new PathException(msg);
+        }
+
         MapNode start = nodes[startPt.getX()][startPt.getY()];
         start.setStart();
+
+        if (endPt.getX() < 0 || endPt.getX() >= nodes.length ||
+            endPt.getY() < 0 || endPt.getY() >= nodes[0].length)
+        {
+            final String msg =
+                String.format("Bad end point [%d,%d]", endPt.getX(),
+                              endPt.getY());
+            throw new PathException(msg);
+        }
 
         MapNode end = nodes[endPt.getX()][endPt.getY()];
         end.setEnd();
