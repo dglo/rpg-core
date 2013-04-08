@@ -11,13 +11,6 @@
   <name>core</name>
   <url>http://www.glowacki.org/Core</url>
 
-  <repositories>
-    <repository>
-      <id>gdx-nightlies</id>
-      <url>http://libgdx.badlogicgames.com/nightlies/maven</url>
-    </repository>
-  </repositories>
-
   <build>
     <plugins>
       <!-- This is to make maven work with Java 1.5 -->
