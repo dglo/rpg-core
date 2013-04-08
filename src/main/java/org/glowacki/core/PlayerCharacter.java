@@ -175,10 +175,21 @@ public class PlayerCharacter
                 throw new CharacterException("You cannot exit here");
             }
 
-            level.exit(this);
-            prevLevel.enterUp(this);
+            final Level oldLevel = level;
+            final int oldX = getX();
+            final int oldY = getY();
 
-            level = prevLevel;
+            level.exit(this);
+            try {
+                prevLevel.enterUp(this);
+
+                level = prevLevel;
+            } catch (CoreException ce) {
+                oldLevel.moveTo(this, oldX, oldY);
+                setPosition(oldX, oldY);
+                level = oldLevel;
+                throw ce;
+            }
 
             return moveInternal(t, false);
         } else if (dir == Direction.DESCEND) {
@@ -192,10 +203,21 @@ public class PlayerCharacter
                 throw new CharacterException("You are at the bottom");
             }
 
-            level.exit(this);
-            nextLevel.enterDown(this);
+            final Level oldLevel = level;
+            final int oldX = getX();
+            final int oldY = getY();
 
-            level = nextLevel;
+            level.exit(this);
+            try {
+                nextLevel.enterDown(this);
+
+                level = nextLevel;
+            } catch (CoreException ce) {
+                oldLevel.moveTo(this, oldX, oldY);
+                setPosition(oldX, oldY);
+                level = oldLevel;
+                throw ce;
+            }
 
             return moveInternal(t, false);
         } else {

@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.glowacki.core.test.MapBuilder;
+import org.glowacki.core.test.MockCharacter;
 
 public class PlayerCharacterTest
     extends TestCase
@@ -182,6 +183,45 @@ public class PlayerCharacterTest
         }
     }
 
+    public void testNoClimbToOccupied()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+        Level bottomLvl = new Level("bottom", map);
+        topLvl.addNextLevel(bottomLvl);
+
+        bottomLvl.enterDown(ch);
+
+        final Level expLvl = ch.getLevel();
+        final int expX = ch.getX();
+        final int expY = ch.getY();
+
+        MockCharacter squatter = new MockCharacter("squatter");
+
+        topLvl.enterUp(squatter);
+
+        Direction dir = Direction.CLIMB;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+            fail("Climb to occupied square should not succeed");
+        } catch (CoreException ex) {
+            assertNotNull("Null exception message", ex.getMessage());
+
+            final String msg = "Down staircase is occupied";
+            assertEquals("Bad message", msg, ex.getMessage());
+        }
+
+        assertEquals("Bad level", expLvl, ch.getLevel());
+        assertEquals("Bad X coord", expX, ch.getX());
+        assertEquals("Bad Y coord", expY, ch.getY());
+    }
+
     public void testDescend()
         throws CoreException
     {
@@ -251,6 +291,45 @@ public class PlayerCharacterTest
             final String expMsg = "You are at the bottom";
             assertEquals("Bad exception", expMsg, ex.getMessage());
         }
+    }
+
+    public void testNoDescendToOccupied()
+        throws CoreException
+    {
+        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+
+        Level topLvl = new Level("top", map);
+        Level bottomLvl = new Level("bottom", map);
+        topLvl.addNextLevel(bottomLvl);
+
+        topLvl.enterUp(ch);
+
+        final Level expLvl = ch.getLevel();
+        final int expX = ch.getX();
+        final int expY = ch.getY();
+
+        MockCharacter squatter = new MockCharacter("squatter");
+
+        bottomLvl.enterDown(squatter);
+
+        Direction dir = Direction.DESCEND;
+
+        int turns;
+        try {
+            turns = ch.move(dir);
+            fail("Descend to occupied square should not succeed");
+        } catch (CoreException ex) {
+            assertNotNull("Null exception message", ex.getMessage());
+
+            final String msg = "Up staircase is occupied";
+            assertEquals("Bad message", msg, ex.getMessage());
+        }
+
+        assertEquals("Bad level", expLvl, ch.getLevel());
+        assertEquals("Bad X coord", expX, ch.getX());
+        assertEquals("Bad Y coord", expY, ch.getY());
     }
 
     public static void main(String[] args)
