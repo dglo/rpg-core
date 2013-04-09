@@ -288,6 +288,14 @@ class AsciiController
                 }
 
                 break;
+            case 'b':
+                try {
+                    turns = player.move(Direction.LEFT_DOWN);
+                } catch (CoreException ce) {
+                    turns = -1;
+                    view.logError(ce.getMessage());
+                }
+                break;
             case 'D':
                 try {
                     MapPoint goal = findGoal(player.getLevel().getMap(),
@@ -301,14 +309,6 @@ class AsciiController
             case 'h':
                 try {
                     turns = player.move(Direction.LEFT);
-                } catch (CoreException ce) {
-                    turns = -1;
-                    view.logError(ce.getMessage());
-                }
-                break;
-            case 'i':
-                try {
-                    turns = player.move(Direction.RIGHT_UP);
                 } catch (CoreException ce) {
                     turns = -1;
                     view.logError(ce.getMessage());
@@ -338,17 +338,9 @@ class AsciiController
                     view.logError(ce.getMessage());
                 }
                 break;
-            case 'm':
-                try {
-                    turns = player.move(Direction.RIGHT_DOWN);
-                } catch (CoreException ce) {
-                    turns = -1;
-                    view.logError(ce.getMessage());
-                }
-                break;
             case 'n':
                 try {
-                    turns = player.move(Direction.LEFT_DOWN);
+                    turns = player.move(Direction.RIGHT_DOWN);
                 } catch (CoreException ce) {
                     turns = -1;
                     view.logError(ce.getMessage());
@@ -368,6 +360,14 @@ class AsciiController
                 turns = -1;
                 break;
             case 'u':
+                try {
+                    turns = player.move(Direction.RIGHT_UP);
+                } catch (CoreException ce) {
+                    turns = -1;
+                    view.logError(ce.getMessage());
+                }
+                break;
+            case 'y':
                 try {
                     turns = player.move(Direction.LEFT_UP);
                 } catch (CoreException ce) {
