@@ -11,9 +11,17 @@ import org.glowacki.core.MapEntry;
 import org.glowacki.core.MapException;
 import org.glowacki.core.MapPoint;
 
+/**
+ * Indicate a problem with the path calculation
+ */
 class PathException
     extends MapException
 {
+    /**
+     * Create a path exception
+     *
+     * @param msg error message
+     */
     PathException(String msg)
     {
         super(msg);
@@ -32,10 +40,12 @@ class BaseNode
     private boolean endNode;
 
     private INode parent;
-    // cost of getting from this node to goal
-    private double localCost = Double.MIN_VALUE;
+
      // cost of getting from parent node to this node
     private double parentCost = Double.MIN_VALUE;
+
+    // last node used to compute passthrough cost
+    private INode lastNode;
     // cost of getting from the start to the goal through this node
     private double passThroughCost = Double.MIN_VALUE;
 
@@ -43,6 +53,18 @@ class BaseNode
     {
         this.x = x;
         this.y = y;
+    }
+
+    public void clear()
+    {
+        startNode = false;
+        endNode = false;
+
+        parent = null;
+        parentCost = Double.MIN_VALUE;
+
+        lastNode = null;
+        passThroughCost = Double.MIN_VALUE;
     }
 
     public int compareTo(Object obj)
@@ -64,20 +86,6 @@ class BaseNode
     public boolean equals(Object obj)
     {
         return compareTo(obj) == 0;
-    }
-
-    public double getLocalCost(INode goal)
-    {
-        if (isStart()) {
-            return 0.0;
-        }
-
-        if (Double.compare(localCost, Double.MIN_VALUE) == 0) {
-            localCost = 1.0 * (Math.abs(x - goal.getX()) +
-                               Math.abs(y - goal.getY()));
-        }
-
-        return localCost;
     }
 
     public INode getParent()
@@ -104,8 +112,14 @@ class BaseNode
             return 0.0;
         }
 
-        if (Double.compare(passThroughCost, Double.MIN_VALUE) == 0) {
-            passThroughCost = getLocalCost(goal) + getParentCost();
+        if (Double.compare(passThroughCost, Double.MIN_VALUE) == 0 ||
+            lastNode == null || lastNode.getX() != goal.getX() ||
+            lastNode.getY() != goal.getY())
+        {
+            double localCost = 1.0 * (Math.abs(x - goal.getX()) +
+                                      Math.abs(y - goal.getY()));
+            passThroughCost = localCost + getParentCost();
+            lastNode = goal;
         }
 
         return passThroughCost;
@@ -145,6 +159,8 @@ class BaseNode
     {
         this.parent = parent;
         parentCost = Double.MIN_VALUE;
+
+        lastNode = null;
         passThroughCost = Double.MIN_VALUE;
     }
 
@@ -225,6 +241,8 @@ public class MapPathFinder
      * @param endPt ending point
      *
      * @return list of points in the path
+     *
+     * @throws PathException if the start or end point is bad
      */
     public List<MapPoint> findBestPath(MapPoint startPt, MapPoint endPt)
         throws PathException
@@ -238,9 +256,6 @@ public class MapPathFinder
             throw new PathException(msg);
         }
 
-        MapNode start = nodes[startPt.getX()][startPt.getY()];
-        start.setStart();
-
         if (endPt.getX() < 0 || endPt.getX() >= nodes.length ||
             endPt.getY() < 0 || endPt.getY() >= nodes[0].length)
         {
@@ -250,10 +265,20 @@ public class MapPathFinder
             throw new PathException(msg);
         }
 
+        MapNode start = nodes[startPt.getX()][startPt.getY()];
         MapNode end = nodes[endPt.getX()][endPt.getY()];
+
+        start.setStart();
         end.setEnd();
 
-        List<INode> list = findBestPath(start, end);
+        List<INode> list;
+        try {
+            list = findBestPath(start, end);
+        } finally {
+            start.clear();
+            end.clear();
+        }
+
         if (list == null) {
             return null;
         }

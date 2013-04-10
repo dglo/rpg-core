@@ -4,7 +4,6 @@ package org.glowacki.core.astar;
  * Adapted from http://memoization.com/2008/11/30/a-star-algorithm-in-java/
  */
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -13,15 +12,12 @@ import java.util.Set;
  */
 abstract class PathFinder
 {
-    private List<INode> opened = new ArrayList<INode>();
-    private List<INode> closed = new ArrayList<INode>();
-
     abstract INode createTempNode(int x, int y);
 
-    private INode findBestPassThrough(INode goal)
+    private static INode findBestPassThrough(List<INode> list, INode goal)
     {
         INode best = null;
-        for (INode node : opened) {
+        for (INode node : list) {
             if (best == null ||
                 node.getPassThrough(goal) < best.getPassThrough(goal))
             {
@@ -34,9 +30,10 @@ abstract class PathFinder
 
     public List<INode> findBestPath(INode start, INode goal)
     {
-        Set<INode> adjacencies =
-            new HashSet<INode>(getAdjacencies(start));
-        for (INode adjacency : adjacencies) {
+        List<INode> opened = new ArrayList<INode>();
+        List<INode> closed = new ArrayList<INode>();
+
+        for (INode adjacency : getAdjacencies(start)) {
             adjacency.setParent(start);
             if (!adjacency.isStart()) {
                 opened.add(adjacency);
@@ -45,7 +42,7 @@ abstract class PathFinder
 
         boolean found = false;
         while (!found && opened.size() > 0) {
-            INode best = findBestPassThrough(goal);
+            INode best = findBestPassThrough(opened, goal);
             opened.remove(best);
             closed.add(best);
             if (best.isEnd()) {
@@ -99,7 +96,7 @@ abstract class PathFinder
 
     abstract Set<INode> getAdjacencies(INode node);
 
-    private void populateBestList(List<INode> bestList, INode node)
+    private static void populateBestList(List<INode> bestList, INode node)
     {
         bestList.add(node);
         if (!node.getParent().isStart()) {
