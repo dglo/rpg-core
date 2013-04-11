@@ -1,5 +1,6 @@
 package org.glowacki.core;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.glowacki.core.astar.MapPathFinder;
@@ -27,6 +28,8 @@ public class PlayerCharacter
     private Level level;
 
     private List<MapPoint> path;
+
+    private HashMap<Level, boolean[][]> seenMap;
 
     /**
      * Create a player character.
@@ -134,6 +137,31 @@ public class PlayerCharacter
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * Get the boolean array indicating which cells in the current level
+     * have been seen.
+     *
+     * @return two dimensional boolean array
+     */
+    public boolean[][] getSeenArray()
+    {
+        if (level == null) {
+            return null;
+        }
+
+        if (seenMap == null) {
+            seenMap = new HashMap<Level, boolean[][]>();
+        }
+
+        boolean[][] seen = seenMap.get(level);
+        if (seen == null) {
+            seen = new boolean[level.getMaxX() + 1][level.getMaxY() + 1];
+            seenMap.put(level, seen);
+        }
+
+        return seen;
     }
 
     /**

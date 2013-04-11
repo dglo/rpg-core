@@ -21,6 +21,7 @@ import org.glowacki.core.MapCharRepresentation;
 import org.glowacki.core.MapPoint;
 import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.Terrain;
+import org.glowacki.core.VisibleMap;
 
 /**
  * ASCII terminal interface
@@ -120,19 +121,29 @@ class AsciiView
 
         char[][] map = new char[maxY + 1][maxX + 1];
 
+        final int DISTANCE = 7;
+
+        VisibleMap vmap = new VisibleMap(level.getMap());
+        boolean[][] visible = vmap.getVisible(player.getX(), player.getY(),
+                                              DISTANCE);
+
         for (int y = 0; y <= maxY; y++) {
             for (int x = 0; x <= maxX; x++) {
                 char ch;
-                try {
-                    if (level.isOccupied(x, y)) {
-                        ch = 'X';
-                    } else {
-                        Terrain t = level.getTerrain(x, y);
-                        ch = MapCharRepresentation.getCharacter(t);
+                if (!visible[x][y]) {
+                    ch = ' ';
+                } else {
+                    try {
+                        if (level.isOccupied(x, y)) {
+                            ch = 'X';
+                        } else {
+                            Terrain t = level.getTerrain(x, y);
+                            ch = MapCharRepresentation.getCharacter(t);
+                        }
+                    } catch (CoreException ce) {
+                        ce.printStackTrace();
+                        ch = '?';
                     }
-                } catch (CoreException ce) {
-                    ce.printStackTrace();
-                    ch = '?';
                 }
 
                 map[y][x] = ch;

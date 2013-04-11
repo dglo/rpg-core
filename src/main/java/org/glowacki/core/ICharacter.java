@@ -35,6 +35,14 @@ public interface ICharacter
     String getName();
 
     /**
+     * Get the boolean array indicating which cells in the current level
+     * have been seen.
+     *
+     * @return two dimensional boolean array
+     */
+    boolean[][] getSeenArray();
+
+    /**
      * Return character's X coordinate.
      *
      * @return X coordinate

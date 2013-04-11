@@ -80,6 +80,17 @@ public class ComputerCharacter
         throw new UnimplementedError();
     }
 
+    /**
+     * Get the boolean array indicating which cells in the current level
+     * have been seen.
+     *
+     * @return two dimensional boolean array
+     */
+    public boolean[][] getSeenArray()
+    {
+        throw new UnimplementedError();
+    }
+
     private void handleAsleepTurn()
     {
         double pct = random.nextDouble();

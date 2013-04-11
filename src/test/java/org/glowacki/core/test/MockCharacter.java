@@ -51,6 +51,11 @@ public class MockCharacter
         return name;
     }
 
+    public boolean[][] getSeenArray()
+    {
+        throw new UnimplementedError();
+    }
+
     public int getX()
     {
         return x;

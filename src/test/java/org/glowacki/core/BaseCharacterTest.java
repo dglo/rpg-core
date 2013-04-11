@@ -52,6 +52,11 @@ class MyCharacter
         return name;
     }
 
+    public boolean[][] getSeenArray()
+    {
+        throw new UnimplementedError();
+    }
+
     public boolean hasPath()
     {
         return false;
