@@ -24,9 +24,10 @@ public class ComputerCharacterTest
     {
         final int str = 1;
         final int dex = 2;
-        final int spd = 3;
+        final int pcp = 3;
+        final int spd = 4;
 
-        ComputerCharacter ch = new ComputerCharacter(str, dex, spd, 0L);
+        ComputerCharacter ch = new ComputerCharacter(str, dex, spd, pcp, 0L);
 
         try {
             ch.getLevel();
@@ -59,7 +60,7 @@ public class ComputerCharacterTest
 
         Direction dir = Direction.LEFT;
         do {
-            ComputerCharacter ch = new ComputerCharacter(1, 2, 10, 0L);
+            ComputerCharacter ch = new ComputerCharacter(1, 2, 10, 10, 0L);
 
             Level lvl = new Level("empty", map);
             ch.setLevel(lvl, 2, 2);

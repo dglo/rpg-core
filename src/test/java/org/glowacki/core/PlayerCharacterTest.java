@@ -26,22 +26,24 @@ public class PlayerCharacterTest
         final String name = "foo";
         final int str = 9;
         final int dex = 10;
-        final int spd = 11;
+        final int pcp = 11;
+        final int spd = 12;
 
-        ICharacter ch = new PlayerCharacter(name, str, dex, spd);
+        ICharacter ch = new PlayerCharacter(name, str, dex, pcp, spd);
         assertEquals("Bad name", ch.getName(), name);
 
         assertTrue("Bad isPlayer() value", ch.isPlayer());
 
-        String expStr = String.format("%s(%d/%d/%d", name, str, dex, spd);
-        assertTrue("Bad character string " + ch,
+        String expStr =
+            String.format("%s(%d/%d/%d/%d", name, str, dex, pcp, spd);
+        assertTrue("Bad character string " + ch + " (expected " + expStr + ")",
                    ch.toString().startsWith(expStr));
     }
 
     public void testLevel()
         throws CoreException
     {
-        ICharacter ch = new PlayerCharacter("joe", 1, 2, 3);
+        ICharacter ch = new PlayerCharacter("joe", 1, 2, 3, 4);
         assertNull("Initial level is not null", ch.getLevel());
 
         Map map = new Map(MapBuilder.buildMap(-1, -1, -1, -2));
@@ -54,7 +56,7 @@ public class PlayerCharacterTest
 
     public void testTakeTurn()
     {
-        ICharacter ch = new PlayerCharacter("bob", 1, 2, 3);
+        ICharacter ch = new PlayerCharacter("bob", 1, 2, 3, 4);
 
         try {
             ch.takeTurn();
@@ -66,7 +68,7 @@ public class PlayerCharacterTest
 
     public void testMoveNoLevel()
     {
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 3);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 3, 4);
 
         try {
             ch.move(Direction.LEFT);
@@ -84,7 +86,7 @@ public class PlayerCharacterTest
 
         Direction dir = Direction.LEFT;
         do {
-            ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+            ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
             Level lvl = new Level("empty", map);
             lvl.enterDown(ch);
@@ -117,7 +119,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
         Level bottomLvl = new Level("bottom", map);
@@ -140,7 +142,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
         Level bottomLvl = new Level("bottom", map);
@@ -165,7 +167,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
 
@@ -188,7 +190,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
         Level bottomLvl = new Level("bottom", map);
@@ -227,7 +229,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
         Level bottomLvl = new Level("bottom", map);
@@ -250,7 +252,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
         Level bottomLvl = new Level("bottom", map);
@@ -275,7 +277,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
 
@@ -298,7 +300,7 @@ public class PlayerCharacterTest
     {
         Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
 
-        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10);
+        ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
         Level topLvl = new Level("top", map);
         Level bottomLvl = new Level("bottom", map);

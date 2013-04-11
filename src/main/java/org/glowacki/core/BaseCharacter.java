@@ -28,6 +28,7 @@ public abstract class BaseCharacter
 
     private int str;
     private int dex;
+    private int pcp;
     private int spd;
 
     private int x;
@@ -41,11 +42,13 @@ public abstract class BaseCharacter
      * @param str strength
      * @param dex dexterity
      * @param spd speed
+     * @param pcp perception
      */
-    public BaseCharacter(int str, int dex, int spd)
+    public BaseCharacter(int str, int dex, int pcp, int spd)
     {
         this.str = str;
         this.dex = dex;
+        this.pcp = pcp;
         this.spd = spd;
 
         x = -1;
@@ -72,6 +75,16 @@ public abstract class BaseCharacter
         }
 
         return cost;
+    }
+
+    /**
+     * Get the distance this character can see (in number of tiles)
+     *
+     * @return distance
+     */
+    public int getSightDistance()
+    {
+        return pcp / 2;
     }
 
     /**
@@ -182,6 +195,7 @@ public abstract class BaseCharacter
      */
     public String toString()
     {
-        return String.format("(%d/%d/%d)@[%d,%d]", str, dex, spd, x, y);
+        return String.format("(%d/%d/%d/%d)@[%d,%d]",
+                             str, dex, pcp, spd, x, y);
     }
 }

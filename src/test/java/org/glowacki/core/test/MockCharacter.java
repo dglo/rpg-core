@@ -56,6 +56,11 @@ public class MockCharacter
         throw new UnimplementedError();
     }
 
+    public int getSightDistance()
+    {
+        throw new UnimplementedError();
+    }
+
     public int getX()
     {
         return x;

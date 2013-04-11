@@ -121,11 +121,9 @@ class AsciiView
 
         char[][] map = new char[maxY + 1][maxX + 1];
 
-        final int DISTANCE = 7;
-
         VisibleMap vmap = new VisibleMap(level.getMap());
         boolean[][] visible = vmap.getVisible(player.getX(), player.getY(),
-                                              DISTANCE);
+                                              player.getSightDistance());
 
         for (int y = 0; y <= maxY; y++) {
             for (int x = 0; x <= maxX; x++) {
@@ -504,7 +502,7 @@ public class Runner
 
         controller = new AsciiController();
 
-        PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10);
+        PlayerCharacter ch = new PlayerCharacter("me", 10, 10, 10, 10);
         controller.addPlayer(ch);
 
         lvl.enterDown(ch);
@@ -514,7 +512,7 @@ public class Runner
         throws CoreException
     {
         for (int i = 0; i < max; i++) {
-            ComputerCharacter ch = new ComputerCharacter(6, 6, 6,
+            ComputerCharacter ch = new ComputerCharacter(6, 6, 6, 10,
                                                          random.nextLong());
             ch.setLevel(lvl);
         }

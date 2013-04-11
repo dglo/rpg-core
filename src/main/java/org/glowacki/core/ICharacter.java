@@ -43,6 +43,13 @@ public interface ICharacter
     boolean[][] getSeenArray();
 
     /**
+     * Get the distance this character can see (in number of tiles)
+     *
+     * @return distance
+     */
+    int getSightDistance();
+
+    /**
      * Return character's X coordinate.
      *
      * @return X coordinate

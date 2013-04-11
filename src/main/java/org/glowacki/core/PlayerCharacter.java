@@ -37,12 +37,13 @@ public class PlayerCharacter
      * @param name player name
      * @param str strength
      * @param dex dexterity
+     * @param pcp perception
      * @param spd speed
      */
     public PlayerCharacter(String name, int str,
-                           int dex, int spd)
+                           int dex, int pcp, int spd)
     {
-        super(str, dex, spd);
+        super(str, dex, pcp, spd);
 
         this.name = name;
     }

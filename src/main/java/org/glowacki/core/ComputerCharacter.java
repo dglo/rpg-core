@@ -22,12 +22,13 @@ public class ComputerCharacter
      *
      * @param str strength
      * @param dex dexterity
+     * @param pcp perception
      * @param spd speed
      * @param seed random number seed
      */
-    public ComputerCharacter(int str, int dex, int spd, long seed)
+    public ComputerCharacter(int str, int dex, int pcp, int spd, long seed)
     {
-        super(str, dex, spd);
+        super(str, dex, pcp, spd);
 
         random = new Random(seed);
 

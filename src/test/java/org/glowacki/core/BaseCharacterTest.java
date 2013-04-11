@@ -15,14 +15,15 @@ class MyCharacter
     private Level level;
     private boolean player;
 
-    MyCharacter(String name, int str, int dex, int spd)
+    MyCharacter(String name, int str, int dex, int pcp, int spd)
     {
-        this(name, str, dex, spd, false);
+        this(name, str, dex, pcp, spd, false);
     }
 
-    MyCharacter(String name, int str, int dex, int spd, boolean player)
+    MyCharacter(String name, int str, int dex, int pcp, int spd,
+                boolean player)
     {
-        super(str, dex, spd);
+        super(str, dex, pcp, spd);
 
         this.name = name;
         this.player = player;
@@ -146,7 +147,7 @@ public class BaseCharacterTest
 
     public void testCreate()
     {
-        MyCharacter ch = new MyCharacter("a", 1, 2, 3);
+        MyCharacter ch = new MyCharacter("a", 1, 2, 3, 4);
         assertEquals("Bad initial X", -1, ch.getX());
         assertEquals("Bad initial Y", -1, ch.getY());
 
@@ -161,7 +162,7 @@ public class BaseCharacterTest
     public void testBadMove00()
         throws CoreException
     {
-        MyCharacter ch = new MyCharacter("b", 1, 2, 3);
+        MyCharacter ch = new MyCharacter("b", 1, 2, 3, 4);
 
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
@@ -185,16 +186,16 @@ public class BaseCharacterTest
                 break;
             case RIGHT:
                 x++;
-                expTurns = 4;
+                expTurns = 3;
                 break;
             case RIGHT_DOWN:
                 x++;
                 y++;
-                expTurns = 5;
+                expTurns = 4;
                 break;
             case DOWN:
                 y++;
-                expTurns = 3;
+                expTurns = 2;
                 break;
             case LEFT_DOWN:
                 break;
@@ -211,7 +212,7 @@ public class BaseCharacterTest
     public void testBadMove22()
         throws CoreException
     {
-        MyCharacter ch = new MyCharacter("b", 1, 2, 3);
+        MyCharacter ch = new MyCharacter("b", 1, 2, 3, 4);
 
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
@@ -227,16 +228,16 @@ public class BaseCharacterTest
             switch (dir) {
             case LEFT:
                 x--;
-                expTurns = 4;
+                expTurns = 3;
                 break;
             case LEFT_UP:
                 x--;
                 y--;
-                expTurns = 5;
+                expTurns = 4;
                 break;
             case UP:
                 y--;
-                expTurns = 3;
+                expTurns = 2;
                 break;
             case RIGHT_UP:
                 break;
@@ -261,7 +262,7 @@ public class BaseCharacterTest
     public void testMove()
         throws CoreException
     {
-        MyCharacter ch = new MyCharacter("b", 1, 2, 3);
+        MyCharacter ch = new MyCharacter("b", 1, 2, 3, 4);
 
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
