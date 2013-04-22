@@ -25,6 +25,6 @@ if __name__ == "__main__":
     except NameError:
         java_args = None
 
-    rundata = runner.run(java_args, sys.argv[1:])
+    rundata = runner.run(sys.argv[1:], java_args)
     if rundata.returncode() is not None and rundata.returncode() != 0:
         raise SystemExit(rundata.returncode())
