@@ -10,9 +10,9 @@ import java.util.Set;
 /**
  * Find a path.
  */
-abstract class PathFinder
+public abstract class PathFinder
 {
-    abstract INode createTempNode(int x, int y);
+    public abstract INode createTempNode(int x, int y);
 
     private static INode findBestPassThrough(List<INode> list, INode goal)
     {
@@ -88,19 +88,15 @@ abstract class PathFinder
         }
 
         List<INode> bestList = new ArrayList<INode>();
-
-        populateBestList(bestList, goal);
+        INode best = goal;
+        while (best != null && !best.isStart()) {
+            bestList.add(best);
+System.out.println("BestAdd " + best);
+            best = best.getParent();
+        }
 
         return bestList;
     }
 
-    abstract Set<INode> getAdjacencies(INode node);
-
-    private static void populateBestList(List<INode> bestList, INode node)
-    {
-        bestList.add(node);
-        if (!node.getParent().isStart()) {
-            populateBestList(bestList, node.getParent());
-        }
-    }
+    public abstract Set<INode> getAdjacencies(INode node);
 }
