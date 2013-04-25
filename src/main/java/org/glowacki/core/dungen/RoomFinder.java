@@ -34,9 +34,9 @@ public class RoomFinder
      *
      * @return new temporary node
      */
-    public INode createTempNode(int x, int y)
+    public INode createTempNode(INode node)
     {
-        return new MapNode(x, y);
+        return new MapNode(node.getX(), node.getY());
     }
 
     /**

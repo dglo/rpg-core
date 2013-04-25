@@ -229,9 +229,9 @@ public class MapPathFinder
      *
      * @return new temporary node
      */
-    public INode createTempNode(int x, int y)
+    public INode createTempNode(INode node)
     {
-        return new BaseNode(x, y);
+        return new BaseNode(node.getX(), node.getY());
     }
 
     /**

@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public abstract class PathFinder
 {
-    public abstract INode createTempNode(int x, int y);
+    public abstract INode createTempNode(INode node);
 
     private static INode findBestPassThrough(List<INode> list, INode goal)
     {
@@ -53,8 +53,7 @@ public abstract class PathFinder
             Set<INode> neighbors = getAdjacencies(best);
             for (INode neighbor : neighbors) {
                 if (opened.contains(neighbor)) {
-                    INode tmpNode = createTempNode(neighbor.getX(),
-                                                   neighbor.getY());
+                    INode tmpNode = createTempNode(neighbor);
                     tmpNode.setParent(best);
                     if (tmpNode.getPassThrough(goal) >=
                         neighbor.getPassThrough(goal))
@@ -64,8 +63,7 @@ public abstract class PathFinder
                 }
 
                 if (closed.contains(neighbor)) {
-                    INode tmpNode = createTempNode(neighbor.getX(),
-                                                   neighbor.getY());
+                    INode tmpNode = createTempNode(neighbor);
                     tmpNode.setParent(best);
                     if (tmpNode.getPassThrough(goal) >=
                         neighbor.getPassThrough(goal))

@@ -104,9 +104,9 @@ class MyPathFinder
         this.goal = goal;
     }
 
-    public INode createTempNode(int x, int y)
+    public INode createTempNode(INode node)
     {
-        return new MyNode("tmp", x, y);
+        return new MyNode("tmp", node.getX(), node.getY());
     }
 
     public Set<INode> getAdjacencies(INode node)
