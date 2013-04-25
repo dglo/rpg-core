@@ -72,7 +72,6 @@ public abstract class PathFinder
                     }
                 }
 
-
                 neighbor.setParent(best);
 
                 opened.remove(neighbor);
@@ -89,7 +88,6 @@ public abstract class PathFinder
         INode best = goal;
         while (best != null && !best.isStart()) {
             bestList.add(best);
-System.out.println("BestAdd " + best);
             best = best.getParent();
         }
 
