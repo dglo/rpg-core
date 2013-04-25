@@ -13,7 +13,9 @@ public class MapNode
     private int x;
     private int y;
     private EndPoint endPt;
+    private boolean tempNode;
     private RoomType type;
+
     private INode parent;
 
      // cost of getting from parent node to this node
@@ -26,15 +28,27 @@ public class MapNode
 
     MapNode(int x, int y)
     {
-        this(x, y, EndPoint.NONE);
+        this(x, y, false);
+    }
+
+    MapNode(int x, int y, boolean tempNode)
+    {
+        this(x, y, EndPoint.NONE, tempNode);
     }
 
     MapNode(int x, int y, EndPoint endPt)
     {
+        this(x, y, endPt, false);
+    }
+
+    MapNode(int x, int y, EndPoint endPt, boolean tempNode)
+    {
         this.x = x;
         this.y = y;
         this.endPt = endPt;
-        this.type = RoomType.EMPTY;
+        this.tempNode = tempNode;
+
+        type = RoomType.EMPTY;
     }
 
     public void clear()
@@ -161,6 +175,27 @@ private char hackChar;
         return (x & 0xffff) << 16 | (y & 0xffff);
     }
 
+    private static boolean isAncestor(INode node, INode other)
+    {
+        INode prev = node;
+
+        int loopCnt = 0;
+        while (prev != null) {
+            if (prev.getX() == other.getX() && prev.getY() == other.getY()) {
+                return true;
+            }
+
+            prev = prev.getParent();
+            if (loopCnt++ > 500) {
+                throw new Error("Aborting loop while setting " + node +
+                                " parent to " + other + " (currently " +
+                                node.getParent() + ")");
+            }
+        }
+
+        return false;
+    }
+
     public boolean isDoor()
     {
         return type == RoomType.DOOR;
@@ -197,30 +232,21 @@ private char hackChar;
         endPt = pt;
     }
 
-    public void setParent(INode parent)
+    public void setParent(INode node)
     {
-        INode grandparent = parent.getParent();
-        if (grandparent != null && grandparent.getX() == x &&
-            grandparent.getY() == y)
+        if (!tempNode && parent != null &&
+            (parent.getX() != node.getX() || parent.getY() != node.getY()) &&
+            (isAncestor(this, node) || isAncestor(node, this)))
         {
-            final String pStr;
-            if (this.parent == null) {
-                pStr = "";
-            } else {
-                pStr = String.format(" (parent is %d,%d)",
-                                     this.parent.getX(), this.parent.getY());
-            }
-
-            System.out.format("Cannot set %d,%d parent to child %d,%d%s", x, y,
-                              parent.getX(), parent.getY(), pStr);
-        } else {
-System.out.format("%d,%d parent is %d,%d\n", x, y, parent.getX(), parent.getY());
-            this.parent = parent;
-            parentCost = Double.MIN_VALUE;
-
-            lastNode = null;
-            passThroughCost = Double.MIN_VALUE;
+            throw new Error("Setting " + toString() + " parent to " +
+                            node + " would create a loop");
         }
+
+        parent = node;
+        parentCost = Double.MIN_VALUE;
+
+        lastNode = null;
+        passThroughCost = Double.MIN_VALUE;
     }
 
     public void setType(RoomType type)

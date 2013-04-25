@@ -36,7 +36,7 @@ public class RoomFinder
      */
     public INode createTempNode(INode node)
     {
-        MapNode m = new MapNode(node.getX(), node.getY());
+        MapNode m = new MapNode(node.getX(), node.getY(), true);
         if (node instanceof MapNode) {
             m.setType(((MapNode) node).getType());
         }
