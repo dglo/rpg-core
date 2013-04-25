@@ -10,28 +10,6 @@ public class MapNode
         START, END, NONE;
     }
 
-    enum RoomType
-    {
-        DOOR('+'),
-        EMPTY(' '),
-        FLOOR('.'),
-        //SIDEWALL('|'),
-        TUNNEL('#'),
-        WALL('-');
-
-        private final char ch;
-
-        RoomType(char ch)
-        {
-            this.ch = ch;
-        }
-
-        char getChar()
-        {
-            return ch;
-        }
-    }
-
     private int x;
     private int y;
     private EndPoint endPt;
