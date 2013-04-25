@@ -88,6 +88,11 @@ public class CharMap
 
     void show()
     {
+        showMap(map);
+    }
+
+    static void showMap(char[][] map)
+    {
         StringBuilder buf = new StringBuilder(map.length);
         for (int y = 0; y < map[0].length; y++) {
             buf.setLength(0);
