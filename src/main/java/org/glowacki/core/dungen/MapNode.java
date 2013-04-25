@@ -124,7 +124,12 @@ private char hackChar;
             } else if (type == RoomType.EMPTY) {
                 extraCost = 5.0;
             } else if (isWall()) {
-                extraCost = 20.0;
+                MapNode p = (MapNode) parent;
+                if (p != null && (p.isWall() || p.isDoor())) {
+                    extraCost = 20.0;
+                } else {
+                    extraCost = 5.5;
+                }
             } else {
                 throw new Error("Not handling " + type);
             }
@@ -134,6 +139,11 @@ private char hackChar;
         }
 
         return passThroughCost;
+    }
+
+    public RoomType getType()
+    {
+        return type;
     }
 
     public int getX()
@@ -149,6 +159,11 @@ private char hackChar;
     public int hashCode()
     {
         return (x & 0xffff) << 16 | (y & 0xffff);
+    }
+
+    public boolean isDoor()
+    {
+        return type == RoomType.DOOR;
     }
 
     public boolean isEmpty()
