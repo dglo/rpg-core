@@ -70,6 +70,12 @@ public class RoomFinder
             throw new GeneratorException(msg);
         }
 
+        for (int x = 0; x < nodes.length; x++) {
+            for (int y = 0; y < nodes[x].length; y++) {
+                nodes[x][y].clear();
+            }
+        }
+
         MapNode start = nodes[startPt.getX()][startPt.getY()];
         MapNode end = nodes[endPt.getX()][endPt.getY()];
 
