@@ -39,6 +39,7 @@ public abstract class PathFinder
                 opened.add(adjacency);
             }
         }
+        closed.add(start);
 
         boolean found = false;
         while (!found && opened.size() > 0) {
