@@ -136,15 +136,15 @@ if(DEBUG)dump("  Grow " + room + " down", rooms);
                 break;
             case TOP:
                 isNeighbor =
-                    room.getY() >= rooms[i].getY() + rooms[i].getHeight();
+                    room.getY() == rooms[i].getY() + rooms[i].getHeight();
                 break;
             case RIGHT:
                 isNeighbor =
-                    rooms[i].getX() >= room.getX() + room.getWidth();
+                    rooms[i].getX() == room.getX() + room.getWidth();
                 break;
             default:
                 isNeighbor =
-                    rooms[i].getY() >= room.getY() + room.getHeight();
+                    rooms[i].getY() == room.getY() + room.getHeight();
                 break;
             }
 
