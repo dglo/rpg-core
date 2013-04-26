@@ -22,7 +22,6 @@ class Tunneler
         {
             this.fromRoom = fromRoom;
             this.toRoom = toRoom;
-            System.out.println("    Created " + toString());
         }
 
         public int compareTo(Object obj)
@@ -47,10 +46,7 @@ class Tunneler
 
         public boolean contains(int num)
         {
-//        return (num == fromRoom.getNumber() || num == toRoom.getNumber());
-boolean val = (num == fromRoom.getNumber() || num == toRoom.getNumber());
-System.out.format("    RC %s contains %d? -> %s\n", toString(), num, val);
-return val;
+            return (num == fromRoom.getNumber() || num == toRoom.getNumber());
         }
 
         public boolean equals(Object obj)
@@ -66,7 +62,6 @@ return val;
                 final int distY = fromRoom.getDistanceY(toRoom);
 
                 distance = (int) Math.sqrt(distX * distX + distY * distY);
-System.out.format("%c->%c X%d Y%d : %d\n", fromRoom.getChar(), toRoom.getChar(), distX, distY, distance);
             }
 
             return distance;
@@ -236,7 +231,6 @@ System.out.format("%c->%c X%d Y%d : %d\n", fromRoom.getChar(), toRoom.getChar(),
 
         boolean isLinked(int num)
         {
-System.out.format("  Rm %s isLinked %d?\n", toString(), num);
             for (int i = 0; i < nextConn; i++) {
                 if (connections[i].contains(num)) {
                     return true;
@@ -278,11 +272,9 @@ System.out.format("  Rm %s isLinked %d?\n", toString(), num);
     {
         this.random = random;
         this.rooms = new ConnectedRoom[rooms.length];
-System.err.println("Tunnel to " + rooms.length + " rooms");
         for (int r = 0; r < rooms.length; r++) {
             this.rooms[r] = new ConnectedRoom(rooms[r]);
             this.rooms[r].setMaxConnections(maxConnections);
-System.err.println("  #" + r + ": " + this.rooms[r]);
         }
     }
 
@@ -292,7 +284,6 @@ System.err.println("  #" + r + ": " + this.rooms[r]);
 
         for (int c = 0; c < connections.length; c++) {
             RoomConnection conn = connections[c];
-System.out.format("FindPath %c->%c ====\n", conn.getFrom().getChar(), conn.getTo().getChar());
 
             List<MapNode> path = null;
 
@@ -348,8 +339,6 @@ System.out.format("FindPath %c->%c ====\n", conn.getFrom().getChar(), conn.getTo
 
             if (path != null) {
                 fillTunnel(path);
-System.out.format("==== PATH %c->%c ====\n", conn.getFrom().getChar(), conn.getTo().getChar());
-CharMap.showMap(getCharMap(map));
             }
         }
     }
@@ -368,7 +357,6 @@ CharMap.showMap(getCharMap(map));
         connections = sortConnections(rooms);
 
         MapNode[][] map = fillMap(width, height);
-CharMap.showMap(getCharMap(map));
 
         // build tunnels
         buildTunnels(map);
@@ -389,7 +377,6 @@ CharMap.showMap(getCharMap(map));
         // fill in rooms
         for (int r = 0; r < rooms.length; r++) {
             ConnectedRoom room = rooms[r];
-System.out.println("R#" + r + ": " + rooms[r]);
 
             fillRoom(map, room);
         }
