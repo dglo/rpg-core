@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public abstract class RoomGenerator1
+    extends BaseGenerator
 {
     private static final boolean DEBUG = false;
 
@@ -90,6 +91,9 @@ if(false&&DEBUG){
             rooms[i] = stack.pop();
             rooms[i].setNumber(i);
         }
+
+        fixNeighbors(rooms);
+
         return rooms;
     }
 

@@ -3,29 +3,9 @@ package org.glowacki.core.dungen;
 import java.util.Random;
 
 public abstract class RoomGenerator2
+    extends BaseGenerator
 {
     private static final boolean DEBUG = false;
-
-    enum Direction {
-        LEFT,
-        TOP,
-        RIGHT,
-        BOTTOM;
-
-        static Direction get(int i)
-        {
-            switch (i % 4) {
-            case 0:
-                return LEFT;
-            case 1:
-                return TOP;
-            case 2:
-                return RIGHT;
-            default:
-                return BOTTOM;
-            }
-        }
-    };
 
     public static Room[] createRooms(Random random, int width, int height,
                                      int gridWidth, int gridHeight)
@@ -59,6 +39,8 @@ if(DEBUG)System.out.println("Move " + room);
                 moveRoom(room, rooms, width, height, random);
             }
         }
+
+        fixNeighbors(rooms);
 
         return rooms;
     }
