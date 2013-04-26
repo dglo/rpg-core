@@ -19,9 +19,13 @@ public class RunGen
         Room[] rooms = RoomGenerator2.createRooms(random, width, height, 3, 3);
 
         Tunneler tunneler = new Tunneler(rooms, 4, random);
-        tunneler.dig();
-
-        new CharMap(rooms).show();
+        char[][] map;
+try{
+        map = tunneler.dig(width, height);
+        CharMap.showMap(map);
+}catch(Throwable thr){
+    thr.printStackTrace(System.out);
+}
     }
 
     public static final void main(String[] args)

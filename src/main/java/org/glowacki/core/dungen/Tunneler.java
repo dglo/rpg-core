@@ -2,6 +2,7 @@ package org.glowacki.core.dungen;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 class Tunneler
@@ -71,6 +72,11 @@ System.out.format("%c->%c X%d Y%d : %d\n", fromRoom.getChar(), toRoom.getChar(),
             return distance;
         }
 
+        public ConnectedRoom getFrom()
+        {
+            return fromRoom;
+        }
+
         public ConnectedRoom getOtherEnd(ConnectedRoom end)
         {
             if (fromRoom == end) {
@@ -82,6 +88,11 @@ System.out.format("%c->%c X%d Y%d : %d\n", fromRoom.getChar(), toRoom.getChar(),
             }
 
             return null;
+        }
+
+        public ConnectedRoom getTo()
+        {
+            return toRoom;
         }
 
         public boolean isDrawn()
@@ -183,6 +194,11 @@ System.out.format("%c->%c X%d Y%d : %d\n", fromRoom.getChar(), toRoom.getChar(),
                                r.room.getHeight());
         }
 
+        int getHeight()
+        {
+            return room.getHeight();
+        }
+
         int getNumConnections()
         {
             return nextConn;
@@ -191,6 +207,21 @@ System.out.format("%c->%c X%d Y%d : %d\n", fromRoom.getChar(), toRoom.getChar(),
         int getNumber()
         {
             return room.getNumber();
+        }
+
+        int getWidth()
+        {
+            return room.getWidth();
+        }
+
+        int getX()
+        {
+            return room.getX();
+        }
+
+        int getY()
+        {
+            return room.getY();
         }
 
         boolean isConnected()
@@ -255,7 +286,75 @@ System.err.println("  #" + r + ": " + this.rooms[r]);
         }
     }
 
-    void dig()
+    private void buildTunnels(MapNode[][] map)
+    {
+        RoomFinder finder = new RoomFinder(map);
+
+        for (int c = 0; c < connections.length; c++) {
+            RoomConnection conn = connections[c];
+System.out.format("FindPath %c->%c ====\n", conn.getFrom().getChar(), conn.getTo().getChar());
+
+            List<MapNode> path = null;
+
+            while (true) {
+                try {
+                    path = finder.findBestPath(getMidpoint(map, conn.getFrom()),
+                                               getMidpoint(map, conn.getTo()));
+                } catch (GeneratorException ge) {
+                    // XXX deal with this!!!
+                    ge.printStackTrace(System.out);
+                    continue;
+                }
+
+                if (path == null) {
+                    // XXX deal with this!!!
+                    System.out.println("Cannot generate path from " +
+                                       conn.getFrom() + " to " + conn.getTo());
+                    break;
+                }
+
+                MapNode wallNode = null;
+                boolean isVertical = false;
+                for (MapNode n : path) {
+                    if (wallNode != null) {
+                        if (n.getX() == wallNode.getX() + 1 ||
+                            n.getX() == wallNode.getX() - 1)
+                        {
+                            // crossing vertical wall horizontally
+                            isVertical = true;
+                        } else if (n.getY() == wallNode.getY() + 1 ||
+                                   n.getY() == wallNode.getY() - 1)
+                        {
+                            // crossing horizontal wall vertically
+                            isVertical = false;
+                        } else {
+                            throw new Error("Node " + n +
+                                            " is not a single step from " +
+                                            wallNode);
+                        }
+                        break;
+                    } else if (n.isWall()) {
+                        wallNode = n;
+                    }
+                }
+
+                // didn't bust through any walls, so path is usable
+                if (wallNode == null) {
+                    break;
+                }
+
+                makeDoor(map, wallNode, isVertical);
+            }
+
+            if (path != null) {
+                fillTunnel(path);
+System.out.format("==== PATH %c->%c ====\n", conn.getFrom().getChar(), conn.getTo().getChar());
+CharMap.showMap(getCharMap(map));
+            }
+        }
+    }
+
+    char[][] dig(int width, int height)
     {
         // connect all rooms
         initialConnect(rooms);
@@ -268,15 +367,17 @@ System.err.println("  #" + r + ": " + this.rooms[r]);
         // build sorted list of connections
         connections = sortConnections(rooms);
 
-for (RoomConnection c : connections) {
-    System.out.println(c);
-}
+        MapNode[][] map = fillMap(width, height);
+CharMap.showMap(getCharMap(map));
+
+        // build tunnels
+        buildTunnels(map);
+
+        return getCharMap(map);
     }
 
-    private char[][] fillMap(int mapWidth, int mapHeight,
-                             ConnectedRoom[] rooms, RoomConnection[] conns)
+    private MapNode[][] fillMap(int mapWidth, int mapHeight)
     {
-/*
         // initialize everything to space character
         MapNode[][] map = new MapNode[mapWidth][mapHeight];
         for (int x = 0; x < mapWidth; x++) {
@@ -287,68 +388,16 @@ for (RoomConnection c : connections) {
 
         // fill in rooms
         for (int r = 0; r < rooms.length; r++) {
-            Room room = rooms[r];
+            ConnectedRoom room = rooms[r];
 System.out.println("R#" + r + ": " + rooms[r]);
 
             fillRoom(map, room);
         }
-showDungeon(getCharMap(map));
-if (false){
-        RoomFinder finder = new RoomFinder(map);
 
-        for (int c = 0; c < conns.length; c++) {
-            RoomConnection conn = conns[c];
-            List<MapNode> path;
-            try {
-                path = finder.findBestPath(getMidpoint(map, conn.getFrom()),
-                                           getMidpoint(map, conn.getTo()));
-            } catch (GeneratorException ge) {
-                ge.printStackTrace();
-                path = null;
-            }
-
-            if (path == null) {
-                System.out.println("Cannot generate path from " +
-                                   conn.getFrom() + " to " + conn.getTo());
-                continue;
-            }
-
-            System.out.println("=== Path ===");
-            for (MapNode p : path) {
-                map[p.getX()][p.getY()].hackChar('@');
-                System.out.println("   " + p);
-            }
-//showDungeon(getCharMap(map));
-        }
-}
-*/
-/*
-        // fill tunnels
-        for (int r = 0; r < rooms.length; r++) {
-            Room room = rooms[r];
-
-            for (int c = 0; c < room.getNumConnections(); c++) {
-                RoomConnection conn = room.getConnection(c);
-System.out.format("Room %c conn %s\n", room.getChar(), conn);
-                if (conn.isDrawn()) {
-                    continue;
-                }
-
-                conn.setDrawn();
-
-                Room other = conn.getOtherEnd(room);
-                fillTunnel(map, room, other);
-System.out.format("Connected %c to %c\n", room.getChar(), other.getChar());
-showDungeon(map);
-            }
-        }
-*/
-
-        return null;//return getCharMap(map);
+        return map;
     }
 
-/*
-    private void fillRoom(MapNode[][] map, Room room)
+    private void fillRoom(MapNode[][] map, ConnectedRoom room)
     {
 final boolean DEBUG_FILL_ROOM = false;
 
@@ -379,11 +428,18 @@ if(DEBUG_FILL_ROOM)System.out.format("%s\n", room);
         final int cx = room.getX() + (room.getWidth() / 2);
         final int cy = room.getY() + (room.getHeight() / 2);
         map[cx][cy].hackChar(room.getChar());
-if(DEBUG_FILL_ROOM)showDungeon(getCharMap(map));
+if(DEBUG_FILL_ROOM)CharMap.showMap(getCharMap(map));
     }
-*/
 
-/*
+    private void fillTunnel(List<MapNode> path)
+    {
+        for (MapNode n : path) {
+            if (n.isEmpty()) {
+                n.setType(RoomType.TUNNEL);
+            }
+        }
+    }
+
     private char[][] getCharMap(MapNode[][] map)
     {
         char[][] chMap = new char[map.length][map[0].length];
@@ -395,7 +451,14 @@ if(DEBUG_FILL_ROOM)showDungeon(getCharMap(map));
 
         return chMap;
     }
-*/
+
+    private static MapNode getMidpoint(MapNode[][] map, ConnectedRoom room)
+    {
+        final int midX = room.getX() + (room.getWidth() / 2);
+        final int midY = room.getY() + (room.getHeight() / 2);
+
+        return map[midX][midY];
+    }
 
     /**
      * Run through room list once to connect every room to one other room.
@@ -517,6 +580,13 @@ if(DEBUG_INIT_CONN)System.out.println("Connected " + connected);
 
         // return <tt>true</tt> if all the rooms are interconnected
         return seenAll;
+    }
+
+    private void makeDoor(MapNode[][] map, MapNode wallNode,
+                          boolean isVertical)
+    {
+        System.out.println("XXX MakeDoor HACK!!!");
+        wallNode.setType(RoomType.DOOR);
     }
 
     /**
