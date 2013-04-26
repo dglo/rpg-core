@@ -1,5 +1,7 @@
 package org.glowacki.core.dungen;
 
+import java.util.Random;
+
 public abstract class BaseGenerator
 {
     enum Direction {
@@ -22,6 +24,32 @@ public abstract class BaseGenerator
             }
         }
     };
+
+    public static void addStairs(Room[] rooms, Random random, boolean addUp,
+                                 boolean addDown)
+    {
+        int up = -1;
+        if (addUp) {
+            up = random.nextInt(rooms.length);
+
+            final int x = random.nextInt(rooms[up].getWidth() - 2) + 1;
+            final int y = random.nextInt(rooms[up].getHeight() - 2) + 1;
+
+            rooms[up].addStairs(x, y, true);
+        }
+
+        if (addDown) {
+            int down;
+            do {
+                down = random.nextInt(rooms.length);
+            } while (down == up);
+
+            final int x = random.nextInt(rooms[down].getWidth() - 2) + 1;
+            final int y = random.nextInt(rooms[down].getHeight() - 2) + 1;
+
+            rooms[down].addStairs(x, y, false);
+        }
+    }
 
     private static void fixHorizontalNeighbors(Room left, Room right)
     {

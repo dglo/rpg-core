@@ -17,10 +17,13 @@ public class RunGen
     {
         //Room[] rooms = RoomGenerator1.createRooms(random, width, height, 12);
         Room[] rooms = RoomGenerator2.createRooms(random, width, height, 3, 3);
+        RoomGenerator2.addStairs(rooms, random, true, true);
 
         Tunneler tunneler = new Tunneler(rooms, 4, random);
-        char[][] map = tunneler.dig(width, height);
-        CharMap.showMap(map);
+        String[] map = tunneler.dig(width, height);
+        for (int i = 0; i < map.length; i++) {
+            System.out.println(map[i]);
+        }
     }
 
     public static final void main(String[] args)

@@ -214,7 +214,8 @@ private char hackChar;
     public boolean isMovable()
     {
         return type == RoomType.FLOOR || type == RoomType.DOOR ||
-            type == RoomType.TUNNEL;
+            type == RoomType.DOWNSTAIRS || type == RoomType.TUNNEL ||
+            type == RoomType.UPSTAIRS;
     }
 
     public boolean isStart()

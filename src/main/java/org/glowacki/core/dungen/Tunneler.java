@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-class Tunneler
+public class Tunneler
 {
     private static int nextConnection;
 
@@ -204,6 +204,16 @@ class Tunneler
             return room.getNumber();
         }
 
+        int getStaircaseX()
+        {
+            return room.getStaircaseX();
+        }
+
+        int getStaircaseY()
+        {
+            return room.getStaircaseY();
+        }
+
         int getWidth()
         {
             return room.getWidth();
@@ -217,6 +227,11 @@ class Tunneler
         int getY()
         {
             return room.getY();
+        }
+
+        boolean hasStaircase()
+        {
+            return room.hasStaircase();
         }
 
         boolean isConnected()
@@ -238,6 +253,11 @@ class Tunneler
             }
 
             return false;
+        }
+
+        boolean isUpStaircase()
+        {
+            return room.isUpStaircase();
         }
 
         void setMaxConnections(int max)
@@ -268,7 +288,7 @@ class Tunneler
     private Random random;
     private RoomConnection[] connections;
 
-    Tunneler(Room[] rooms, int maxConnections, Random random)
+    public Tunneler(Room[] rooms, int maxConnections, Random random)
     {
         this.random = random;
         this.rooms = new ConnectedRoom[rooms.length];
@@ -343,7 +363,7 @@ class Tunneler
         }
     }
 
-    char[][] dig(int width, int height)
+    public String[] dig(int width, int height)
     {
         // connect all rooms
         initialConnect(rooms);
@@ -361,7 +381,7 @@ class Tunneler
         // build tunnels
         buildTunnels(map);
 
-        return getCharMap(map);
+        return getStringMap(map);
     }
 
     private MapNode[][] fillMap(int mapWidth, int mapHeight)
@@ -412,9 +432,16 @@ if(DEBUG_FILL_ROOM)System.out.format("%s\n", room);
             }
         }
 
-        final int cx = room.getX() + (room.getWidth() / 2);
-        final int cy = room.getY() + (room.getHeight() / 2);
-        map[cx][cy].hackChar(room.getChar());
+        if (room.hasStaircase()) {
+            final int x = room.getX() + room.getStaircaseX();
+            final int y = room.getY() + room.getStaircaseY();
+
+            if (room.isUpStaircase()) {
+                map[x][y].setType(RoomType.UPSTAIRS);
+            } else {
+                map[x][y].setType(RoomType.DOWNSTAIRS);
+            }
+        }
 if(DEBUG_FILL_ROOM)CharMap.showMap(getCharMap(map));
     }
 
@@ -445,6 +472,20 @@ if(DEBUG_FILL_ROOM)CharMap.showMap(getCharMap(map));
         final int midY = room.getY() + (room.getHeight() / 2);
 
         return map[midX][midY];
+    }
+
+    private String[] getStringMap(MapNode[][] map)
+    {
+        String[] chMap = new String[map.length];
+        for (int x = 0; x < map.length; x++) {
+            char[] chars = new char[map[x].length];
+            for (int y = 0; y < map[0].length; y++) {
+                chars[y] = map[x][y].getChar();
+            }
+            chMap[x] = new String(chars);
+        }
+
+        return chMap;
     }
 
     /**
