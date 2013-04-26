@@ -4,18 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Level-related exceptions.
- */
-class LevelException
-    extends CoreException
-{
-    LevelException(String msg)
-    {
-        super(msg);
-    }
-}
-
-/**
  * Level
  */
 public class Level
