@@ -15,6 +15,7 @@ public abstract class PathFinder
     public abstract INode createTempNode(INode node);
 
     private static INode findBestPassThrough(List<INode> list, INode goal)
+        throws PathException
     {
         INode best = null;
         for (INode node : list) {
@@ -29,6 +30,7 @@ public abstract class PathFinder
     }
 
     public List<INode> findBestPath(INode start, INode goal)
+        throws PathException
     {
         List<INode> opened = new ArrayList<INode>();
         List<INode> closed = new ArrayList<INode>();
@@ -95,5 +97,6 @@ public abstract class PathFinder
         return bestList;
     }
 
-    public abstract Set<INode> getAdjacencies(INode node);
+    public abstract Set<INode> getAdjacencies(INode node)
+        throws PathException;
 }

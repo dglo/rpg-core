@@ -140,6 +140,7 @@ public class PathFinderTest
     }
 
     public void testSimple()
+        throws PathException
     {
         MyNode start = new MyNode("start", 0, 0);
         start.setStart();

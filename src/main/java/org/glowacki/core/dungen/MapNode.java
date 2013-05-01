@@ -1,6 +1,16 @@
 package org.glowacki.core.dungen;
 
 import org.glowacki.core.astar.INode;
+import org.glowacki.core.astar.PathException;
+
+class MapNodeException
+    extends PathException
+{
+    MapNodeException(String msg)
+    {
+        super(msg);
+    }
+}
 
 public class MapNode
     implements Comparable, INode
@@ -120,6 +130,7 @@ private char hackChar;
     }
 
     public double getPassThrough(INode goal)
+        throws MapNodeException
     {
         if (isStart()) {
             return 0.0;
@@ -145,7 +156,7 @@ private char hackChar;
                     extraCost = 5.5;
                 }
             } else {
-                throw new Error("Not handling " + type);
+                throw new MapNodeException("Not handling " + type);
             }
 
             passThroughCost = localCost + extraCost + getParentCost();
@@ -176,6 +187,7 @@ private char hackChar;
     }
 
     private static boolean isAncestor(INode node, INode other)
+        throws MapNodeException
     {
         INode prev = node;
 
@@ -187,9 +199,10 @@ private char hackChar;
 
             prev = prev.getParent();
             if (loopCnt++ > 500) {
-                throw new Error("Aborting loop while setting " + node +
-                                " parent to " + other + " (currently " +
-                                node.getParent() + ")");
+                final String msg = "Aborting loop while setting " + node +
+                    " parent to " + other + " (currently " +
+                    node.getParent() + ")";
+                throw new MapNodeException(msg);
             }
         }
 
@@ -234,13 +247,15 @@ private char hackChar;
     }
 
     public void setParent(INode node)
+        throws MapNodeException
     {
         if (!tempNode && parent != null &&
             (parent.getX() != node.getX() || parent.getY() != node.getY()) &&
             (isAncestor(this, node) || isAncestor(node, this)))
         {
-            throw new Error("Setting " + toString() + " parent to " +
-                            node + " would create a loop");
+            throw new MapNodeException("Setting " + toString() +
+                                         " parent to " + node +
+                                         " would create a loop");
         }
 
         parent = node;

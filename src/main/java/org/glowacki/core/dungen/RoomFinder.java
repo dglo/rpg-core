@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.glowacki.core.astar.INode;
+import org.glowacki.core.astar.PathException;
 import org.glowacki.core.astar.PathFinder;
 
 /**
@@ -54,7 +55,7 @@ public class RoomFinder
      * @throws GeneratorException if the start or end point is bad
      */
     public List<MapNode> findBestPath(MapNode startPt, MapNode endPt)
-        throws GeneratorException
+        throws GeneratorException, PathException
     {
         if (startPt.getX() < 0 || startPt.getX() >= nodes.length ||
             startPt.getY() < 0 || startPt.getY() >= nodes[0].length)
@@ -101,8 +102,9 @@ public class RoomFinder
         List<MapNode> bestList = new ArrayList<MapNode>();
         for (INode node : list) {
             if (!(node instanceof MapNode)) {
-                throw new Error("Found non-MapEntry node " + node + "<" +
-                                node.getClass().getName() + ">");
+                throw new MapNodeException("Found non-MapEntry node " + node +
+                                           "<" + node.getClass().getName() +
+                                           ">");
             }
             bestList.add((MapNode) node);
         }
@@ -118,10 +120,12 @@ public class RoomFinder
      * @return set of adjacent nodes
      */
     public Set<INode> getAdjacencies(INode node)
+        throws PathException
     {
 //try{drawCosts(node);}catch(Throwable thr){thr.printStackTrace();}
         if (!(node instanceof MapNode)) {
-            throw new Error("Unexpected node " + node.getClass().getName());
+            throw new MapNodeException("Unexpected node " +
+                                       node.getClass().getName());
         }
 
         Set<INode> sorted = new TreeSet<INode>();
@@ -142,6 +146,7 @@ public class RoomFinder
     }
 private INode prevNode = null;
 private void drawCosts(INode node)
+    throws PathException
 {
     StringBuilder buf = new StringBuilder();
     for (int x = 0; x < nodes.length; x++) {

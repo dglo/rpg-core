@@ -8,25 +8,7 @@ import java.util.TreeSet;
 
 import org.glowacki.core.Map;
 import org.glowacki.core.MapEntry;
-import org.glowacki.core.MapException;
 import org.glowacki.core.MapPoint;
-
-/**
- * Indicate a problem with the path calculation
- */
-class PathException
-    extends MapException
-{
-    /**
-     * Create a path exception
-     *
-     * @param msg error message
-     */
-    PathException(String msg)
-    {
-        super(msg);
-    }
-}
 
 /**
  * Node base class
@@ -286,8 +268,9 @@ public class MapPathFinder
         List<MapPoint> bestList = new ArrayList<MapPoint>();
         for (INode node : list) {
             if (!(node instanceof MapNode)) {
-                throw new Error("Found non-MapEntry node " + node + "<" +
-                                node.getClass().getName() + ">");
+                throw new PathException("Found non-MapEntry node " + node +
+                                        "<" + node.getClass().getName() +
+                                           ">");
             }
             bestList.add(((MapNode) node).getEntry());
         }
@@ -305,9 +288,11 @@ public class MapPathFinder
      * @return set of adjacent nodes
      */
     public Set<INode> getAdjacencies(INode node)
+        throws PathException
     {
         if (!(node instanceof MapNode)) {
-            throw new Error("Unexpected node " + node.getClass().getName());
+            throw new PathException("Unexpected node " +
+                                    node.getClass().getName());
         }
 
         Set<INode> sorted = new TreeSet<INode>();

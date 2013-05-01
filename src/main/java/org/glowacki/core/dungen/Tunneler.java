@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.glowacki.core.astar.PathException;
+
 public class Tunneler
 {
     private static int nextConnection;
@@ -314,6 +316,10 @@ public class Tunneler
                 } catch (GeneratorException ge) {
                     // XXX deal with this!!!
                     ge.printStackTrace(System.out);
+                    continue;
+                } catch (PathException pe) {
+                    // XXX deal with this!!!
+                    pe.printStackTrace(System.out);
                     continue;
                 }
 
