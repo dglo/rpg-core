@@ -15,10 +15,10 @@ import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
+import org.glowacki.core.IMapPoint;
 import org.glowacki.core.Level;
 import org.glowacki.core.Map;
 import org.glowacki.core.MapCharRepresentation;
-import org.glowacki.core.MapPoint;
 import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.Terrain;
 import org.glowacki.core.VisibleMap;
@@ -204,7 +204,7 @@ class AsciiController
         view.close();
     }
 
-    private MapPoint findGoal(Map map, Direction dir)
+    private IMapPoint findGoal(Map map, Direction dir)
         throws CoreException
     {
         Terrain t;
@@ -307,7 +307,7 @@ class AsciiController
                 break;
             case 'D':
                 try {
-                    MapPoint goal = findGoal(player.getLevel().getMap(),
+                    IMapPoint goal = findGoal(player.getLevel().getMap(),
                                              Direction.DESCEND);
                     player.buildPath(goal);
                 } catch (CoreException ce) {
@@ -360,7 +360,7 @@ class AsciiController
                 break;
             case 'U':
                 try {
-                    MapPoint goal = findGoal(player.getLevel().getMap(),
+                    IMapPoint goal = findGoal(player.getLevel().getMap(),
                                              Direction.CLIMB);
                     player.buildPath(goal);
                 } catch (CoreException ce) {

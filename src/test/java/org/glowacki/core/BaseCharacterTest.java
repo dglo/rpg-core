@@ -29,7 +29,7 @@ class MyCharacter
         this.player = player;
     }
 
-    public void buildPath(MapPoint goal)
+    public void buildPath(IMapPoint goal)
         throws CoreException
     {
         throw new UnimplementedError();
@@ -120,10 +120,49 @@ class MockMap
         return terrain;
     }
 
-    public void moveTo(ICharacter ch, int x, int y)
+    public void moveDirection(IMapObject obj, Direction dir)
         throws MapException
     {
-        // do nothing
+        int newX = obj.getX();
+        int newY = obj.getY();
+
+        boolean moved = true;
+        if (dir == Direction.LEFT_UP || dir == Direction.LEFT ||
+            dir == Direction.LEFT_DOWN)
+        {
+            newX -= 1;
+            moved &= (newX >= 0);
+        } else if (dir == Direction.RIGHT_UP || dir == Direction.RIGHT ||
+                   dir == Direction.RIGHT_DOWN)
+        {
+            newX += 1;
+            moved &= (newX <= getMaxX());
+        }
+
+        if (dir == Direction.LEFT_UP || dir == Direction.UP ||
+            dir == Direction.RIGHT_UP)
+        {
+            newY -= 1;
+            moved &= (newY >= 0);
+        } else if (dir == Direction.LEFT_DOWN || dir == Direction.DOWN ||
+                   dir == Direction.RIGHT_DOWN)
+        {
+            newY += 1;
+            moved &= (newY <= getMaxY());
+        }
+
+        if (!moved) {
+            throw new MapException(String.format("Cannot move %s to %s",
+                                                 obj.getName(), dir));
+        }
+
+        moveTo(obj, newX, newY);
+    }
+
+    public void moveTo(IMapObject obj, int x, int y)
+        throws MapException
+    {
+        obj.setPosition(x, y);
     }
 
     public void setTerrain(Terrain t)
@@ -146,6 +185,7 @@ public class BaseCharacterTest
     }
 
     public void testCreate()
+        throws CoreException
     {
         MyCharacter ch = new MyCharacter("a", 1, 2, 3, 4);
         assertEquals("Bad initial X", -1, ch.getX());

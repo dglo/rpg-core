@@ -21,7 +21,7 @@ class PlayerException
  * Base character
  */
 public abstract class BaseCharacter
-    implements ICharacter, MapPoint
+    implements ICharacter, IMapPoint
 {
     /** Used to compute movement cost */
     public static final double SQRT_2 = 1.41421356;
@@ -51,30 +51,16 @@ public abstract class BaseCharacter
         this.pcp = pcp;
         this.spd = spd;
 
-        x = -1;
-        y = -1;
+        clearPosition();
     }
 
     /**
-     * Compute the cost of moving to the specified terrain.
-     *
-     * @param terrain terrain being moved to
-     * @param diagonal <tt>true</tt> if this is a diagonal move
-     *
-     * @return movement cost
+     * Clear the current position.
      */
-    private double computeMoveCost(Terrain terrain, boolean diagonal)
+    public void clearPosition()
     {
-        if (!terrain.isMovable()) {
-            return Integer.MAX_VALUE;
-        }
-
-        double cost = 10.0 * terrain.getCost();
-        if (diagonal) {
-            cost *= SQRT_2;
-        }
-
-        return cost;
+        x = -1;
+        y = -1;
     }
 
     /**
@@ -107,73 +93,26 @@ public abstract class BaseCharacter
         return y;
     }
 
+    /**
+     * Move in the specified direction.
+     *
+     * @param map current map
+     * @param dir direction
+     *
+     * @return number of turns
+     *
+     * @throws MapException if there is a problem
+     */
     int move(IMap map, Direction dir)
-        throws CoreException
+        throws MapException
     {
-        int newX = x;
-        int newY = y;
-
-        Terrain t;
-
-        boolean moved = true;
-        if (dir == Direction.LEFT_UP || dir == Direction.LEFT ||
-            dir == Direction.LEFT_DOWN)
-        {
-            newX -= 1;
-            moved &= (newX >= 0);
-        } else if (dir == Direction.RIGHT_UP || dir == Direction.RIGHT ||
-                   dir == Direction.RIGHT_DOWN)
-        {
-            newX += 1;
-            moved &= (newX <= map.getMaxX());
-        }
-
-        if (dir == Direction.LEFT_UP || dir == Direction.UP ||
-            dir == Direction.RIGHT_UP)
-        {
-            newY -= 1;
-            moved &= (newY >= 0);
-        } else if (dir == Direction.LEFT_DOWN || dir == Direction.DOWN ||
-                   dir == Direction.RIGHT_DOWN)
-        {
-            newY += 1;
-            moved &= (newY <= map.getMaxY());
-        }
-
-        if (!moved) {
-            return -1;
-        }
-
         try {
-            map.moveTo(this, newX, newY);
-        } catch (CoreException ce) {
+            map.moveDirection(this, dir);
+        } catch (MapException me) {
             return -1;
         }
 
-        t = map.getTerrain(newX, newY);
-
-        x = newX;
-        y = newY;
-
-        boolean diagonal =
-            (dir == Direction.LEFT_UP || dir == Direction.LEFT_DOWN ||
-             dir == Direction.RIGHT_UP || dir == Direction.RIGHT_DOWN);
-
-        return moveInternal(t, diagonal);
-    }
-
-    int moveInternal(Terrain t, boolean diagonal)
-    {
-        final double cost = computeMoveCost(t, diagonal);
-
-        int turns = 0;
-        while (cost > timeLeft) {
-            timeLeft += (double) spd;
-            turns++;
-        }
-
-        timeLeft -= cost;
-        return turns;
+        return subtractMoveCost(map, dir);
     }
 
     /**
@@ -186,6 +125,44 @@ public abstract class BaseCharacter
     {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Subtract the cost of this move from the character's time.
+     *
+     * @param map map
+     * @param dir direction
+     *
+     * @return movement cost
+     *
+     * @throws MapException if the current position is not valid
+     */
+    int subtractMoveCost(IMap map, Direction dir)
+        throws MapException
+    {
+        Terrain terrain = map.getTerrain(getX(), getY());
+
+        final boolean diagonal =
+            (dir == Direction.LEFT_UP || dir == Direction.LEFT_DOWN ||
+             dir == Direction.RIGHT_UP || dir == Direction.RIGHT_DOWN);
+
+        final double cost;
+        if (!terrain.isMovable()) {
+            cost = Integer.MAX_VALUE;
+        } else if (!diagonal) {
+            cost = 10.0 * terrain.getCost();
+        } else {
+            cost = 10.0 * terrain.getCost() * SQRT_2;
+        }
+
+        int turns = 0;
+        while (cost > timeLeft) {
+            timeLeft += (double) spd;
+            turns++;
+        }
+
+        timeLeft -= cost;
+        return turns;
     }
 
     /**

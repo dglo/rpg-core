@@ -4,12 +4,12 @@ package org.glowacki.core;
  * A map entry.
  */
 public class MapEntry
-    implements MapPoint
+    implements IMapPoint
 {
     private int x;
     private int y;
     private Terrain terrain;
-    private ICharacter character;
+    private IMapObject object;
 
     /**
      * Create a map entry.
@@ -26,21 +26,36 @@ public class MapEntry
     }
 
     /**
-     * Remove the character from this position.
+     * Remove the object from this position.
      */
-    public void clearCharacter()
+    public void clearObject(IMapObject obj)
+        throws MapException
     {
-        character = null;
+        if (object == null) {
+            final String msg =
+                String.format("Entry [%d, %d] does not contain %s", obj.getX(),
+                              obj.getY(), obj.getName());
+            throw new MapException(msg);
+        } else if (!object.equals(obj)) {
+            final String msg =
+                String.format("Entry [%d, %d] contains %s, not %s", obj.getX(),
+                              obj.getY(), object.getName(), obj.getName());
+            throw new MapException(msg);
+        }
+
+        object = null;
+
+        obj.clearPosition();
     }
 
     /**
-     * Get the character occupying this entry.
+     * Get the object occupying this entry.
      *
-     * @return <tt>null</tt> if there is no character at this position
+     * @return <tt>null</tt> if there is no object at this position
      */
-    public ICharacter getCharacter()
+    public IMapObject getObject()
     {
-        return character;
+        return object;
     }
 
     /**
@@ -74,20 +89,24 @@ public class MapEntry
     }
 
     /**
-     * Set the character which occupies this entry.
+     * Set the object which occupies this entry.
      *
-     * @param ch character
+     * @param obj object
      *
      * @throws OccupiedException if this entry is occupied
      */
-    public void setCharacter(ICharacter ch)
+    public void setObject(IMapObject obj)
         throws OccupiedException
     {
-        if (character != null) {
-            throw new OccupiedException();
+        if (object != null) {
+            final String msg =
+                String.format("Cannot move %s to [%d,%d]; occupied by %s",
+                              obj.getName(), x, y, object.getName());
+            throw new OccupiedException(msg);
         }
 
-        character = ch;
+        object = obj;
+        object.setPosition(x, y);
     }
 
     /**

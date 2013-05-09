@@ -6,7 +6,69 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.glowacki.core.test.MapBuilder;
-import org.glowacki.core.test.MockCharacter;
+
+class MockMapObject
+    implements IMapObject
+{
+    private String name;
+    private int x;
+    private int y;
+
+    MockMapObject(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * Clear the object's position.
+     */
+    public void clearPosition()
+    {
+        x = -1;
+        y = -1;
+    }
+
+    /**
+     * Return object's name.
+     *
+     * @return name
+     */
+    public String getName()
+    {
+        return name;
+    }
+    /**
+     * Get this point's X coordinate.
+     *
+     * @return X coordinate
+     */
+    public int getX()
+    {
+        return x;
+    }
+
+    /**
+     * Get this point's Y coordinate.
+     *
+     * @return Y coordinate
+     */
+    public int getY()
+    {
+        return y;
+    }
+
+    /**
+     * Set the object's position.
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     */
+    public void setPosition(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+}
 
 public class MapTest
     extends TestCase
@@ -189,10 +251,10 @@ public class MapTest
 
         Map tmap = new Map(map);
 
-        MockCharacter badguy = new MockCharacter("badguy");
+        MockMapObject badguy = new MockMapObject("badguy");
 
         try {
-            tmap.insertCharacter(badguy, 0, 0);
+            tmap.insertObject(badguy, 0, 0);
             fail("Should not be able to insert character at [0, 0]");
         } catch (CoreException ce) {
             // expect this to fail
@@ -213,7 +275,7 @@ public class MapTest
             }
 
             try {
-                tmap.insertCharacter(badguy, x, y);
+                tmap.insertObject(badguy, x, y);
                 fail(String.format("Should not be able to insert character" +
                                    " at [%d,%d]", x, y));
             } catch (CoreException ce) {
@@ -231,7 +293,7 @@ public class MapTest
             badguy.setPosition(x, y);
 
             try {
-                tmap.removeCharacter(badguy);
+                tmap.removeObject(badguy);
                 fail(String.format("Should not be able to remove character" +
                                    " from [%d,%d]", x, y));
             } catch (CoreException ce) {
@@ -252,10 +314,10 @@ public class MapTest
 
         Map tmap = new Map(map);
 
-        MockCharacter jumpy = new MockCharacter("jumpy");
+        MockMapObject jumpy = new MockMapObject("jumpy");
 
         try {
-            tmap.removeCharacter(jumpy);
+            tmap.removeObject(jumpy);
             fail("Should not be able to remove character from initial map");
         } catch (CoreException ce) {
             // expect this to fail
@@ -264,19 +326,19 @@ public class MapTest
         int x = 2;
         int y = 1;
 
-        tmap.insertCharacter(jumpy, x, y);
+        tmap.insertObject(jumpy, x, y);
         jumpy.setPosition(x, y);
 
-        MockCharacter outie = new MockCharacter("outie");
+        MockMapObject outie = new MockMapObject("outie");
 
         try {
-            tmap.insertCharacter(outie, x, y);
+            tmap.insertObject(outie, x, y);
             fail("Should not be able to insert character into occupied space");
         } catch (CoreException ce) {
             // expect this to fail
         }
 
-        tmap.removeCharacter(jumpy);
+        tmap.removeObject(jumpy);
     }
 
     public void testIsOccupied()
@@ -298,7 +360,7 @@ public class MapTest
         }
 
         // character should enter at [1,1]
-        MockCharacter downCh = new MockCharacter("downer");
+        MockMapObject downCh = new MockMapObject("downer");
         final int downY = 1;
         final int downX = 1;
         tmap.enterDown(downCh);
@@ -321,7 +383,7 @@ public class MapTest
         // character should enter at [1,2]
         final int upY = 1;
         final int upX = 2;
-        MockCharacter upCh = new MockCharacter("upper");
+        MockMapObject upCh = new MockMapObject("upper");
         tmap.enterUp(upCh);
         assertEquals("Unexpected Y coordinate " + upCh.getY(),
                      upY, upCh.getY());
@@ -353,14 +415,14 @@ public class MapTest
 
         Map tmap = new Map(map);
 
-        MockCharacter movie = new MockCharacter("movie");
+        MockMapObject movie = new MockMapObject("movie");
 
         final int origX = 1;
         final int origY = 1;
 
         movie.setPosition(origX, origY);
 
-        tmap.insertCharacter(movie, origX, origY);
+        tmap.insertObject(movie, origX, origY);
 
         for (int i = 0; i < 4; i++) {
             assertEquals("Bad X coordinate", origX, movie.getX());
@@ -416,7 +478,7 @@ public class MapTest
 
         Map tmap = new Map(map);
 
-        MockCharacter entry = new MockCharacter("entry");
+        MockMapObject entry = new MockMapObject("entry");
 
         try {
             tmap.enterDown(entry);

@@ -27,7 +27,7 @@ public class PlayerCharacter
 
     private Level level;
 
-    private List<MapPoint> path;
+    private List<IMapPoint> path;
 
     private HashMap<Level, boolean[][]> seenMap;
 
@@ -55,18 +55,20 @@ public class PlayerCharacter
      *
      * @throws CoreException if there is a problem
      */
-    public void buildPath(MapPoint goal)
+    public void buildPath(IMapPoint goal)
         throws CoreException
     {
-        if (goal.getX() < 0 || goal.getX() > getLevel().getMap().getMaxX() ||
-            goal.getY() < 0 || goal.getY() > getLevel().getMap().getMaxY())
+        if (level == null) {
+            throw new PlayerException("Level has not been set for " + name);
+        } else if (goal.getX() < 0 || goal.getX() > level.getMap().getMaxX() ||
+            goal.getY() < 0 || goal.getY() > level.getMap().getMaxY())
         {
             final String msg =
                 String.format("Bad goal [%d,%d]", goal.getX(), goal.getY());
             throw new PlayerException(msg);
         }
 
-        MapPathFinder pathFinder = new MapPathFinder(getLevel().getMap());
+        MapPathFinder pathFinder = new MapPathFinder(level.getMap());
         path = pathFinder.findBestPath(this, goal);
     }
 
@@ -78,7 +80,7 @@ public class PlayerCharacter
         path = null;
     }
 
-    private Direction findDirection(MapPoint goal)
+    private Direction findDirection(IMapPoint goal)
         throws PlayerException
     {
         final int x = goal.getX() - getX();
@@ -198,7 +200,7 @@ public class PlayerCharacter
         throws CoreException
     {
         if (level == null) {
-            throw new CharacterException("Level cannot be null");
+            throw new PlayerException("Level has not been set for " + name);
         }
 
         if (dir == Direction.CLIMB) {
@@ -228,7 +230,7 @@ public class PlayerCharacter
                 throw ce;
             }
 
-            return moveInternal(t, false);
+            return subtractMoveCost(level.getMap(), dir);
         } else if (dir == Direction.DESCEND) {
             Terrain t = level.getTerrain(getX(), getY());
             if (t != Terrain.DOWNSTAIRS) {
@@ -256,7 +258,7 @@ public class PlayerCharacter
                 throw ce;
             }
 
-            return moveInternal(t, false);
+            return subtractMoveCost(level.getMap(), dir);
         } else {
             return move(level.getMap(), dir);
         }
@@ -276,9 +278,11 @@ public class PlayerCharacter
             throw new CoreException("No current path");
         }
 
+        IMapPoint nextPt = path.remove(0);
+        Direction dir = findDirection(nextPt);
         int rtnval;
         try {
-            rtnval = move(level.getMap(), findDirection(path.remove(0)));
+            rtnval = move(level.getMap(), dir);
         } catch (CoreException ce) {
             path = null;
             throw ce;

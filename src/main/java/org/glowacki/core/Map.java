@@ -70,15 +70,15 @@ public class Map
     }
 
     /**
-     * Add this character to the map at the up staircase.
+     * Add this object to the map at the up staircase.
      *
-     * @param ch character
+     * @param obj object
      *
      * @return location of up staircase
      *
      * @throws MapException if there is a problem
      */
-    public MapPoint enterDown(ICharacter ch)
+    public IMapPoint enterDown(IMapObject obj)
         throws MapException
     {
         MapEntry entry = find(Terrain.UPSTAIRS);
@@ -86,26 +86,26 @@ public class Map
             throw new MapException("Map has no up staircase");
         }
 
-        if (entry.getCharacter() != null) {
+        if (entry.getObject() != null) {
             throw new OccupiedException("Up staircase is occupied");
         }
 
-        entry.setCharacter(ch);
-        ch.setPosition(entry.getX(), entry.getY());
+        entry.setObject(obj);
+        obj.setPosition(entry.getX(), entry.getY());
 
         return entry;
     }
 
     /**
-     * Add this character to the map at the down staircase.
+     * Add this object to the map at the down staircase.
      *
-     * @param ch character
+     * @param obj object
      *
      * @return location of down staircase
      *
      * @throws MapException if there is a problem
      */
-    public MapPoint enterUp(ICharacter ch)
+    public IMapPoint enterUp(IMapObject obj)
         throws MapException
     {
         MapEntry entry = find(Terrain.DOWNSTAIRS);
@@ -113,12 +113,12 @@ public class Map
             throw new MapException("Map has no down staircase");
         }
 
-        if (entry.getCharacter() != null) {
+        if (entry.getObject() != null) {
             throw new OccupiedException("Down staircase is occupied");
         }
 
-        entry.setCharacter(ch);
-        ch.setPosition(entry.getX(), entry.getY());
+        entry.setObject(obj);
+        obj.setPosition(entry.getX(), entry.getY());
 
         return entry;
     }
@@ -151,54 +151,6 @@ public class Map
     public Iterable<MapEntry> getEntries()
     {
         return new EntryIterable();
-    }
-
-    /**
-     * Get the terrain found at the specified coordinates.
-     *
-     * @param x X coordinate
-     * @param y Y coordinate
-     *
-     * @return terrain at the specified point
-     *
-     * @throws MapException if the point is not valid
-     */
-    public Terrain getTerrain(int x, int y)
-        throws MapException
-    {
-        if (y < 0 || y >= map.length) {
-            throw new MapException("Bad Y coordinate in (" + x + "," +
-                                   y + "), max is " + getMaxY());
-        } else if (x < 0 || x >= map[y].length) {
-            throw new MapException("Bad X coordinate in (" + x + "," +
-                                   y + "), max is " + getMaxX());
-        }
-
-        return map[y][x].getTerrain();
-    }
-
-    /**
-     * Is the specified point occupied?
-     *
-     * @param x X coordinate
-     * @param y Y coordinate
-     *
-     * @return <tt>true</tt> if this point is occupied
-     *
-     * @throws MapException if there is a problem
-     */
-    public boolean isOccupied(int x, int y)
-        throws MapException
-    {
-        if (y < 0 || y >= map.length) {
-            throw new MapException("Bad Y coordinate in (" + x + "," +
-                                   y + "), max is " + getMaxY());
-        } else if (x < 0 || x >= map[y].length) {
-            throw new MapException("Bad X coordinate in (" + x + "," +
-                                   y + "), max is " + getMaxX());
-        }
-
-        return map[y][x].getCharacter() != null;
     }
 
     /**
@@ -260,28 +212,52 @@ public class Map
     }
 
     /**
-     * Insert this character into the map.
+     * Get the terrain found at the specified coordinates.
      *
-     * @param ch character to add
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return terrain at the specified point
+     *
+     * @throws MapException if the point is not valid
+     */
+    public Terrain getTerrain(int x, int y)
+        throws MapException
+    {
+        if (y < 0 || y >= map.length) {
+            throw new MapException("Bad Y coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxY());
+        } else if (x < 0 || x >= map[y].length) {
+            throw new MapException("Bad X coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxX());
+        }
+
+        return map[y][x].getTerrain();
+    }
+
+    /**
+     * Insert this object into the map.
+     *
+     * @param obj object to add
      * @param x X coordinate
      * @param y Y coordinate
      *
      * @throws MapException if there is a problem
      */
-    void insertCharacter(ICharacter ch, int x, int y)
+    void insertObject(IMapObject obj, int x, int y)
         throws MapException
     {
         if (y < 0 || y >= map.length || x < 0 || x >= map[0].length) {
             final String msg =
                 String.format("Bad insert position [%d,%d] for %s", x, y,
-                              ch.getName());
+                              obj.getName());
             throw new MapException(msg);
         }
 
         MapEntry entry = map[y][x];
-        if (entry.getCharacter() != null) {
+        if (entry.getObject() != null) {
             final String msg =
-                String.format("%s is at [%d, %d]", entry.getCharacter(), x, y);
+                String.format("%s is at [%d, %d]", entry.getObject(), x, y);
             throw new OccupiedException(msg);
         }
 
@@ -292,65 +268,129 @@ public class Map
             throw new MapException(msg);
         }
 
-        entry.setCharacter(ch);
+        entry.setObject(obj);
     }
 
     /**
-     * Move the character to the specified position.
+     * Is the specified point occupied?
      *
-     * @param ch character
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return <tt>true</tt> if this point is occupied
+     *
+     * @throws MapException if there is a problem
+     */
+    public boolean isOccupied(int x, int y)
+        throws MapException
+    {
+        if (y < 0 || y >= map.length) {
+            throw new MapException("Bad Y coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxY());
+        } else if (x < 0 || x >= map[y].length) {
+            throw new MapException("Bad X coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxX());
+        }
+
+        return map[y][x].getObject() != null;
+    }
+
+    /**
+     * Move object in the specified direction.
+     *
+     * @param obj object being moved
+     * @param dir direction
+     *
+     * @throws MapException if there is a problem
+     */
+    public void moveDirection(IMapObject obj, Direction dir)
+        throws MapException
+    {
+        int newX = obj.getX();
+        int newY = obj.getY();
+
+        boolean moved = true;
+        if (dir == Direction.LEFT_UP || dir == Direction.LEFT ||
+            dir == Direction.LEFT_DOWN)
+        {
+            newX -= 1;
+            moved &= (newX >= 0);
+        } else if (dir == Direction.RIGHT_UP || dir == Direction.RIGHT ||
+                   dir == Direction.RIGHT_DOWN)
+        {
+            newX += 1;
+            moved &= (newX <= getMaxX());
+        }
+
+        if (dir == Direction.LEFT_UP || dir == Direction.UP ||
+            dir == Direction.RIGHT_UP)
+        {
+            newY -= 1;
+            moved &= (newY >= 0);
+        } else if (dir == Direction.LEFT_DOWN || dir == Direction.DOWN ||
+                   dir == Direction.RIGHT_DOWN)
+        {
+            newY += 1;
+            moved &= (newY <= getMaxY());
+        }
+
+        if (!moved) {
+            throw new MapException(String.format("Cannot move %s to %s",
+                                                 obj.getName(), dir));
+        }
+
+        moveTo(obj, newX, newY);
+    }
+
+    /**
+     * Move the object to the specified position.
+     *
+     * @param obj object
      * @param x X position
      * @param y Y position
      *
      * @throws MapException if there is a problem
      */
-    public void moveTo(ICharacter ch, int x, int y)
+    public void moveTo(IMapObject obj, int x, int y)
         throws MapException
     {
-        final int oldX = ch.getX();
-        final int oldY = ch.getY();
+        final int oldX = obj.getX();
+        final int oldY = obj.getY();
 
-        // only try to remove character if position is valid
+        // only try to remove object if position is valid
         if (oldX >= 0 && oldY >= 0) {
-            removeCharacter(ch);
+            removeObject(obj);
         }
 
         try {
-            insertCharacter(ch, x, y);
+            insertObject(obj, x, y);
         } catch (MapException me) {
-            insertCharacter(ch, oldX, oldY);
+            insertObject(obj, oldX, oldY);
             throw me;
         }
     }
 
     /**
-     * Remove this character from the map.
+     * Remove this object from the map.
      *
-     * @param ch character to remove
+     * @param obj object to remove
      *
      * @throws MapException if there is a problem
      */
-    void removeCharacter(ICharacter ch)
+    void removeObject(IMapObject obj)
         throws MapException
     {
-        if (ch.getY() < 0 || ch.getY() >= map.length ||
-            ch.getX() < 0 || ch.getX() >= map[0].length)
+        if (obj.getY() < 0 || obj.getY() >= map.length ||
+            obj.getX() < 0 || obj.getX() >= map[0].length)
         {
             final String msg =
                 String.format("Bad current position [%d,%d] for %s",
-                              ch.getX(), ch.getY(), ch.getName());
+                              obj.getX(), obj.getY(), obj.getName());
             throw new MapException(msg);
         }
 
-        MapEntry entry = map[ch.getY()][ch.getX()];
-        if (entry.getCharacter() != ch) {
-            final String msg =
-                String.format("Entry [%d, %d] does not contain %s", ch.getX(),
-                              ch.getY(), ch.getName());
-            throw new MapException(msg);
-        }
-
-        entry.clearCharacter();
+        MapEntry entry = map[obj.getY()][obj.getX()];
+        entry.clearObject(obj);
     }
 
     /**

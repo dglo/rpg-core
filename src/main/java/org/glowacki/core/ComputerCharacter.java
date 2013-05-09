@@ -47,7 +47,7 @@ public class ComputerCharacter
      *
      * @throws CoreException always
      */
-    public void buildPath(MapPoint goal)
+    public void buildPath(IMapPoint goal)
         throws CoreException
     {
         throw new UnimplementedError();

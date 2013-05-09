@@ -3,8 +3,8 @@ package org.glowacki.core.test;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
+import org.glowacki.core.IMapPoint;
 import org.glowacki.core.Level;
-import org.glowacki.core.MapPoint;
 import org.glowacki.core.UnimplementedError;
 
 public class MockCharacter
@@ -27,7 +27,7 @@ public class MockCharacter
         this.player = player;
     }
 
-    public void buildPath(MapPoint goal)
+    public void buildPath(IMapPoint goal)
         throws CoreException
     {
         throw new UnimplementedError();
@@ -39,6 +39,15 @@ public class MockCharacter
     public void clearPath()
     {
         throw new UnimplementedError();
+    }
+
+    /**
+     * Clear the current position.
+     */
+    public void clearPosition()
+    {
+        x = -1;
+        y = -1;
     }
 
     public Level getLevel()

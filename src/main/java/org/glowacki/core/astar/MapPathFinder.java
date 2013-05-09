@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.glowacki.core.IMapPoint;
 import org.glowacki.core.Map;
 import org.glowacki.core.MapEntry;
-import org.glowacki.core.MapPoint;
 
 /**
  * Node base class
@@ -226,7 +226,7 @@ public class MapPathFinder
      *
      * @throws PathException if the start or end point is bad
      */
-    public List<MapPoint> findBestPath(MapPoint startPt, MapPoint endPt)
+    public List<IMapPoint> findBestPath(IMapPoint startPt, IMapPoint endPt)
         throws PathException
     {
         if (startPt.getX() < 0 || startPt.getX() >= nodes.length ||
@@ -265,7 +265,7 @@ public class MapPathFinder
             return null;
         }
 
-        List<MapPoint> bestList = new ArrayList<MapPoint>();
+        List<IMapPoint> bestList = new ArrayList<IMapPoint>();
         for (INode node : list) {
             if (!(node instanceof MapNode)) {
                 throw new PathException("Found non-MapEntry node " + node +

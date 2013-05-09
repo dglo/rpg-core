@@ -4,6 +4,7 @@ package org.glowacki.core;
  * Character methods.
  */
 public interface ICharacter
+    extends IMapObject
 {
     /**
      * Build a path from the current position to the goal.
@@ -12,7 +13,7 @@ public interface ICharacter
      *
      * @throws CoreException if there is a problem
      */
-    void buildPath(MapPoint goal)
+    void buildPath(IMapPoint goal)
         throws CoreException;
 
     /**
@@ -28,13 +29,6 @@ public interface ICharacter
     Level getLevel();
 
     /**
-     * Return character's name.
-     *
-     * @return name
-     */
-    String getName();
-
-    /**
      * Get the boolean array indicating which cells in the current level
      * have been seen.
      *
@@ -48,20 +42,6 @@ public interface ICharacter
      * @return distance
      */
     int getSightDistance();
-
-    /**
-     * Return character's X coordinate.
-     *
-     * @return X coordinate
-     */
-    int getX();
-
-    /**
-     * Return character's Y coordinate.
-     *
-     * @return Y coordinate
-     */
-    int getY();
 
     /**
      * Does this character have an existing path?
@@ -108,14 +88,6 @@ public interface ICharacter
      */
     void setLevel(Level lvl)
         throws CoreException;
-
-    /**
-     * Set the character's position.
-     *
-     * @param x x coordinate
-     * @param y y coordinate
-     */
-    void setPosition(int x, int y);
 
     /**
      * Take a turn.

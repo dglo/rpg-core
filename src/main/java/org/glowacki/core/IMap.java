@@ -33,14 +33,25 @@ public interface IMap
         throws MapException;
 
     /**
-     * Move the character to the specified point.
+     * Move object in the specified direction.
      *
-     * @param ch character
+     * @param obj object being moved
+     * @param dir direction
+     *
+     * @throws MapException if there is a problem
+     */
+    void moveDirection(IMapObject obj, Direction dir)
+        throws MapException;
+
+    /**
+     * Move the object to the specified point.
+     *
+     * @param obj object
      * @param x X coordinate
      * @param y Y coordinate
      *
      * @throws MapException if there is a problem
      */
-    void moveTo(ICharacter ch, int x, int y)
+    void moveTo(IMapObject obj, int x, int y)
         throws MapException;
 }

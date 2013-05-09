@@ -3,7 +3,7 @@ package org.glowacki.core;
 /**
  * A single point.
  */
-public interface MapPoint
+public interface IMapPoint
 {
     /**
      * Get this point's X coordinate.

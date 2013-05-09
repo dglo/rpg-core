@@ -65,7 +65,7 @@ public class Level
     public void addNonplayer(ComputerCharacter ch, int x, int y)
         throws CoreException
     {
-        map.insertCharacter(ch, x, y);
+        map.insertObject(ch, x, y);
         nonplayers.add(ch);
     }
 
@@ -109,7 +109,7 @@ public class Level
                                      " and " + name);
         }
 
-        MapPoint p = map.enterDown(ch);
+        IMapPoint p = map.enterDown(ch);
 
         if (ch.isPlayer()) {
             players.add(ch);
@@ -118,7 +118,6 @@ public class Level
         }
 
         ch.setLevel(this);
-        ch.setPosition(p.getX(), p.getY());
     }
 
     /**
@@ -137,7 +136,7 @@ public class Level
                                      " and " + name);
         }
 
-        MapPoint p = map.enterUp(ch);
+        IMapPoint p = map.enterUp(ch);
 
         if (ch.isPlayer()) {
             players.add(ch);
@@ -146,7 +145,6 @@ public class Level
         }
 
         ch.setLevel(this);
-        ch.setPosition(p.getX(), p.getY());
     }
 
     /**
@@ -164,8 +162,7 @@ public class Level
                                      " is not on level " + name);
         }
 
-        map.removeCharacter(ch);
-        ch.setPosition(-1, -1);
+        map.removeObject(ch);
         ch.setLevel(null);
 
         boolean result;
