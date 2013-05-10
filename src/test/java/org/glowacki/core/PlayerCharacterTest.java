@@ -53,6 +53,15 @@ public class PlayerCharacterTest
 
         ch.setPosition(fromX, fromY);
 
+        try {
+            ch.movePath();
+            fail("Expect this to fail");
+        } catch (CoreException ce) {
+            assertNotNull("Null exception message", ce.getMessage());
+            assertEquals("Unexpected exception",
+                         "No current path", ce.getMessage());
+        }
+
         assertEquals("Bad starting X", fromX, ch.getX());
         assertEquals("Bad starting Y", fromY, ch.getY());
 
@@ -414,6 +423,12 @@ public class PlayerCharacterTest
                             seen[x][y]);
             }
         }
+
+        // refetch to fill out branch coverage
+        seen = ch.getSeenArray();
+        assertNotNull("'Seen' array should not be null", seen);
+        assertEquals("Bad 'seen' width", lvl.getMaxX() + 1, seen.length);
+        assertEquals("Bad 'seen' height", lvl.getMaxY() + 1, seen[0].length);
     }
 
     public void testBuildPathBad()
@@ -533,10 +548,12 @@ public class PlayerCharacterTest
         lvl.enterDown(ch);
         assertFalse("Player should not have a defined path", ch.hasPath());
 
-        runPath(ch, 1, 1, 3, 5, 4);
-        runPath(ch, 3, 5, 1, 1, 4);
-        runPath(ch, 5, 5, 3, 1, 4);
-        runPath(ch, 3, 1, 5, 5, 4);
+        runPath(ch, 1, 1, 2, 3, 2);
+        runPath(ch, 2, 3, 1, 1, 2);
+        runPath(ch, 1, 1, 3, 2, 2);
+        runPath(ch, 3, 2, 1, 1, 2);
+        runPath(ch, 1, 2, 2, 1, 1);
+        runPath(ch, 2, 1, 1, 2, 1);
     }
 
     public static void main(String[] args)

@@ -2,8 +2,12 @@ package org.glowacki.core.dungen;
 
 import java.util.Random;
 
+/**
+ * Base dungeon generator
+ */
 public abstract class BaseGenerator
 {
+    /** Compass points */
     enum Direction {
         LEFT,
         TOP,
@@ -25,8 +29,19 @@ public abstract class BaseGenerator
         }
     };
 
-    public static void addStairs(Room[] rooms, Random random, boolean addUp,
+    /**
+     * Add up and/or down staircase to the set of rooms.
+     *
+     * @param rooms set of rooms
+     * @param random random number generator
+     * @param addUp if <tt>true</tt> add up staircase
+     * @param addDown if <tt>true</tt> add down staircase
+     *
+     * @throws GeneratorException if there is a problem
+     */
+    public static void addStairs(IRoom[] rooms, Random random, boolean addUp,
                                  boolean addDown)
+        throws GeneratorException
     {
         int up = -1;
         if (addUp) {
@@ -51,7 +66,7 @@ public abstract class BaseGenerator
         }
     }
 
-    private static void fixHorizontalNeighbors(Room left, Room right)
+    private static void fixHorizontalNeighbors(IRoom left, IRoom right)
     {
         if (left.getWidth() < right.getWidth()) {
             left.changeWidth(1);
@@ -61,7 +76,7 @@ public abstract class BaseGenerator
         }
     }
 
-    static void fixNeighbors(Room[] rooms)
+    static void fixNeighbors(IRoom[] rooms)
     {
         for (int i = 0; i < rooms.length - 1; i++) {
             for (int j = i; j < rooms.length; j++) {
@@ -101,7 +116,7 @@ public abstract class BaseGenerator
         }
     }
 
-    private static void fixVerticalNeighbors(Room top, Room bottom)
+    private static void fixVerticalNeighbors(IRoom top, IRoom bottom)
     {
         if (top.getHeight() < bottom.getHeight()) {
             top.changeHeight(1);

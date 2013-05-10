@@ -6,12 +6,12 @@ import java.util.List;
 import org.glowacki.core.astar.MapPathFinder;
 
 /**
- * Character-related exception
+ * Player-related exceptions
  */
-class CharacterException
-    extends CoreException
+class PlayerException
+    extends CharacterException
 {
-    CharacterException(String msg)
+    PlayerException(String msg)
     {
         super(msg);
     }
@@ -206,12 +206,12 @@ public class PlayerCharacter
         if (dir == Direction.CLIMB) {
             Terrain t = level.getTerrain(getX(), getY());
             if (t != Terrain.UPSTAIRS) {
-                throw new CharacterException("You cannot climb here");
+                throw new PlayerException("You cannot climb here");
             }
 
             Level prevLevel = level.getPreviousLevel();
             if (prevLevel == null) {
-                throw new CharacterException("You cannot exit here");
+                throw new PlayerException("You cannot exit here");
             }
 
             final Level oldLevel = level;
@@ -234,12 +234,12 @@ public class PlayerCharacter
         } else if (dir == Direction.DESCEND) {
             Terrain t = level.getTerrain(getX(), getY());
             if (t != Terrain.DOWNSTAIRS) {
-                throw new CharacterException("You cannot descend here");
+                throw new PlayerException("You cannot descend here");
             }
 
             Level nextLevel = level.getNextLevel();
             if (nextLevel == null) {
-                throw new CharacterException("You are at the bottom");
+                throw new PlayerException("You are at the bottom");
             }
 
             final Level oldLevel = level;
@@ -275,11 +275,12 @@ public class PlayerCharacter
         throws CoreException
     {
         if (path == null || path.size() == 0) {
-            throw new CoreException("No current path");
+            throw new PlayerException("No current path");
         }
 
         IMapPoint nextPt = path.remove(0);
         Direction dir = findDirection(nextPt);
+
         int rtnval;
         try {
             rtnval = move(level.getMap(), dir);

@@ -1,5 +1,8 @@
 package org.glowacki.core.dungen;
 
+/**
+ * Room node types
+ */
 enum RoomType
 {
     DOOR('+'),

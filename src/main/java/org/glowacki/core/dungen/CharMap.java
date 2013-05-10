@@ -1,8 +1,10 @@
 package org.glowacki.core.dungen;
 
+/**
+ * A character representation of a set of rooms
+ */
 public class CharMap
 {
-    private static final char DOOR = '+';
     private static final char EMPTY = ' ';
     private static final char FLOOR = '.';
     private static final char SIDEWALL = '|';
@@ -57,7 +59,7 @@ public class CharMap
                 if (map[xx][yy] != EMPTY && map[xx][yy] != WALL &&
                     map[xx][yy] != SIDEWALL && !overlapError)
                 {
-                    System.out.format("Room %s overwrites data at %d,%d\n",
+                    System.out.format("Room %s overwrites data at %d,%d%n",
                                       room, xx, yy);
                     overlapError = true;
                 }

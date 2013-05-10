@@ -1,17 +1,12 @@
 package org.glowacki.core;
 
 /**
- * Player-related exceptions
+ * Character-related exception
  */
-class PlayerException
+class CharacterException
     extends CoreException
 {
-    PlayerException()
-    {
-        super();
-    }
-
-    PlayerException(String msg)
+    CharacterException(String msg)
     {
         super(msg);
     }

@@ -201,7 +201,7 @@ public class ComputerCharacter
         }
 
         if (!positioned) {
-            throw new CoreException("Failed to position " + toString());
+            throw new CharacterException("Failed to position " + toString());
         }
     }
 

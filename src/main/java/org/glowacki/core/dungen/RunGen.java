@@ -14,19 +14,21 @@ public class RunGen
     }
 
     void specific(Random random)
+        throws GeneratorException
     {
         //Room[] rooms = RoomGenerator1.createRooms(random, width, height, 12);
         Room[] rooms = RoomGenerator2.createRooms(random, width, height, 3, 3);
         RoomGenerator2.addStairs(rooms, random, true, true);
 
-        Tunneler tunneler = new Tunneler(rooms, 4, random);
-        String[] map = tunneler.dig(width, height);
+        Tunneler tunneler = new Tunneler(rooms, 4);
+        String[] map = tunneler.dig(width, height, random);
         for (int i = 0; i < map.length; i++) {
             System.out.println(map[i]);
         }
     }
 
     public static final void main(String[] args)
+        throws GeneratorException
     {
         long seed = 123;
         int width = 79;

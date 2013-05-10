@@ -27,6 +27,10 @@ public class MapEntry
 
     /**
      * Remove the object from this position.
+     *
+     * @param obj object to remove
+     *
+     * @throws MapException if the object is not in this entry
      */
     public void clearObject(IMapObject obj)
         throws MapException

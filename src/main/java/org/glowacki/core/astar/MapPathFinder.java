@@ -206,8 +206,7 @@ public class MapPathFinder
     /**
      * Create a temporary node
      *
-     * @param x X coordinate
-     * @param y Y coordinate
+     * @param node node to copy
      *
      * @return new temporary node
      */
@@ -286,6 +285,8 @@ public class MapPathFinder
      * @param node center node
      *
      * @return set of adjacent nodes
+     *
+     * @throws PathException if there is a problem
      */
     public Set<INode> getAdjacencies(INode node)
         throws PathException

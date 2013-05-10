@@ -12,6 +12,13 @@ import java.util.Set;
  */
 public abstract class PathFinder
 {
+    /**
+     * Create a temporary copy of a node
+     *
+     * @param node node being copied
+     *
+     * @return temporary copy
+     */
     public abstract INode createTempNode(INode node);
 
     private static INode findBestPassThrough(List<INode> list, INode goal)
@@ -29,6 +36,16 @@ public abstract class PathFinder
         return best;
     }
 
+    /**
+     * Find the best path from <tt>start</tt> to <tt>goal</tt>.
+     *
+     * @param start starting node
+     * @param goal target node
+     *
+     * @return list of nodes indicating the path
+     *
+     * @throws PathException if there is a problem
+     */
     public List<INode> findBestPath(INode start, INode goal)
         throws PathException
     {
@@ -97,6 +114,15 @@ public abstract class PathFinder
         return bestList;
     }
 
+    /**
+     * Get all adjacent nodes
+     *
+     * @param node center node
+     *
+     * @return set of adjacent nodes
+     *
+     * @throws PathException if there is a problem
+     */
     public abstract Set<INode> getAdjacencies(INode node)
         throws PathException;
 }

@@ -1,6 +1,16 @@
 package org.glowacki.core.dungen;
 
+class RoomException
+    extends GeneratorException
+{
+    RoomException(String msg)
+    {
+        super(msg);
+    }
+}
+
 public class Room
+    implements IRoom
 {
     private int num;
     private int x;
@@ -23,12 +33,18 @@ public class Room
         this.name = name;
     }
 
-    void addStairs(int x, int y, boolean up)
+    public void addStairs(int x, int y, boolean up)
+        throws RoomException
     {
-        if (x < 1 || x >= width) {
-            throw new Error("Bad staircase X " + x);
-        } else if (y < 1 || y >= height) {
-            throw new Error("Bad staircase Y " + y);
+        if (stairX != Integer.MIN_VALUE || stairY != Integer.MIN_VALUE) {
+            final String msg =
+                String.format("Staircase is already located at %d,%d",
+                              stairX, stairY);
+            throw new RoomException(msg);
+        } else if (x < 1 || x >= width - 1) {
+            throw new RoomException("Bad staircase X " + x);
+        } else if (y < 1 || y >= height - 1) {
+            throw new RoomException("Bad staircase Y " + y);
         }
 
         if (width > 4) {
@@ -52,22 +68,22 @@ public class Room
         stairUp = up;
     }
 
-    void decX()
+    public void decX()
     {
         x--;
     }
 
-    void decY()
+    public void decY()
     {
         y--;
     }
 
-    char getChar()
+    public char getChar()
     {
-        return (char)('A' + num);
+        return (char) ('A' + num);
     }
 
-    int getHeight()
+    public int getHeight()
     {
         return height;
     }
@@ -77,52 +93,52 @@ public class Room
         return name;
     }
 
-    int getNumber()
+    public int getNumber()
     {
         return num;
     }
 
-    int getStaircaseX()
+    public int getStaircaseX()
     {
         return stairX;
     }
 
-    int getStaircaseY()
+    public int getStaircaseY()
     {
         return stairY;
     }
 
-    int getWidth()
+    public int getWidth()
     {
         return width;
     }
 
-    int getX()
+    public int getX()
     {
         return x;
     }
 
-    int getY()
+    public int getY()
     {
         return y;
     }
 
-    boolean hasStaircase()
+    public boolean hasStaircase()
     {
         return stairX != Integer.MIN_VALUE && stairY != Integer.MIN_VALUE;
     }
 
-    void incX()
+    public void incX()
     {
         x++;
     }
 
-    void incY()
+    public void incY()
     {
         y++;
     }
 
-    boolean isUpStaircase()
+    public boolean isUpStaircase()
     {
         return stairUp;
     }
@@ -132,12 +148,12 @@ public class Room
         this.num = num;
     }
 
-    void changeHeight(int amt)
+    public void changeHeight(int amt)
     {
         height += amt;
     }
 
-    void changeWidth(int amt)
+    public void changeWidth(int amt)
     {
         width += amt;
     }

@@ -30,8 +30,7 @@ public class RoomFinder
     /**
      * Create a temporary node
      *
-     * @param x X coordinate
-     * @param y Y coordinate
+     * @param node node to copy
      *
      * @return new temporary node
      */
@@ -53,6 +52,7 @@ public class RoomFinder
      * @return list of points in the path
      *
      * @throws GeneratorException if the start or end point is bad
+     * @throws PathException if no path exists
      */
     public List<MapNode> findBestPath(MapNode startPt, MapNode endPt)
         throws GeneratorException, PathException
@@ -118,6 +118,8 @@ public class RoomFinder
      * @param node center node
      *
      * @return set of adjacent nodes
+     *
+     * @throws PathException if there is a problem
      */
     public Set<INode> getAdjacencies(INode node)
         throws PathException
@@ -144,6 +146,7 @@ public class RoomFinder
 
         return sorted;
     }
+
 private INode prevNode = null;
 private void drawCosts(INode node)
     throws PathException
@@ -165,7 +168,7 @@ private void drawCosts(INode node)
     }
     prevNode = node;
 
-    System.out.format("** Costs for %d,%d **\n", px, py);
+    System.out.format("** Costs for %d,%d **%n", px, py);
     for (int y = 0; y < nodes[0].length; y++) {
         System.out.println(sep);
         for (int x = 0; x < nodes.length; x++) {

@@ -7,11 +7,20 @@ import java.util.Random;
 
 import org.glowacki.core.astar.PathException;
 
+class TunnelerException
+    extends GeneratorException
+{
+    TunnelerException(String msg)
+    {
+        super(msg);
+    }
+}
+
 public class Tunneler
 {
     private static int nextConnection;
 
-    class RoomConnection
+    static class RoomConnection
         implements Comparable
     {
         private int id = nextConnection++;
@@ -92,6 +101,11 @@ public class Tunneler
             return toRoom;
         }
 
+        public int hashCode()
+        {
+            return id;
+        }
+
         public boolean isDrawn()
         {
             return drawn;
@@ -120,23 +134,24 @@ public class Tunneler
 
     class ConnectedRoom
     {
-        private Room room;
+        private IRoom room;
         private RoomConnection[] connections;
         private int nextConn;
         private boolean connected;
 
-        ConnectedRoom(Room room)
+        ConnectedRoom(IRoom room)
         {
             this.room = room;
         }
 
         void connect(ConnectedRoom other)
+            throws TunnelerException
         {
             if (nextConn == connections.length) {
-                throw new Error("Room " + getNumber() +
+                throw new TunnelerException("Room " + getNumber() +
                                 " is maximally connected");
             } else if (other.nextConn == connections.length) {
-                throw new Error("Room " + other.getNumber() +
+                throw new TunnelerException("Room " + other.getNumber() +
                                 " is maximally connected");
             }
 
@@ -154,9 +169,10 @@ public class Tunneler
         }
 
         RoomConnection getConnection(int i)
+            throws TunnelerException
         {
             if (i < 0 || i >= nextConn) {
-                throw new Error("Bad connection " + i);
+                throw new TunnelerException("Bad connection " + i);
             }
 
             return connections[i];
@@ -287,20 +303,43 @@ public class Tunneler
     }
 
     private ConnectedRoom[] rooms;
-    private Random random;
     private RoomConnection[] connections;
 
-    public Tunneler(Room[] rooms, int maxConnections, Random random)
+    public Tunneler(IRoom[] rlist, int maxConnections)
+        throws TunnelerException
     {
-        this.random = random;
-        this.rooms = new ConnectedRoom[rooms.length];
-        for (int r = 0; r < rooms.length; r++) {
-            this.rooms[r] = new ConnectedRoom(rooms[r]);
-            this.rooms[r].setMaxConnections(maxConnections);
+        final int len = (rlist == null ? 0 : rlist.length);
+        if (len < 2) {
+            throw new TunnelerException("Expect at least 2 rooms, not " + len);
+        }
+
+        rooms = new ConnectedRoom[len];
+        for (int r = 0; r < len; r++) {
+            if (rlist[r] == null) {
+                final String msg = String.format("List entry %d is null", r);
+                throw new TunnelerException(msg);
+            } else if (rlist[r].getNumber() < 0 ||
+                       rlist[r].getNumber() >= rooms.length)
+            {
+                final String msg =
+                    String.format("Bad room number %d (must be between" +
+                                  " 0 and %d)", rlist[r].getNumber(),
+                                  rlist.length);
+                throw new TunnelerException(msg);
+            } else if (rooms[rlist[r].getNumber()] != null) {
+                final String msg =
+                    String.format("Found multiple rooms numbered %d",
+                                  rlist[r].getNumber());
+                throw new TunnelerException(msg);
+            }
+
+            rooms[rlist[r].getNumber()] = new ConnectedRoom(rlist[r]);
+            rooms[rlist[r].getNumber()].setMaxConnections(maxConnections);
         }
     }
 
     private void buildTunnels(MapNode[][] map)
+        throws TunnelerException
     {
         RoomFinder finder = new RoomFinder(map);
 
@@ -345,9 +384,9 @@ public class Tunneler
                             // crossing horizontal wall vertically
                             isVertical = false;
                         } else {
-                            throw new Error("Node " + n +
-                                            " is not a single step from " +
-                                            wallNode);
+                            final String msg = "Node " + n +
+                                " is not a single step from " + wallNode;
+                            throw new TunnelerException(msg);
                         }
                         break;
                     } else if (n.isWall()) {
@@ -369,10 +408,11 @@ public class Tunneler
         }
     }
 
-    public String[] dig(int width, int height)
+    public String[] dig(int width, int height, Random random)
+        throws TunnelerException
     {
         // connect all rooms
-        initialConnect(rooms);
+        initialConnect(rooms, random);
         for (int i = 0; i < 10; i++) {
             if (interconnectLoops(rooms)) {
                 break;
@@ -412,9 +452,6 @@ public class Tunneler
 
     private void fillRoom(MapNode[][] map, ConnectedRoom room)
     {
-final boolean DEBUG_FILL_ROOM = false;
-
-if(DEBUG_FILL_ROOM)System.out.format("%s\n", room);
         final int left = room.getX();
         final int top = room.getY();
         final int right = left + room.getWidth() - 1;
@@ -448,7 +485,6 @@ if(DEBUG_FILL_ROOM)System.out.format("%s\n", room);
                 map[x][y].setType(RoomType.DOWNSTAIRS);
             }
         }
-if(DEBUG_FILL_ROOM)CharMap.showMap(getCharMap(map));
     }
 
     private void fillTunnel(List<MapNode> path)
@@ -497,18 +533,19 @@ if(DEBUG_FILL_ROOM)CharMap.showMap(getCharMap(map));
     /**
      * Run through room list once to connect every room to one other room.
      */
-    private void initialConnect(ConnectedRoom[] rooms)
+    private static void initialConnect(ConnectedRoom[] rooms, Random random)
+        throws TunnelerException
     {
-final boolean DEBUG_INIT_CONN = false;
-if(DEBUG_INIT_CONN)System.out.println("Connect " + rooms.length + " rooms");
+        int attempts = 0;
+
         // while all rooms are not connected...
         boolean connected = false;
-        while (!connected) {
+        while (!connected && attempts < rooms.length) {
             ConnectedRoom room = rooms[random.nextInt(rooms.length)];
             if (room.isConnected() || room.isFull()) {
                 // already connected to another room, or
                 // room already has maximum number of connections
-if(DEBUG_INIT_CONN)System.out.println("Already connected " + room);
+                attempts++;
                 continue;
             }
 
@@ -518,7 +555,7 @@ if(DEBUG_INIT_CONN)System.out.println("Already connected " + room);
                 room.isLinked(otherNum))
             {
                 // picked the same room or the rooms are already linked
-if(DEBUG_INIT_CONN)System.out.println("Room "+room+" is/isLinked "+rooms[otherNum]);
+                attempts++;
                 continue;
             }
 
@@ -526,34 +563,33 @@ if(DEBUG_INIT_CONN)System.out.println("Room "+room+" is/isLinked "+rooms[otherNu
             if (other.isLinked(room.getNumber()) ||
                 other.isFull())
             {
-if(DEBUG_INIT_CONN)System.out.println("Already connected " + other);
                 // the rooms are already linked or the other room is full
+                attempts++;
                 continue;
             }
+
+            attempts = 0;
 
             // connect the rooms
             room.connect(other);
             //other.connect(room);
-if(DEBUG_INIT_CONN)System.out.println("Connect " + room + " and " + other);
 
             // check if all rooms are connected
             connected = true;
             for (int i = 0; i < rooms.length; i++) {
                 if (!rooms[i].isConnected()) {
                     connected = false;
-if(DEBUG_INIT_CONN)System.out.format("    #%d: %s not connected\n", i, rooms[i]);
                     break;
                 }
-if(DEBUG_INIT_CONN)System.out.format("    #%d: %s\n", i, rooms[i]);
             }
-if(DEBUG_INIT_CONN)System.out.println("Connected " + connected);
         }
     }
 
     /**
      * Interconnect unconnected loops of rooms.
      */
-    private boolean interconnectLoops(ConnectedRoom[] rooms)
+    private static boolean interconnectLoops(ConnectedRoom[] rooms)
+        throws TunnelerException
     {
         // initialize the 'seen' array with the first room's connections
         boolean[] seen = new boolean[rooms.length];
@@ -589,7 +625,7 @@ if(DEBUG_INIT_CONN)System.out.println("Connected " + connected);
                 }
             }
             if (unconn == null) {
-                throw new Error("Cannot find unconnected room");
+                throw new TunnelerException("Cannot find unconnected room");
             }
 
             // find next connected room which is not fully connected
@@ -604,7 +640,8 @@ if(DEBUG_INIT_CONN)System.out.println("Connected " + connected);
                 }
             }
             if (conn == null) {
-                throw new Error("Cannot connect two loops of connections");
+                throw new TunnelerException("Cannot connect two loops of " +
+                                            "connections");
             }
 
             // connect the loops
@@ -632,7 +669,8 @@ if(DEBUG_INIT_CONN)System.out.println("Connected " + connected);
      *
      * @return <tt>true</tt> if any new connections were marked
      */
-    private boolean markConnections(ConnectedRoom room, boolean[] seen)
+    private static boolean markConnections(ConnectedRoom room, boolean[] seen)
+        throws TunnelerException
     {
         boolean marked = false;
         for (int i = 0; i < room.getNumConnections(); i++) {
@@ -648,6 +686,7 @@ if(DEBUG_INIT_CONN)System.out.println("Connected " + connected);
     }
 
     private RoomConnection[] sortConnections(ConnectedRoom[] rooms)
+        throws TunnelerException
     {
         HashMap<RoomConnection, RoomConnection> connMap =
             new HashMap<RoomConnection, RoomConnection>();

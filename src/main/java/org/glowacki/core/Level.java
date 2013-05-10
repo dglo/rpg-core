@@ -98,9 +98,11 @@ public class Level
      *
      * @param ch character
      *
+     * @return point where character entered the level
+     *
      * @throws CoreException if the level doesn't have an up staircase
      */
-    public void enterDown(ICharacter ch)
+    public IMapPoint enterDown(ICharacter ch)
         throws CoreException
     {
         if (ch.getLevel() != null) {
@@ -118,6 +120,8 @@ public class Level
         }
 
         ch.setLevel(this);
+
+        return p;
     }
 
     /**
@@ -125,9 +129,11 @@ public class Level
      *
      * @param ch character
      *
+     * @return point where character entered the level
+     *
      * @throws CoreException if the level doesn't have a down staircase
      */
-    public void enterUp(ICharacter ch)
+    public IMapPoint enterUp(ICharacter ch)
         throws CoreException
     {
         if (ch.getLevel() != null) {
@@ -145,6 +151,8 @@ public class Level
         }
 
         ch.setLevel(this);
+
+        return p;
     }
 
     /**
