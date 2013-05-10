@@ -1,10 +1,12 @@
 package org.glowacki.core.dungen;
 
+import org.glowacki.core.CoreException;
+
 /**
  * Indicate a problem with the level generation
  */
 public class GeneratorException
-    extends Exception
+    extends CoreException
 {
     /**
      * Create an exception
