@@ -75,6 +75,26 @@ public class Point
     }
 
     /**
+     * Get X coordinate
+     *
+     * @return X coordinate
+     */
+    public int getX()
+    {
+        return x;
+    }
+
+    /**
+     * Get Y coordinate
+     *
+     * @return Y coordinate
+     */
+    public int getY()
+    {
+        return y;
+    }
+
+    /**
      * Compute the hash code for this point.
      *
      * @return hash code
