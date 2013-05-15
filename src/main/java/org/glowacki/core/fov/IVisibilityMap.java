@@ -9,12 +9,12 @@ package org.glowacki.core.fov;
 public interface IVisibilityMap
 {
     /**
-     * Is the specified inside the map?
+     * Is the specified point inside the map?
      *
      * @param x X coordinate
      * @param y Y coordinate
      *
-     * @return <tt>true</tt> if there is an obstacle at the specified point
+     * @return <tt>true</tt> if the specified point is inside the map
      */
     boolean contains(int x, int y);
 
