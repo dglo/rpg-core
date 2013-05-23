@@ -1,5 +1,12 @@
 package org.glowacki.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.glowacki.core.event.CoreEvent;
+import org.glowacki.core.event.EventListener;
+import org.glowacki.core.event.MoveEvent;
+
 /**
  * Character-related exception
  */
@@ -21,6 +28,11 @@ public abstract class BaseCharacter
     /** Used to compute movement cost */
     public static final double SQRT_2 = 1.41421356;
 
+    private List<EventListener> listeners = new ArrayList<EventListener>();
+
+    private int id;
+    private static int nextId;
+
     private int str;
     private int dex;
     private int pcp;
@@ -41,6 +53,8 @@ public abstract class BaseCharacter
      */
     public BaseCharacter(int str, int dex, int pcp, int spd)
     {
+        this.id = nextId++;
+
         this.str = str;
         this.dex = dex;
         this.pcp = pcp;
@@ -50,12 +64,32 @@ public abstract class BaseCharacter
     }
 
     /**
+     * Add an event listener.
+     *
+     * @param listener new listener
+     */
+    public void addEventListener(EventListener listener)
+    {
+        listeners.add(listener);
+    }
+
+    /**
      * Clear the current position.
      */
     public void clearPosition()
     {
         x = -1;
         y = -1;
+    }
+
+    /**
+     * Get unique character ID.
+     *
+     * @return id
+     */
+    public int getId()
+    {
+        return id;
     }
 
     /**
@@ -102,12 +136,25 @@ public abstract class BaseCharacter
         throws MapException
     {
         try {
+            final int fromX = x;
+            final int fromY = y;
             map.moveDirection(this, dir);
+            sendEvent(new MoveEvent(this, fromX, fromY, x, y));
         } catch (MapException me) {
             return -1;
         }
 
         return subtractMoveCost(map, dir);
+    }
+
+    /**
+     * Send an event to all listeners.
+     */
+    public void sendEvent(CoreEvent evt)
+    {
+        for (EventListener l : listeners) {
+            l.send(evt);
+        }
     }
 
     /**

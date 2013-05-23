@@ -2,6 +2,8 @@ package org.glowacki.core;
 
 import java.util.Random;
 
+import org.glowacki.core.event.StateEvent;
+
 /**
  * Computer character.
  */
@@ -9,9 +11,6 @@ public class ComputerCharacter
     extends BaseCharacter
 {
     private static final int MAX_ATTEMPTS = 20;
-
-    /** Character states */
-    private enum State { ASLEEP, MEANDER, IN_PURSUIT };
 
     private Random random;
     private Level level;
@@ -97,7 +96,9 @@ public class ComputerCharacter
         double pct = random.nextDouble();
         if (pct < 0.05) {
             // 5% chance of waking up
+            final State oldState = state;
             state = State.MEANDER;
+            sendEvent(new StateEvent(this, oldState, state));
         }
     }
 
@@ -106,7 +107,9 @@ public class ComputerCharacter
         double pct = random.nextDouble();
         if (pct >= 0.99) {
             // 1% chance of falling asleep
+            final State oldState = state;
             state = State.ASLEEP;
+            sendEvent(new StateEvent(this, oldState, state));
         } else {
             final Direction startDir = Direction.random();
 
@@ -116,7 +119,7 @@ public class ComputerCharacter
                     move(level.getMap(), dir);
                     return;
                 } catch (CoreException ce) {
-                    // mot that way!
+                    // not that way!
                 }
                 dir = dir.next();
             } while (dir != startDir);

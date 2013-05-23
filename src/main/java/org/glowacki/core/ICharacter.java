@@ -1,11 +1,23 @@
 package org.glowacki.core;
 
+import org.glowacki.core.event.EventListener;
+
 /**
  * Character methods.
  */
 public interface ICharacter
     extends IMapObject
 {
+    /** Character states */
+    public enum State { ASLEEP, MEANDER, IN_PURSUIT };
+
+    /**
+     * Add an event listener.
+     *
+     * @param listener new listener
+     */
+    void addEventListener(EventListener listener);
+
     /**
      * Build a path from the current position to the goal.
      *
@@ -20,6 +32,13 @@ public interface ICharacter
      * Clear the stored path.
      */
     void clearPath();
+
+    /**
+     * Get unique character ID.
+     *
+     * @return id
+     */
+    int getId();
 
     /**
      * Get character's current level

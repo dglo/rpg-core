@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.glowacki.core.astar.MapPathFinder;
+import org.glowacki.core.event.ChangeLevelEvent;
 
 /**
  * Player-related exceptions
@@ -223,6 +224,9 @@ public class PlayerCharacter
                 prevLevel.enterUp(this);
 
                 level = prevLevel;
+
+                sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
+                                               prevLevel, getX(), getY()));
             } catch (CoreException ce) {
                 oldLevel.moveTo(this, oldX, oldY);
                 setPosition(oldX, oldY);
@@ -251,6 +255,9 @@ public class PlayerCharacter
                 nextLevel.enterDown(this);
 
                 level = nextLevel;
+
+                sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
+                                               nextLevel, getX(), getY()));
             } catch (CoreException ce) {
                 oldLevel.moveTo(this, oldX, oldY);
                 setPosition(oldX, oldY);

@@ -7,6 +7,7 @@ import java.util.List;
  * Level
  */
 public class Level
+    implements ILevel
 {
     private String name;
     private Map map;

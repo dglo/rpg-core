@@ -6,10 +6,14 @@ import org.glowacki.core.ICharacter;
 import org.glowacki.core.IMapPoint;
 import org.glowacki.core.Level;
 import org.glowacki.core.UnimplementedError;
+import org.glowacki.core.event.EventListener;
 
 public class MockCharacter
     implements ICharacter
 {
+    private static int nextId;
+    private int id;
+
     private String name;
     private boolean player;
     private int x;
@@ -23,8 +27,19 @@ public class MockCharacter
 
     public MockCharacter(String name, boolean player)
     {
+        this.id = nextId++;
         this.name = name;
         this.player = player;
+    }
+
+    /**
+     * Add an event listener.
+     *
+     * @param listener new listener
+     */
+    public void addEventListener(EventListener listener)
+    {
+        throw new UnimplementedError();
     }
 
     public void buildPath(IMapPoint goal)
@@ -48,6 +63,11 @@ public class MockCharacter
     {
         x = -1;
         y = -1;
+    }
+
+    public int getId()
+    {
+        return id;
     }
 
     public Level getLevel()
