@@ -23,7 +23,7 @@ public class Room
     private int stairY = Integer.MIN_VALUE;
     private boolean stairUp;
 
-    Room(int num, int x, int y, int width, int height, String name)
+    public Room(int num, int x, int y, int width, int height, String name)
     {
         this.num = num;
         this.x = x;

@@ -13,7 +13,7 @@ public class GeneratorException
      *
      * @param msg error message
      */
-    GeneratorException(String msg)
+    public GeneratorException(String msg)
     {
         super(msg);
     }
