@@ -98,6 +98,13 @@ public interface ICharacter
     int movePath()
         throws CoreException;
 
+    /*
+     * Is the character on a staircase?
+     *
+     * @return <tt>true</tt> if character is on a staircase
+     */
+    boolean onStaircase();
+
     /**
      * Set computer character's level
      *
@@ -112,4 +119,14 @@ public interface ICharacter
      * Take a turn.
      */
     void takeTurn();
+
+    /*
+     * Use the staircase in the character's current position.
+     *
+     * @return number of turns
+     *
+     * @throws CoreException if there is a problem
+     */
+    int useStaircase()
+        throws CoreException;
 }

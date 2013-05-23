@@ -122,6 +122,11 @@ public class MockCharacter
         throw new UnimplementedError();
     }
 
+    public boolean onStaircase()
+    {
+        throw new UnimplementedError();
+    }
+
     public void setLevel(Level level)
     {
         this.level = level;
@@ -134,6 +139,11 @@ public class MockCharacter
     }
 
     public void takeTurn()
+    {
+        throw new UnimplementedError();
+    }
+
+    public int useStaircase()
     {
         throw new UnimplementedError();
     }

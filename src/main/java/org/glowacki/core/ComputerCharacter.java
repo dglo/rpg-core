@@ -179,6 +179,14 @@ public class ComputerCharacter
         throw new UnimplementedError();
     }
 
+    /*
+     * Unimplemented
+     */
+    public boolean onStaircase()
+    {
+        throw new UnimplementedError();
+    }
+
     /**
      * Set computer character's level
      *
@@ -245,6 +253,14 @@ public class ComputerCharacter
         default:
             throw new Error("Unexpected state " + state);
         }
+    }
+
+    /*
+     * Unimplemented
+     */
+    public int useStaircase()
+    {
+        throw new UnimplementedError();
     }
 
     /**

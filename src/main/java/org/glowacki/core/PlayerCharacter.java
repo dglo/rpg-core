@@ -81,6 +81,66 @@ public class PlayerCharacter
         path = null;
     }
 
+    private int climbStairs()
+        throws CoreException
+    {
+        Level prevLevel = level.getPreviousLevel();
+        if (prevLevel == null) {
+            throw new PlayerException("You cannot exit here");
+        }
+
+        final Level oldLevel = level;
+        final int oldX = getX();
+        final int oldY = getY();
+
+        level.exit(this);
+        try {
+            prevLevel.enterUp(this);
+
+            level = prevLevel;
+
+            sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
+                                           prevLevel, getX(), getY()));
+        } catch (CoreException ce) {
+            oldLevel.moveTo(this, oldX, oldY);
+            setPosition(oldX, oldY);
+            level = oldLevel;
+            throw ce;
+        }
+
+        return subtractMoveCost(level.getMap(), Direction.CLIMB);
+    }
+
+    private int descendStairs()
+        throws CoreException
+    {
+        Level nextLevel = level.getNextLevel();
+        if (nextLevel == null) {
+            throw new PlayerException("You are at the bottom");
+        }
+
+        final Level oldLevel = level;
+        final int oldX = getX();
+        final int oldY = getY();
+
+        level.exit(this);
+        try {
+            nextLevel.enterDown(this);
+
+            level = nextLevel;
+
+            sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
+                                           nextLevel, getX(), getY()));
+        } catch (CoreException ce) {
+            oldLevel.moveTo(this, oldX, oldY);
+            setPosition(oldX, oldY);
+            level = oldLevel;
+            throw ce;
+        }
+
+        return subtractMoveCost(level.getMap(), Direction.DESCEND);
+    }
+
     private Direction findDirection(IMapPoint goal)
         throws PlayerException
     {
@@ -210,62 +270,14 @@ public class PlayerCharacter
                 throw new PlayerException("You cannot climb here");
             }
 
-            Level prevLevel = level.getPreviousLevel();
-            if (prevLevel == null) {
-                throw new PlayerException("You cannot exit here");
-            }
-
-            final Level oldLevel = level;
-            final int oldX = getX();
-            final int oldY = getY();
-
-            level.exit(this);
-            try {
-                prevLevel.enterUp(this);
-
-                level = prevLevel;
-
-                sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
-                                               prevLevel, getX(), getY()));
-            } catch (CoreException ce) {
-                oldLevel.moveTo(this, oldX, oldY);
-                setPosition(oldX, oldY);
-                level = oldLevel;
-                throw ce;
-            }
-
-            return subtractMoveCost(level.getMap(), dir);
+            return climbStairs();
         } else if (dir == Direction.DESCEND) {
             Terrain t = level.getTerrain(getX(), getY());
             if (t != Terrain.DOWNSTAIRS) {
                 throw new PlayerException("You cannot descend here");
             }
 
-            Level nextLevel = level.getNextLevel();
-            if (nextLevel == null) {
-                throw new PlayerException("You are at the bottom");
-            }
-
-            final Level oldLevel = level;
-            final int oldX = getX();
-            final int oldY = getY();
-
-            level.exit(this);
-            try {
-                nextLevel.enterDown(this);
-
-                level = nextLevel;
-
-                sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
-                                               nextLevel, getX(), getY()));
-            } catch (CoreException ce) {
-                oldLevel.moveTo(this, oldX, oldY);
-                setPosition(oldX, oldY);
-                level = oldLevel;
-                throw ce;
-            }
-
-            return subtractMoveCost(level.getMap(), dir);
+            return descendStairs();
         } else {
             return move(level.getMap(), dir);
         }
@@ -299,6 +311,23 @@ public class PlayerCharacter
         return rtnval;
     }
 
+    /*
+     * Is the player on a staircase?
+     *
+     * @return <tt>true</tt> if player is on a staircase
+     */
+    public boolean onStaircase()
+    {
+        Terrain t;
+        try {
+            t = level.getTerrain(getX(), getY());
+        } catch (MapException me) {
+            return false;
+        }
+
+        return t == Terrain.UPSTAIRS || t == Terrain.DOWNSTAIRS;
+    }
+
     /**
      * Set character's current level
      *
@@ -315,6 +344,26 @@ public class PlayerCharacter
     public void takeTurn()
     {
         throw new UnimplementedError();
+    }
+
+    /*
+     * Use the staircase in the player's current position.
+     *
+     * @return number of turns
+     *
+     * @throws CoreException if there is a problem
+     */
+    public int useStaircase()
+        throws CoreException
+    {
+        Terrain t = level.getTerrain(getX(), getY());
+        if (t == Terrain.UPSTAIRS) {
+            return climbStairs();
+        } else if (t == Terrain.DOWNSTAIRS) {
+            return descendStairs();
+        }
+
+        throw new PlayerException(name + " is not on a staircase");
     }
 
     /**
