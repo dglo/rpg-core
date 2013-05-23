@@ -1,13 +1,19 @@
 package org.glowacki.core.dungen;
 
+import java.io.PrintStream;
+
 /**
  * A character representation of a set of rooms
  */
 public class CharMap
 {
+    private static final char DOOR = '+';
+    private static final char DOWNSTAIRS = '>';
     private static final char EMPTY = ' ';
     private static final char FLOOR = '.';
     private static final char SIDEWALL = '|';
+    private static final char TUNNEL = '#';
+    private static final char UPSTAIRS = '<';
     private static final char WALL = '-';
 
     private char[][] map;
@@ -18,7 +24,12 @@ public class CharMap
         clearMap();
     }
 
-    CharMap(Room[] rooms)
+    CharMap(IRoom[] rooms)
+    {
+        this(rooms, false);
+    }
+
+    public CharMap(IRoom[] rooms, boolean addLabel)
     {
         int width = 0;
         int height = 0;
@@ -36,17 +47,30 @@ public class CharMap
 
         map = new char[width][height];
         clearMap();
-        addRooms(rooms);
+        addRooms(rooms, addLabel);
     }
 
-    void addRooms(Room[] rooms)
+    public void addDoor(int x, int y)
+        throws GeneratorException
+    {
+        if (map[x][y] != WALL && map[x][y] != SIDEWALL) {
+            final String msg =
+                String.format("Cannot add door at %d,%d, '%c' is not a wall\n",
+                              x, y, map[x][y]);
+            throw new GeneratorException(msg);
+        }
+
+        map[x][y] = DOOR;
+    }
+
+    private void addRooms(IRoom[] rooms, boolean addLabel)
     {
         for (int i = 0; i < rooms.length; i++) {
-            addRoom(rooms[i]);
+            addRoom(rooms[i], addLabel);
         }
     }
 
-    void addRoom(Room room)
+    private void addRoom(IRoom room, boolean addLabel)
     {
         final int left = room.getX();
         final int top = room.getY();
@@ -74,9 +98,24 @@ public class CharMap
             }
         }
 
-        final int cx = room.getX() + (room.getWidth() / 2);
-        final int cy = room.getY() + (room.getHeight() / 2);
-        map[cx][cy] = room.getChar();
+        if (addLabel) {
+            final int cx = room.getX() + (room.getWidth() / 2);
+            final int cy = room.getY() + (room.getHeight() / 2);
+            map[cx][cy] = room.getChar();
+        }
+    }
+
+    public void addStaircase(int x, int y, boolean isUp)
+        throws GeneratorException
+    {
+        if (map[x][y] != FLOOR) {
+            final String msg =
+                String.format("Cannot add staircase at %d,%d," +
+                              " '%c' is not a floor\n", x, y, map[x][y]);
+            throw new GeneratorException(msg);
+        }
+
+        map[x][y] = isUp ? UPSTAIRS : DOWNSTAIRS;
     }
 
     private void clearMap()
@@ -88,12 +127,50 @@ public class CharMap
         }
     }
 
-    void show()
+    public String[] getStrings()
     {
-        showMap(map);
+        String[] strMap = new String[map[0].length];
+
+        StringBuilder buf = new StringBuilder(map.length);
+        for (int y = 0; y < map[0].length; y++) {
+            buf.setLength(0);
+            for (int x = 0; x < map.length; x++) {
+                buf.append(map[x][y]);
+            }
+            strMap[y] = buf.toString();
+        }
+        return strMap;
+    }
+
+    void set(int x, int y, char ch)
+        throws GeneratorException
+    {
+        if (map[x][y] != EMPTY && map[x][y] != ch) {
+            final String msg =
+                String.format("Overwriting '%c' at %d,%d with '%c'\n",
+                              map[x][y], x, y, ch);
+            throw new GeneratorException(msg);
+        }
+
+        map[x][y] = ch;
+    }
+
+    public void show()
+    {
+        show(System.out);
+    }
+
+    public void show(PrintStream out)
+    {
+        showMap(map, out);
     }
 
     static void showMap(char[][] map)
+    {
+        showMap(map, System.out);
+    }
+
+    static void showMap(char[][] map, PrintStream out)
     {
         StringBuilder buf = new StringBuilder(map.length);
         for (int y = 0; y < map[0].length; y++) {
@@ -101,7 +178,20 @@ public class CharMap
             for (int x = 0; x < map.length; x++) {
                 buf.append(map[x][y]);
             }
-            System.out.println(buf.toString());
+            out.println(buf.toString());
         }
+    }
+
+    public void tunnel(int x, int y)
+        throws GeneratorException
+    {
+        if (map[x][y] != EMPTY && map[x][y] != TUNNEL) {
+            final String msg =
+                String.format("Cannot add tunnel at %d,%d," +
+                              " '%c' is not empty\n", x, y, map[x][y]);
+            throw new GeneratorException(msg);
+        }
+
+        map[x][y] = TUNNEL;
     }
 }
