@@ -13,16 +13,6 @@
 
   <build>
     <plugins>
-      <!-- This is to make maven work with Java 1.5 -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-      <!-- code coverage report -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
@@ -34,15 +24,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-         <configuration>
-           <configLocation>
-             src/test/resources/checkstyle/normal.xml
-           </configLocation>
-         </configuration>
       </plugin>
     </plugins>
   </build>

@@ -28,10 +28,11 @@ public abstract class BaseCharacter
     /** Used to compute movement cost */
     public static final double SQRT_2 = 1.41421356;
 
+    private static int nextId;
+
     private List<EventListener> listeners = new ArrayList<EventListener>();
 
     private int id;
-    private static int nextId;
 
     private int str;
     private int dex;
@@ -149,6 +150,8 @@ public abstract class BaseCharacter
 
     /**
      * Send an event to all listeners.
+     *
+     * @param evt event being sent
      */
     public void sendEvent(CoreEvent evt)
     {

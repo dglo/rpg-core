@@ -311,7 +311,7 @@ public class PlayerCharacter
         return rtnval;
     }
 
-    /*
+    /**
      * Is the player on a staircase?
      *
      * @return <tt>true</tt> if player is on a staircase
@@ -346,7 +346,7 @@ public class PlayerCharacter
         throw new UnimplementedError();
     }
 
-    /*
+    /**
      * Use the staircase in the player's current position.
      *
      * @return number of turns

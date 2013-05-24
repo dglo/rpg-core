@@ -3,6 +3,9 @@ package org.glowacki.core.dungen;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Specialized room description
+ */
 class RG3Room
     extends Room
 {
@@ -75,6 +78,9 @@ class RG3Room
     }
 }
 
+/**
+ * Connection between two rooms
+ */
 class Connection
 {
     private RG3Room r1;
@@ -144,7 +150,7 @@ class Connection
                 map.tunnel(i, shift);
             }
         }
-   }
+    }
 
     private int findDoor(Random random, int coord, int len)
     {
@@ -211,6 +217,9 @@ class Connection
     }
 }
 
+/**
+ * Simple map generator
+ */
 public class SimpleGenerator
 {
     private static void addRoomStairs(Random random, RG3Room room,
@@ -273,6 +282,19 @@ public class SimpleGenerator
         }
     }
 
+    /**
+     * Build rooms
+     *
+     * @param random random number generator
+     * @param maxWidth maximum width
+     * @param maxHeight maximum height
+     * @param gridWidth number of rooms horizontally
+     * @param gridHeight number of rooms vertically
+     *
+     * @return array of room descriptions
+     *
+     * @throws GeneratorException if there is a problem
+     */
     public static RG3Room[] buildRooms(Random random, int maxWidth,
                                        int maxHeight, int gridWidth,
                                        int gridHeight)
@@ -375,6 +397,21 @@ public class SimpleGenerator
         return rooms[r].addConnection(room);
     }
 
+    /**
+     * Generate a map
+     *
+     * @param random random number generator
+     * @param maxWidth maximum width
+     * @param maxHeight maximum height
+     * @param gridWidth number of rooms horizontally
+     * @param gridHeight number of rooms vertically
+     * @param addUpStairs add an up staircase
+     * @param addDownStairs add a down staircase
+     *
+     * @return generated character map
+     *
+     * @throws GeneratorException if there is a problem
+     */
     public static CharMap createRooms(Random random, int maxWidth,
                                       int maxHeight, int gridWidth,
                                       int gridHeight, boolean addUpStairs,
@@ -526,6 +563,13 @@ public class SimpleGenerator
         return true;
     }
 
+    /**
+     * Run generator from the command line
+     *
+     * @param args command-line arguments
+     *
+     * @throws GeneratorException if there is a problem
+     */
     public static final void main(String[] args)
         throws GeneratorException
     {

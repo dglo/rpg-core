@@ -98,7 +98,7 @@ public interface ICharacter
     int movePath()
         throws CoreException;
 
-    /*
+    /**
      * Is the character on a staircase?
      *
      * @return <tt>true</tt> if character is on a staircase
@@ -120,7 +120,7 @@ public interface ICharacter
      */
     void takeTurn();
 
-    /*
+    /**
      * Use the staircase in the character's current position.
      *
      * @return number of turns

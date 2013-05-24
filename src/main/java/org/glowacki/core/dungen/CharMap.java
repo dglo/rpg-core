@@ -29,6 +29,13 @@ public class CharMap
         this(rooms, false);
     }
 
+    /**
+     * Create a character-based map
+     *
+     * @param rooms array of room descriptions
+     * @param addLabel if <tt>true</tt> add a letter designation to
+     *                 the center of each room
+     */
     public CharMap(IRoom[] rooms, boolean addLabel)
     {
         int width = 0;
@@ -50,6 +57,14 @@ public class CharMap
         addRooms(rooms, addLabel);
     }
 
+    /**
+     * Add a door
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @throws GeneratorException if the current terrain is not a wall
+     */
     public void addDoor(int x, int y)
         throws GeneratorException
     {
@@ -105,6 +120,16 @@ public class CharMap
         }
     }
 
+    /**
+     * Add a staircase
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param isUp if <tt>true</tt>, add an up staircase.
+     *             otherwise add down staircase
+     *
+     * @throws GeneratorException if the current terrain is not a floor
+     */
     public void addStaircase(int x, int y, boolean isUp)
         throws GeneratorException
     {
@@ -127,6 +152,11 @@ public class CharMap
         }
     }
 
+    /**
+     * Get the map as an array of strings
+     *
+     * @return array of strings depicting the map
+     */
     public String[] getStrings()
     {
         String[] strMap = new String[map[0].length];
@@ -155,21 +185,40 @@ public class CharMap
         map[x][y] = ch;
     }
 
+    /**
+     * Write the map to System.out
+     */
     public void show()
     {
         show(System.out);
     }
 
+    /**
+     * Write the map to the output file/device
+     *
+     * @param out output file/device
+     */
     public void show(PrintStream out)
     {
         showMap(map, out);
     }
 
+    /**
+     * Write the map to System.out
+     *
+     * @param map map characters
+     */
     static void showMap(char[][] map)
     {
         showMap(map, System.out);
     }
 
+    /**
+     * Write the map to the output file/device
+     *
+     * @param map map characters
+     * @param out output file/device
+     */
     static void showMap(char[][] map, PrintStream out)
     {
         StringBuilder buf = new StringBuilder(map.length);
@@ -182,6 +231,14 @@ public class CharMap
         }
     }
 
+    /**
+     * Dig a tunnel
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @throws GeneratorException if the current terrain is not tunnelable
+     */
     public void tunnel(int x, int y)
         throws GeneratorException
     {

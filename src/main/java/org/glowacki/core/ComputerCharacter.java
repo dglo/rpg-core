@@ -179,8 +179,10 @@ public class ComputerCharacter
         throw new UnimplementedError();
     }
 
-    /*
+    /**
      * Unimplemented
+     *
+     * @return nothing
      */
     public boolean onStaircase()
     {
@@ -255,8 +257,10 @@ public class ComputerCharacter
         }
     }
 
-    /*
+    /**
      * Unimplemented
+     *
+     * @return nothing
      */
     public int useStaircase()
     {
