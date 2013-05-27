@@ -11,6 +11,20 @@
   <name>core</name>
   <url>http://www.glowacki.org/Core</url>
 
+  <build>
+    <plugins>
+      <!-- Build with Java 1.6 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
 
     <!-- ASCII graphics dependency -->

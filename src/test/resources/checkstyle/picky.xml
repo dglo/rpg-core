@@ -181,7 +181,9 @@
         <module name="CovariantEquals"/>
         <module name="DeclarationOrder"/>
         <module name="DefaultComesLast"/>
-        <module name="DoubleCheckedLocking"/>    <!-- MY FAVOURITE -->
+<!--
+        <module name="DoubleCheckedLocking"/>
+-->
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <module name="ExplicitInitialization"/>

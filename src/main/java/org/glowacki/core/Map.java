@@ -417,7 +417,7 @@ public class Map
             return y < map.length && x < map[y].length;
         }
 
-        public java.util.Iterator<MapEntry> iterator()
+        public Iterator<MapEntry> iterator()
         {
             return this;
         }

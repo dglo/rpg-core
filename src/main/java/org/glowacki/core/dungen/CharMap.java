@@ -6,6 +6,7 @@ import java.io.PrintStream;
  * A character representation of a set of rooms
  */
 public class CharMap
+    implements IMapArray
 {
     private static final char DOOR = '+';
     private static final char DOWNSTAIRS = '>';
@@ -250,5 +251,23 @@ public class CharMap
         }
 
         map[x][y] = TUNNEL;
+    }
+
+    /**
+     * Return a debugging string.
+     *
+     * @return debugging string
+     */
+    public String toString()
+    {
+        StringBuilder buf = new StringBuilder();
+        for (String str : getStrings()) {
+            if (buf.length() == 0) {
+                buf.append(str);
+            } else {
+                buf.append('\n').append(str);
+            }
+        }
+        return buf.toString();
     }
 }
