@@ -1,6 +1,7 @@
 package org.glowacki.core.dungen;
 
-import java.util.Random;
+import org.glowacki.core.util.IRandom;
+import org.glowacki.core.util.Random;
 
 public class RunGen
 {
@@ -13,7 +14,7 @@ public class RunGen
         this.height = height;
     }
 
-    void specific(Random random)
+    void specific(IRandom random)
         throws GeneratorException
     {
         //Room[] rooms = RoomGenerator1.createRooms(random, width, height, 12);

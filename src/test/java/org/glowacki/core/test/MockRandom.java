@@ -1,5 +1,7 @@
 package org.glowacki.core.test;
 
+import java.nio.ByteBuffer;
+
 import org.glowacki.core.util.IRandom;
 
 public class MockRandom
@@ -11,6 +13,8 @@ public class MockRandom
     private int[] queue;
     private int totVals;;
     private int nextVal;
+
+    private ByteBuffer cvtBuf;
 
     public MockRandom add(int val)
     {
@@ -37,15 +41,46 @@ public class MockRandom
         return this;
     }
 
+    public MockRandom addDouble(double val)
+    {
+        if (cvtBuf == null) {
+            cvtBuf = ByteBuffer.allocate(8);
+        }
+
+        cvtBuf.clear();
+        cvtBuf.putDouble(val);
+        cvtBuf.flip();
+
+        add(cvtBuf.getInt());
+        add(cvtBuf.getInt());
+
+        return this;
+    }
+
     public boolean hasData()
     {
-        //System.out.format("%d values left\n", totVals - nextVal);
-        return nextVal < totVals;
+        final int rem = remaining();
+        //System.out.format("%d values left\n", rem);
+        return rem > 0;
     }
 
     public boolean nextBoolean()
     {
         return nextInt(2) == 1;
+    }
+
+    public double nextDouble()
+    {
+        if (cvtBuf == null) {
+            cvtBuf = ByteBuffer.allocate(8);
+        }
+
+        cvtBuf.clear();
+        cvtBuf.putInt(nextInt());
+        cvtBuf.putInt(nextInt());
+        cvtBuf.flip();
+
+        return cvtBuf.getDouble();
     }
 
     public int nextInt()
@@ -66,5 +101,10 @@ public class MockRandom
     public long nextLong()
     {
         throw new Error("No long values");
+    }
+
+    public int remaining()
+    {
+        return totVals - nextVal;
     }
 }

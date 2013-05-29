@@ -3,9 +3,9 @@ package org.glowacki.core.dungen;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import org.glowacki.core.astar.PathException;
+import org.glowacki.core.util.IRandom;
 
 class TunnelerException
     extends GeneratorException
@@ -408,7 +408,7 @@ public class Tunneler
         }
     }
 
-    public String[] dig(int width, int height, Random random)
+    public String[] dig(int width, int height, IRandom random)
         throws TunnelerException
     {
         // connect all rooms
@@ -533,7 +533,7 @@ public class Tunneler
     /**
      * Run through room list once to connect every room to one other room.
      */
-    private static void initialConnect(ConnectedRoom[] rooms, Random random)
+    private static void initialConnect(ConnectedRoom[] rooms, IRandom random)
         throws TunnelerException
     {
         int attempts = 0;

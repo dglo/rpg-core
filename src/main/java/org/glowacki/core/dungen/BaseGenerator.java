@@ -1,6 +1,6 @@
 package org.glowacki.core.dungen;
 
-import java.util.Random;
+import org.glowacki.core.util.IRandom;
 
 /**
  * Base dungeon generator
@@ -39,7 +39,7 @@ public abstract class BaseGenerator
      *
      * @throws GeneratorException if there is a problem
      */
-    public static void addStairs(IRoom[] rooms, Random random, boolean addUp,
+    public static void addStairs(IRoom[] rooms, IRandom random, boolean addUp,
                                  boolean addDown)
         throws GeneratorException
     {

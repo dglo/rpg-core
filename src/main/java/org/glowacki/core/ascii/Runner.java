@@ -9,7 +9,6 @@ import com.googlecode.lanterna.terminal.TerminalSize;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
@@ -22,6 +21,8 @@ import org.glowacki.core.MapCharRepresentation;
 import org.glowacki.core.PlayerCharacter;
 import org.glowacki.core.Terrain;
 import org.glowacki.core.VisibleMap;
+import org.glowacki.core.util.IRandom;
+import org.glowacki.core.util.Random;
 
 /**
  * ASCII terminal interface
@@ -508,12 +509,12 @@ public class Runner
         lvl.enterDown(ch);
     }
 
-    private void populate(Level lvl, Random random, int max)
+    private void populate(Level lvl, IRandom random, int max)
         throws CoreException
     {
         for (int i = 0; i < max; i++) {
-            ComputerCharacter ch = new ComputerCharacter(6, 6, 6, 10,
-                                                         random.nextLong());
+            ComputerCharacter ch = new ComputerCharacter(random, 6, 6, 6, 10);
+
             ch.setLevel(lvl);
         }
     }

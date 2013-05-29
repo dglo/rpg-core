@@ -70,6 +70,16 @@ public class Random
     }
 
     /**
+     * Generate the next random double value
+     *
+     * @return next random double value
+     */
+    public double nextDouble()
+    {
+        return random.nextDouble();
+    }
+
+    /**
      * Returns the next pseudorandom, uniformly distributed {@code int}
      * value from this random number generator's sequence. The general
      * contract of {@code nextInt} is that one {@code int} value is

@@ -1,6 +1,6 @@
 package org.glowacki.core;
 
-import java.util.Random;
+import org.glowacki.core.util.IRandom;
 
 import org.glowacki.core.event.StateEvent;
 
@@ -12,24 +12,25 @@ public class ComputerCharacter
 {
     private static final int MAX_ATTEMPTS = 20;
 
-    private Random random;
+    private IRandom random;
     private Level level;
     private State state;
 
     /**
      * Create a computer character.
      *
+     * @param random random number generator
      * @param str strength
      * @param dex dexterity
      * @param pcp perception
      * @param spd speed
-     * @param seed random number seed
      */
-    public ComputerCharacter(int str, int dex, int pcp, int spd, long seed)
+    public ComputerCharacter(IRandom random, int str, int dex, int pcp,
+                             int spd)
     {
         super(str, dex, pcp, spd);
 
-        random = new Random(seed);
+        this.random = random;
 
         double pct = random.nextDouble();
         if (pct < 0.333) {
@@ -111,7 +112,8 @@ public class ComputerCharacter
             state = State.ASLEEP;
             sendEvent(new StateEvent(this, oldState, state));
         } else {
-            final Direction startDir = Direction.random();
+            final Direction startDir =
+                Direction.getDirection(random.nextInt());
 
             Direction dir = startDir;
             do {

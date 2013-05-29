@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import org.glowacki.core.test.MapBuilder;
+import org.glowacki.core.test.MockRandom;
 
 public class ComputerCharacterTest
     extends TestCase
@@ -22,12 +23,17 @@ public class ComputerCharacterTest
 
     public void testCreate()
     {
+        MockRandom random = new MockRandom();
+
         final int str = 1;
         final int dex = 2;
         final int pcp = 3;
         final int spd = 4;
 
-        ComputerCharacter ch = new ComputerCharacter(str, dex, spd, pcp, 0L);
+        random.addDouble(0.111);
+
+        ComputerCharacter ch =
+            new ComputerCharacter(random, str, dex, spd, pcp);
 
         try {
             ch.getLevel();
@@ -56,11 +62,15 @@ public class ComputerCharacterTest
     public void testMove2D()
         throws CoreException
     {
+        MockRandom random = new MockRandom();
+
         Map map = new Map(MapBuilder.buildMap(2, 2, -1, -1));
 
         Direction dir = Direction.LEFT;
         do {
-            ComputerCharacter ch = new ComputerCharacter(1, 2, 10, 10, 0L);
+            random.addDouble(0.111);
+
+            ComputerCharacter ch = new ComputerCharacter(random, 1, 2, 10, 10);
 
             Level lvl = new Level("empty", map);
             ch.setLevel(lvl, 2, 2);

@@ -49,4 +49,18 @@ public class MockRandomTest
             }
         }
     }
+
+    @Test
+    public void testDouble()
+    {
+        MockRandom random = new MockRandom();
+        random.addDouble(1.0);
+        assertEquals("Bad double value", 1.0, random.nextDouble());
+        random.addDouble(Double.MIN_VALUE);
+        assertEquals("Bad double value",
+                     Double.MIN_VALUE, random.nextDouble());
+        random.addDouble(Double.MAX_VALUE);
+        assertEquals("Bad double value",
+                     Double.MAX_VALUE, random.nextDouble());
+    }
 }

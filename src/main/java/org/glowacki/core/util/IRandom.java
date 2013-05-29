@@ -13,6 +13,13 @@ public interface IRandom
     boolean nextBoolean();
 
     /**
+     * Generate the next random double value
+     *
+     * @return next random double value
+     */
+    double nextDouble();
+
+    /**
      * Generate the next random value
      *
      * @return next random value

@@ -1,6 +1,6 @@
 package org.glowacki.core.dungen;
 
-import java.util.Random;
+import org.glowacki.core.test.MockRandom;
 
 import org.glowacki.core.UnimplementedError;
 
@@ -175,7 +175,7 @@ public class TunnelerTest
             new TTRoom(3, 7, 7, 4, 4)
         };
 
-        Random r = new Random(123);
+        MockRandom r = new MockRandom();
 
         Tunneler t;
         try {
@@ -185,6 +185,9 @@ public class TunnelerTest
             return;
         }
 
+        // add random values
+        r.add(0).add(1).add(2).add(3);
+
         try {
             t.dig(12, 12, r);
             fail("Should not succeed");
@@ -193,6 +196,9 @@ public class TunnelerTest
             assertEquals("Unexpected exception",
                          "Cannot find unconnected room", te.getMessage());
         }
+
+        assertFalse("Did not use " + r.remaining() + " random values",
+                    r.hasData());
     }
 
     @Test
@@ -205,7 +211,7 @@ public class TunnelerTest
             new TTRoom(3, 7, 7, 4, 4)
         };
 
-        Random r = new Random(123);
+        MockRandom r = new MockRandom();
 
         Tunneler t;
         try {
@@ -214,6 +220,9 @@ public class TunnelerTest
             fail("Unexpected exception " + te);
             return;
         }
+
+        // add random values
+        r.add(0).add(1).add(2).add(3);
 
         try {
             String[] map = t.dig(12, 12, r);
@@ -224,5 +233,8 @@ public class TunnelerTest
             fail("Unexpected exception " + te);
             return;
         }
+
+        assertFalse("Did not use " + r.remaining() + " random values",
+                    r.hasData());
     }
 }

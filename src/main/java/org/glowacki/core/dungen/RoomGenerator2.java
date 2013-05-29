@@ -1,13 +1,13 @@
 package org.glowacki.core.dungen;
 
-import java.util.Random;
+import org.glowacki.core.util.IRandom;
 
 public abstract class RoomGenerator2
     extends BaseGenerator
 {
     private static final boolean DEBUG = false;
 
-    public static Room[] createRooms(Random random, int width, int height,
+    public static Room[] createRooms(IRandom random, int width, int height,
                                      int gridWidth, int gridHeight)
     {
         final int zoneWidth = (width / gridWidth) - 2;
@@ -52,7 +52,7 @@ if(DEBUG)System.out.println("Move " + room);
     }
 
     private static void growRoom(Room room, Room[] rooms, int roomWidth,
-                                 int roomHeight, Random random)
+                                 int roomHeight, IRandom random)
     {
         final Direction dir;
         if (room.getWidth() < room.getHeight()) {
@@ -139,7 +139,7 @@ if(DEBUG)dump("  Grow " + room + " down", rooms);
     }
 
     private static void moveRoom(Room room, Room[] rooms, int roomWidth,
-                                 int roomHeight, Random random)
+                                 int roomHeight, IRandom random)
     {
         final Direction dir = Direction.get(random.nextInt(4));
         if (hasNeighbor(room, rooms, dir)) {
@@ -178,7 +178,7 @@ if(DEBUG)dump("  Move " + room + " down", rooms);
         }
     }
 
-    private static void shrinkRoom(Room room, Room[] rooms, Random random)
+    private static void shrinkRoom(Room room, Room[] rooms, IRandom random)
     {
         final Direction dir;
         if (room.getWidth() > room.getHeight()) {

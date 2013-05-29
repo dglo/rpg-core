@@ -2,14 +2,15 @@ package org.glowacki.core.dungen;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Random;
+
+import org.glowacki.core.util.IRandom;
 
 public abstract class RoomGenerator1
     extends BaseGenerator
 {
     private static final boolean DEBUG = false;
 
-    public static Room[] createRooms(Random random, int width, int height,
+    public static Room[] createRooms(IRandom random, int width, int height,
                                      int maxRooms)
     {
         LinkedList<Room> stack = new LinkedList<Room>();
@@ -98,7 +99,7 @@ if(false&&DEBUG){
     }
 
     private static void joinRoom(Room room, LinkedList<Room> stack,
-                                 Random random)
+                                 IRandom random)
     {
         Room removed = null;
         Room added = null;
@@ -161,7 +162,7 @@ if(DEBUG)System.out.format("c3 %d == %d+%d<%d> c4 %d+%d-1<%d> == %d\n",
     }
 
     private static void splitRoom(Room room, LinkedList<Room> stack,
-                                  Random random, int maxWidth, int maxHeight,
+                                  IRandom random, int maxWidth, int maxHeight,
                                   boolean killOne)
     {
         int num = random.nextInt(2) + 2;

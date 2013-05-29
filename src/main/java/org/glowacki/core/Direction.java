@@ -3,7 +3,6 @@ package org.glowacki.core;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Directions
@@ -33,7 +32,6 @@ public enum Direction
     /** unknown */
     UNKNOWN;
 
-    private static final Random RANDOM = new Random();
     private static final List<Direction> VALUES =
         Collections.unmodifiableList(Arrays.asList(values()));
     private static final int SIZE = VALUES.size();
@@ -50,12 +48,12 @@ public enum Direction
     }
 
     /**
-     * Get a random cardinal direction
+     * Get a cardinal direction
      *
      * @return cardinal direction
      */
-    public static Direction random()
+    public static Direction getDirection(int val)
     {
-        return VALUES.get(RANDOM.nextInt(8));
+        return VALUES.get(val % 8);
     }
 }
