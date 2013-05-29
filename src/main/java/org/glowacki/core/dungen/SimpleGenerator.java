@@ -218,11 +218,18 @@ class Connection
     }
 }
 
-/**
- * Simple map generator
- */
-public class SimpleGenerator
+class RoomCreator
 {
+    private int gridWidth;
+    private int gridHeight;
+    private RoomPlus[] rooms;
+
+    RoomCreator(int gridWidth, int gridHeight)
+    {
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+    }
+
     private static void addRoomStairs(IRandom random, RoomPlus room,
                                       IMapArray map, boolean isUp)
         throws GeneratorException
@@ -232,27 +239,16 @@ public class SimpleGenerator
         map.addStaircase(sx, sy, isUp);
     }
 
-    private static int getStairPos(IRandom random, int max)
-    {
-        final int pos;
-        if (max < 5) {
-            pos = 1 + random.nextInt(2);
-        } else if (max == 5) {
-            pos = 3;
-        } else {
-            pos = 2 + random.nextInt(max - 4);
-        }
-        return pos;
-    }
-
-    private static void addStairs(IRandom random, RoomPlus[] rooms,
-                                  int gridWidth, int gridHeight, IMapArray map,
-                                  boolean addUpStairs, boolean addDownStairs)
+    public void addStairs(IRandom random, IMapArray map,
+                          boolean addUpStairs, boolean addDownStairs)
         throws GeneratorException
     {
+        if (rooms == null) {
+            throw new GeneratorException("No rooms have been built");
+        }
+
         final int one;
         final int other;
-
         if (random.nextBoolean()) {
             final int x = random.nextInt(gridWidth);
 
@@ -296,9 +292,7 @@ public class SimpleGenerator
      *
      * @throws GeneratorException if there is a problem
      */
-    public static RoomPlus[] buildRooms(IRandom random, int maxWidth,
-                                        int maxHeight, int gridWidth,
-                                        int gridHeight)
+    public void buildRooms(IRandom random, int maxWidth, int maxHeight)
         throws GeneratorException
     {
         final int cellWidth = maxWidth / gridWidth;
@@ -306,10 +300,9 @@ public class SimpleGenerator
 
         final int numRooms = gridWidth * gridHeight;
 
-        RoomPlus[] rooms = new RoomPlus[numRooms];
-
         StringBuilder nameBuf = new StringBuilder(1);
 
+        rooms = new RoomPlus[numRooms];
         for (int r = 0; r < rooms.length; r++) {
             final int i = r % gridWidth;
             final int j = r / gridWidth;
@@ -340,29 +333,30 @@ public class SimpleGenerator
             rooms[r] = new RoomPlus(r, x, y, width, height, nameBuf.toString(),
                                     maxConn);
         }
-
-        return rooms;
     }
 
-    private static boolean connect(IRandom random, RoomPlus[] rooms,
-                                   int gridWidth, int gridHeight)
+    public boolean connect(IRandom random)
         throws GeneratorException
     {
+        if (rooms == null) {
+            throw new GeneratorException("No rooms have been built");
+        }
+
         for (int r = 0; r < rooms.length; r++) {
             final int maxConn = rooms[r].getMaxConnections();
             final int connect = 1 + random.nextInt(maxConn - 1);
             for (int n = 0; n < connect; n++) {
-                connectOne(rooms, random, gridWidth, gridHeight, r);
+                connectOne(random, r);
             }
         }
 
         boolean[] seen = new boolean[rooms.length];
-        findConnected(rooms, seen);
+        findConnected(seen);
 
         int failCount = 0;
         while (!seenAll(seen) && failCount < 10) {
             // find random unconnected room
-            int unconn = findUnconnected(random, rooms, seen);
+            int unconn = findUnconnected(random, seen);
             if (unconn < 0) {
                 failCount++;
                 continue;
@@ -370,7 +364,7 @@ public class SimpleGenerator
 
             // find next connected room which is not fully connected
             RoomPlus conn = null;
-            for (int r : getNeighbors(gridWidth, gridHeight, unconn)) {
+            for (int r : getNeighbors(unconn)) {
                 if (seen[r] && !rooms[r].isFull()) {
                     conn = rooms[r];
                     break;
@@ -383,60 +377,27 @@ public class SimpleGenerator
 
             // connect the loops
             rooms[unconn].addConnection(conn);
-            findConnected(rooms, seen);
+            findConnected(seen);
             failCount = 0;
         }
 
         return seenAll(seen);
     }
 
-    private static boolean connectOne(RoomPlus[] rooms, IRandom random,
-                                      int gridWidth, int gridHeight, int r)
+    private boolean connectOne(IRandom random, int r)
     {
-        int[] neighbors = getNeighbors(gridWidth, gridHeight, r);
+        int[] neighbors = getNeighbors(r);
         RoomPlus room = rooms[neighbors[random.nextInt(neighbors.length)]];
         return rooms[r].addConnection(room);
     }
 
-    /**
-     * Generate a map
-     *
-     * @param random random number generator
-     * @param maxWidth maximum width
-     * @param maxHeight maximum height
-     * @param gridWidth number of rooms horizontally
-     * @param gridHeight number of rooms vertically
-     * @param addUpStairs add an up staircase
-     * @param addDownStairs add a down staircase
-     *
-     * @return generated character map
-     *
-     * @throws GeneratorException if there is a problem
-     */
-    public static IMapArray createRooms(IRandom random, int maxWidth,
-                                        int maxHeight, int gridWidth,
-                                        int gridHeight, boolean addUpStairs,
-                                        boolean addDownStairs)
+    public void digTunnels(IRandom random, IMapArray map)
         throws GeneratorException
     {
-        RoomPlus[] rooms =
-            buildRooms(random, maxWidth, maxHeight, gridWidth, gridHeight);
-
-        if (!connect(random, rooms, gridWidth, gridHeight)) {
-            IMapArray map = drawMap(random, rooms, gridWidth, gridHeight,
-                                    addUpStairs, addDownStairs, true);
-            map.show(System.err);
-            throw new GeneratorException("Cannot connect all rooms");
+        if (rooms == null) {
+            throw new GeneratorException("No rooms have been built");
         }
 
-        return drawMap(random, rooms, gridWidth, gridHeight, addUpStairs,
-                       addDownStairs, false);
-    }
-
-    private static void digTunnels(IRandom random, RoomPlus[] rooms,
-                                   IMapArray map)
-        throws GeneratorException
-    {
         ArrayList<Connection> connections = new ArrayList<Connection>();
         for (int r = rooms.length - 1; r >= 0; r--) {
             for (RoomPlus room : rooms[r].getConnections()) {
@@ -465,22 +426,7 @@ public class SimpleGenerator
         }
     }
 
-    private static IMapArray drawMap(IRandom random, RoomPlus[] rooms,
-                                     int gridWidth, int gridHeight,
-                                     boolean addUpStairs,
-                                     boolean addDownStairs, boolean addLabel)
-        throws GeneratorException
-    {
-        IMapArray map = new CharMap(rooms, addLabel);
-
-        digTunnels(random, rooms, map);
-        addStairs(random, rooms, gridWidth, gridHeight, map, addUpStairs,
-                  addDownStairs);
-
-        return map;
-    }
-
-    private static boolean[] findConnected(RoomPlus[] rooms, boolean[] seen)
+    private boolean[] findConnected(boolean[] seen)
     {
         // clear 'seen' array
         for (int i = 0; i < seen.length; i++) {
@@ -507,8 +453,7 @@ public class SimpleGenerator
         return seen;
     }
 
-    private static int findUnconnected(IRandom random, RoomPlus[] rooms,
-                                       boolean[] seen)
+    private int findUnconnected(IRandom random, boolean[] seen)
     {
         int[] unconn = new int[rooms.length];
         int num = 0;
@@ -525,7 +470,17 @@ public class SimpleGenerator
         return unconn[random.nextInt(num)];
     }
 
-    private static int[] getNeighbors(int gridWidth, int gridHeight, int r)
+    public IMapArray getMap(boolean addLabel)
+        throws GeneratorException
+    {
+        if (rooms == null) {
+            throw new GeneratorException("No rooms have been built");
+        }
+
+        return new CharMap(rooms, addLabel);
+    }
+
+    private int[] getNeighbors(int r)
     {
         final int i = r % gridWidth;
         final int j = r / gridWidth;
@@ -554,6 +509,24 @@ public class SimpleGenerator
         return neighbors;
     }
 
+    public RoomPlus[] getRooms()
+    {
+        return rooms;
+    }
+
+    private static int getStairPos(IRandom random, int max)
+    {
+        final int pos;
+        if (max < 5) {
+            pos = 1 + random.nextInt(2);
+        } else if (max == 5) {
+            pos = 3;
+        } else {
+            pos = 2 + random.nextInt(max - 4);
+        }
+        return pos;
+    }
+
     private static boolean seenAll(boolean[] seen)
     {
         for (int i = 0; i < seen.length; i++) {
@@ -563,6 +536,59 @@ public class SimpleGenerator
         }
 
         return true;
+    }
+
+    public void setGrid(int width, int height)
+    {
+        gridWidth = width;
+        gridHeight = height;
+
+        rooms = null;
+    }
+}
+
+/**
+ * Simple map generator
+ */
+public class SimpleGenerator
+{
+    /**
+     * Generate a map
+     *
+     * @param random random number generator
+     * @param maxWidth maximum width
+     * @param maxHeight maximum height
+     * @param gridWidth number of rooms horizontally
+     * @param gridHeight number of rooms vertically
+     * @param addUpStairs add an up staircase
+     * @param addDownStairs add a down staircase
+     *
+     * @return generated character map
+     *
+     * @throws GeneratorException if there is a problem
+     */
+    public static IMapArray createMap(IRandom random, int maxWidth,
+                                      int maxHeight, int gridWidth,
+                                      int gridHeight, boolean addUpStairs,
+                                      boolean addDownStairs)
+        throws GeneratorException
+    {
+        RoomCreator creator =
+            new RoomCreator(gridWidth, gridHeight);
+
+        creator.buildRooms(random, maxWidth, maxHeight);
+
+        if (!creator.connect(random)) {
+            IMapArray map = creator.getMap(true);
+            map.show(System.err);
+            throw new GeneratorException("Cannot connect all rooms");
+        }
+
+        IMapArray map = creator.getMap(false);
+        creator.digTunnels(random, map);
+        creator.addStairs(random, map, addUpStairs, addDownStairs);
+
+        return map;
     }
 
     /**

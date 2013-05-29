@@ -35,4 +35,6 @@ public interface IRandom
      */
     int nextInt(int n)
         throws IllegalArgumentException;
+
+    long nextLong();
 }

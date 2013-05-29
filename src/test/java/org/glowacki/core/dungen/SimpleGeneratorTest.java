@@ -16,14 +16,15 @@ public class SimpleGeneratorTest
             random.add(i);
         }
 
-        final int cellWidth = 20;
-        final int cellHeight = 20;
+        final int maxWidth = 20;
+        final int maxHeight = 20;
         final int gridWidth = 2;
         final int gridHeight = 2;
 
-        RoomPlus[] rooms =
-            SimpleGenerator.buildRooms(random, cellWidth, cellHeight,
-                                       gridWidth, gridHeight);
+        RoomCreator rc = new RoomCreator(gridWidth, gridHeight);
+        rc.buildRooms(random, maxWidth, maxHeight);
+
+        RoomPlus[] rooms = rc.getRooms();
         assertNotNull("Returned null array", rooms);
         assertEquals("Unexpected number of rooms",
                      gridWidth * gridHeight, rooms.length);
@@ -58,14 +59,14 @@ public class SimpleGeneratorTest
             random.add(i);
         }
 
-        final int cellWidth = 20;
-        final int cellHeight = 20;
+        final int maxWidth = 20;
+        final int maxHeight = 20;
         final int gridWidth = 3;
         final int gridHeight = 3;
 
         IMapArray map =
-            SimpleGenerator.createRooms(random, cellWidth, cellHeight,
-                                        gridWidth, gridHeight, true, true);
+            SimpleGenerator.createMap(random, maxWidth, maxHeight,
+                                      gridWidth, gridHeight, true, true);
 
         assertNotNull("Returned null map", map);
 
@@ -112,14 +113,14 @@ public class SimpleGeneratorTest
             random.add(200 - i);
         }
 
-        final int cellWidth = 40;
-        final int cellHeight = 40;
+        final int maxWidth = 40;
+        final int maxHeight = 40;
         final int gridWidth = 4;
         final int gridHeight = 4;
 
         IMapArray map =
-            SimpleGenerator.createRooms(random, cellWidth, cellHeight,
-                                        gridWidth, gridHeight, true, true);
+            SimpleGenerator.createMap(random, maxWidth, maxHeight,
+                                      gridWidth, gridHeight, true, true);
 
         assertNotNull("Returned null map", map);
 

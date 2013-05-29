@@ -62,4 +62,9 @@ public class MockRandom
     {
         return nextInt() % maxVal;
     }
+
+    public long nextLong()
+    {
+        throw new Error("No long values");
+    }
 }

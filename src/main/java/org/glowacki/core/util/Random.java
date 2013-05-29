@@ -15,7 +15,7 @@ public class Random
      */
     Random()
     {
-        random = new java.util.Random();
+        this(new java.util.Random());
     }
 
     /**
@@ -33,7 +33,15 @@ public class Random
      */
     public Random(long seed)
     {
-        random = new java.util.Random(seed);
+        this(new java.util.Random(seed));
+    }
+
+    /**
+     * Wrap an existing random number generator.
+     */
+    public Random(java.util.Random random)
+    {
+        this.random = random;
     }
 
     /**
@@ -148,5 +156,10 @@ public class Random
         }
 
         return random.nextInt(n);
+    }
+
+    public long nextLong()
+    {
+        return random.nextLong();
     }
 }
