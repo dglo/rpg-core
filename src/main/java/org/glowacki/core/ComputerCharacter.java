@@ -1,8 +1,7 @@
 package org.glowacki.core;
 
-import org.glowacki.core.util.IRandom;
-
 import org.glowacki.core.event.StateEvent;
+import org.glowacki.core.util.IRandom;
 
 /**
  * Computer character.

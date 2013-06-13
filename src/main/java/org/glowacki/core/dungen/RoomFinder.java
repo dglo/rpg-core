@@ -147,7 +147,7 @@ public class RoomFinder
         return sorted;
     }
 
-private INode prevNode = null;
+private INode prevNode;
 private void drawCosts(INode node)
     throws PathException
 {

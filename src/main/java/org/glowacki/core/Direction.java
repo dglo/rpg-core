@@ -50,6 +50,8 @@ public enum Direction
     /**
      * Get a cardinal direction
      *
+     * @param val integer direction
+     *
      * @return cardinal direction
      */
     public static Direction getDirection(int val)

@@ -38,6 +38,8 @@ public class Random
 
     /**
      * Wrap an existing random number generator.
+     *
+     * @param random random number generator
      */
     public Random(java.util.Random random)
     {
@@ -168,6 +170,11 @@ public class Random
         return random.nextInt(n);
     }
 
+    /**
+     * Generate the next random long value
+     *
+     * @return next random long value
+     */
     public long nextLong()
     {
         return random.nextLong();

@@ -3,9 +3,14 @@ package org.glowacki.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.glowacki.core.event.AttackHitEvent;
+import org.glowacki.core.event.AttackKilledEvent;
+import org.glowacki.core.event.AttackMissedEvent;
+import org.glowacki.core.event.AttackParriedEvent;
 import org.glowacki.core.event.CoreEvent;
 import org.glowacki.core.event.EventListener;
 import org.glowacki.core.event.MoveEvent;
+import org.glowacki.core.util.IRandom;
 
 /**
  * Character-related exception
@@ -44,6 +49,11 @@ public abstract class BaseCharacter
 
     private double timeLeft;
 
+    private int hitPoints;
+    private int maxHitPoints;
+
+    private int armorPoints;
+
     /**
      * Create a character.
      *
@@ -61,6 +71,9 @@ public abstract class BaseCharacter
         this.pcp = pcp;
         this.spd = spd;
 
+        maxHitPoints = computeHitPoints();
+        hitPoints = maxHitPoints;
+
         clearPosition();
     }
 
@@ -75,12 +88,135 @@ public abstract class BaseCharacter
     }
 
     /**
+     * Attack the character
+     *
+     * @param random random number generator
+     * @param ch character to attack
+     * @param weapon weapon used for the attack
+     */
+    public void attack(IRandom random, ICharacter ch, IWeapon weapon)
+    {
+        final int attackPct = getAttackPercent(weapon);
+
+        // TODO: handle critical hits and failures
+
+        int defendPct = ch.getDefendPercent(weapon);
+        if (defendPct > attackPct) {
+            defendPct = attackPct;
+        }
+
+        final int rnd = random.nextInt(100);
+
+        if (attackPct < rnd) {
+            sendEvent(new AttackMissedEvent(this, ch));
+        } else if (attackPct - defendPct < rnd) {
+            sendEvent(new AttackParriedEvent(this, ch));
+        } else {
+            ch.takeDamage(random, this, weapon);
+        }
+    }
+
+    /**
      * Clear the current position.
      */
     public void clearPosition()
     {
         x = -1;
         y = -1;
+    }
+
+    /**
+     * Compare this object against another
+     *
+     * @param obj object being compared
+     *
+     * @return the usual comparison values
+     */
+    public int compareTo(Object obj)
+    {
+        if (obj == null) {
+            return 1;
+        }
+
+        if (!(obj instanceof BaseCharacter)) {
+            return getClass().getName().compareTo(obj.getClass().getName());
+        }
+
+        return ((BaseCharacter) obj).id - id;
+    }
+
+    /**
+     * Compute the maximum number of hit points for this character
+     *
+     * @return maximum hit points
+     */
+    private int computeHitPoints()
+    {
+        return str;
+    }
+
+    /**
+     * Return <tt>true</tt> if the objects are equal
+     *
+     * @param obj object being compared
+     *
+     * @return <tt>true</tt> if objects are equal
+     */
+    public boolean equals(Object obj)
+    {
+        return compareTo(obj) == 0;
+    }
+
+    /**
+     * Get the attack percentage.
+     *
+     * @param weapon attacker's weapon
+     *
+     * @return percentage
+     */
+    public int getAttackPercent(IWeapon weapon)
+    {
+        int pct = (dex * 100) / 18;
+        if (pct < 0) {
+            return 0;
+        }
+
+        if (pct > 100) {
+            return 100;
+        }
+
+        return pct;
+    }
+
+    /**
+     * Get the defence percentage.
+     *
+     * @param weapon attacker's weapon
+     *
+     * @return percentage
+     */
+    public int getDefendPercent(IWeapon weapon)
+    {
+        int pct = (dex * 100) / 36;
+        if (pct < 0) {
+            return 0;
+        }
+
+        if (pct > 100) {
+            return 100;
+        }
+
+        return pct;
+    }
+
+    /**
+     * Get current hit points.
+     *
+     * @return hit points
+     */
+    public int getHitPoints()
+    {
+        return hitPoints;
     }
 
     /**
@@ -91,6 +227,16 @@ public abstract class BaseCharacter
     public int getId()
     {
         return id;
+    }
+
+    /**
+     * Get maximum hit points.
+     *
+     * @return maximum hit points
+     */
+    public int getMaxHitPoints()
+    {
+        return maxHitPoints;
     }
 
     /**
@@ -121,6 +267,16 @@ public abstract class BaseCharacter
     public int getY()
     {
         return y;
+    }
+
+    /**
+     * Return a hash code representing this character
+     *
+     * @return hash code
+     */
+    public int hashCode()
+    {
+        return id;
     }
 
     /**
@@ -208,6 +364,28 @@ public abstract class BaseCharacter
 
         timeLeft -= cost;
         return turns;
+    }
+
+    /**
+     * Take damage from an attack
+     *
+     * @param random random number generator
+     * @param ch attacker
+     * @param weapon attacker's weapon
+     */
+    public void takeDamage(IRandom random, ICharacter ch, IWeapon weapon)
+    {
+        int damage = weapon.getDamage(random) - armorPoints;
+        if (damage < 0) {
+            damage = 0;
+        }
+
+        hitPoints -= damage;
+        if (hitPoints > 0) {
+            sendEvent(new AttackHitEvent(ch, this, damage));
+        } else {
+            sendEvent(new AttackKilledEvent(ch, this));
+        }
     }
 
     /**

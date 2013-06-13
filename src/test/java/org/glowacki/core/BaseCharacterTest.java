@@ -5,8 +5,16 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.glowacki.core.event.AttackHitEvent;
+import org.glowacki.core.event.AttackKilledEvent;
+import org.glowacki.core.event.AttackMissedEvent;
+import org.glowacki.core.event.AttackParriedEvent;
+import org.glowacki.core.event.EventListener;
 import org.glowacki.core.test.MapBuilder;
 import org.glowacki.core.test.MockCharacter;
+import org.glowacki.core.test.MockListener;
+import org.glowacki.core.test.MockRandom;
+import org.glowacki.core.test.MockWeapon;
 
 class MyCharacter
     extends BaseCharacter
@@ -262,7 +270,7 @@ public class BaseCharacterTest
     public void testBadMove22()
         throws CoreException
     {
-        MyCharacter ch = new MyCharacter("b", 1, 2, 3, 4);
+        MyCharacter ch = new MyCharacter("c", 1, 2, 3, 4);
 
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
@@ -312,7 +320,7 @@ public class BaseCharacterTest
     public void testMove()
         throws CoreException
     {
-        MyCharacter ch = new MyCharacter("b", 1, 2, 3, 4);
+        MyCharacter ch = new MyCharacter("d", 1, 2, 3, 4);
 
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
@@ -361,6 +369,141 @@ public class BaseCharacterTest
 
             dir = dir.next();
         } while (dir != Direction.LEFT);
+    }
+
+    public void testAttackFail()
+    {
+        MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
+
+        MockListener alistener = new MockListener("AListener");
+        attacker.addEventListener(alistener);
+
+        MyCharacter defender = new MyCharacter("def", 11, 9, 3, 4);
+
+        MockListener dlistener = new MockListener("DListener");
+        defender.addEventListener(dlistener);
+
+        MockRandom random = new MockRandom();
+
+        MockWeapon weapon = new MockWeapon();
+
+        random.add(99);
+        alistener.addExpectedEvent(new AttackMissedEvent(attacker, defender));
+
+        attacker.attack(random, defender, weapon);
+    }
+
+    public void testAttackParried()
+    {
+        MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
+
+        MockListener alistener = new MockListener("AListener");
+        attacker.addEventListener(alistener);
+
+        MyCharacter defender = new MyCharacter("def", 11, 9, 3, 4);
+
+        MockListener dlistener = new MockListener("DListener");
+        defender.addEventListener(dlistener);
+
+        MockRandom random = new MockRandom();
+
+        MockWeapon weapon = new MockWeapon();
+
+        random.add(31);
+        alistener.addExpectedEvent(new AttackParriedEvent(attacker, defender));
+
+        attacker.attack(random, defender, weapon);
+    }
+
+    public void testAttackHit()
+    {
+        MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
+
+        MockListener alistener = new MockListener("AListener");
+        attacker.addEventListener(alistener);
+
+        MyCharacter defender = new MyCharacter("def", 11, 9, 3, 4);
+
+        MockListener dlistener = new MockListener("DListener");
+        defender.addEventListener(dlistener);
+
+        MockRandom random = new MockRandom();
+
+        MockWeapon weapon = new MockWeapon();
+
+        final int damage = 5;
+
+        random.add(1);
+        weapon.setDamage(damage);
+        dlistener.addExpectedEvent(new AttackHitEvent(attacker, defender,
+                                                      damage));
+
+        attacker.attack(random, defender, weapon);
+    }
+
+    public void testAttackKilled()
+    {
+        MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
+
+        MockListener alistener = new MockListener("AListener");
+        attacker.addEventListener(alistener);
+
+        MyCharacter defender = new MyCharacter("def", 11, 9, 3, 4);
+
+        MockListener dlistener = new MockListener("DListener");
+        defender.addEventListener(dlistener);
+
+        MockRandom random = new MockRandom();
+
+        MockWeapon weapon = new MockWeapon();
+
+        random.add(1);
+        weapon.setDamage(defender.getMaxHitPoints() * 2);
+        dlistener.addExpectedEvent(new AttackKilledEvent(attacker, defender));
+
+        attacker.attack(random, defender, weapon);
+    }
+
+    public void testAttackPercent()
+    {
+        MockWeapon weapon = new MockWeapon();
+
+        for (int dex = -1; dex < 25; dex += 25) {
+            MyCharacter guy = new MyCharacter("guy", 11, dex, 3, 4);
+
+            int expPct;
+            if (dex < 0) {
+                expPct = 0;
+            } else if (dex > 18) {
+                expPct = 100;
+            } else {
+                expPct = dex;
+            }
+
+            assertEquals("Bad attack percent for dex " + dex,
+                         expPct, guy.getAttackPercent(weapon));
+        }
+    }
+
+    public void testDefendPercent()
+    {
+        MockWeapon weapon = new MockWeapon();
+
+        for (int dex = -1; dex < 40; dex += 40) {
+            MyCharacter guy = new MyCharacter("guy", 11, dex, 3, 4);
+
+            int expPct;
+            if (dex < 0) {
+                expPct = 0;
+            } else if (dex > 36) {
+                expPct = 100;
+            } else {
+                expPct = dex;
+            }
+
+            assertEquals("Bad defend percent for dex " + dex,
+                         expPct, guy.getDefendPercent(weapon));
+        }
     }
 
     public static void main(String[] args)

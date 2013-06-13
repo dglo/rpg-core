@@ -4,9 +4,11 @@ import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.IMapPoint;
+import org.glowacki.core.IWeapon;
 import org.glowacki.core.Level;
 import org.glowacki.core.UnimplementedError;
 import org.glowacki.core.event.EventListener;
+import org.glowacki.core.util.IRandom;
 
 public class MockCharacter
     implements ICharacter
@@ -42,6 +44,11 @@ public class MockCharacter
         throw new UnimplementedError();
     }
 
+    public void attack(IRandom random, ICharacter ch, IWeapon weapon)
+    {
+        throw new UnimplementedError();
+    }
+
     public void buildPath(IMapPoint goal)
         throws CoreException
     {
@@ -63,6 +70,36 @@ public class MockCharacter
     {
         x = -1;
         y = -1;
+    }
+
+    /**
+     * Compare this object against another
+     *
+     * @param obj object being compared
+     *
+     * @return the usual comparison values
+     */
+    public int compareTo(Object obj)
+    {
+        if (obj == null) {
+            return 1;
+        }
+
+        if (!(obj instanceof MockCharacter)) {
+            return getClass().getName().compareTo(obj.getClass().getName());
+        }
+
+        return ((MockCharacter) obj).id - id;
+    }
+
+    public int getAttackPercent(IWeapon weapon)
+    {
+        throw new UnimplementedError();
+    }
+
+    public int getDefendPercent(IWeapon weapon)
+    {
+        throw new UnimplementedError();
     }
 
     public int getId()
@@ -136,6 +173,11 @@ public class MockCharacter
     {
         this.x = x;
         this.y = y;
+    }
+
+    public void takeDamage(IRandom random, ICharacter ch, IWeapon weapon)
+    {
+        throw new UnimplementedError();
     }
 
     public void takeTurn()

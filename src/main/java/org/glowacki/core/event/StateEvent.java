@@ -30,6 +30,31 @@ public class StateEvent
     }
 
     /**
+     * Compare this object against another
+     *
+     * @param obj object being compared
+     *
+     * @return the usual comparison values
+     */
+    public int compareTo(Object obj)
+    {
+        int val = compareBasic(obj);
+        if (val == 0) {
+            StateEvent evt = (StateEvent) obj;
+
+            val = eChar.compareTo(evt.eChar);
+            if (val == 0) {
+                val = fromState.compareTo(evt.fromState);
+                if (val == 0) {
+                    val = toState.compareTo(evt.toState);
+                }
+            }
+        }
+
+        return val;
+    }
+
+    /**
      * Get the character whose state changed
      *
      * @return character

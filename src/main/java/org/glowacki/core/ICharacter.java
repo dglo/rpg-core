@@ -1,12 +1,13 @@
 package org.glowacki.core;
 
 import org.glowacki.core.event.EventListener;
+import org.glowacki.core.util.IRandom;
 
 /**
  * Character methods.
  */
 public interface ICharacter
-    extends IMapObject
+    extends Comparable, IMapObject
 {
     /** Character states */
     public enum State { ASLEEP, MEANDER, IN_PURSUIT };
@@ -17,6 +18,15 @@ public interface ICharacter
      * @param listener new listener
      */
     void addEventListener(EventListener listener);
+
+    /**
+     * Attack the character
+     *
+     * @param random random number generator
+     * @param ch character to attack
+     * @param weapon weapon used for the attack
+     */
+    void attack(IRandom random, ICharacter ch, IWeapon weapon);
 
     /**
      * Build a path from the current position to the goal.
@@ -32,6 +42,24 @@ public interface ICharacter
      * Clear the stored path.
      */
     void clearPath();
+
+    /**
+     * Get percent chance to hit on attack
+     *
+     * @param weapon weapon used in attack
+     *
+     * @return attack percent
+     */
+    int getAttackPercent(IWeapon weapon);
+
+    /**
+     * Get percent chance to parry an attack
+     *
+     * @param weapon weapon used in attack
+     *
+     * @return defend percent
+     */
+    int getDefendPercent(IWeapon weapon);
 
     /**
      * Get unique character ID.
@@ -114,6 +142,15 @@ public interface ICharacter
      */
     void setLevel(Level lvl)
         throws CoreException;
+
+    /**
+     * Take damage from an attack
+     *
+     * @param random random number generator
+     * @param ch attacker
+     * @param weapon weapon used for the attack
+     */
+    void takeDamage(IRandom random, ICharacter ch, IWeapon weapon);
 
     /**
      * Take a turn.

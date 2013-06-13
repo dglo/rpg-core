@@ -51,6 +51,37 @@ public class MoveEvent
     }
 
     /**
+     * Compare this object against another
+     *
+     * @param obj object being compared
+     *
+     * @return the usual comparison values
+     */
+    public int compareTo(Object obj)
+    {
+        int val = compareBasic(obj);
+        if (val == 0) {
+            MoveEvent evt = (MoveEvent) obj;
+
+            val = eChar.compareTo(evt.eChar);
+            if (val == 0) {
+                val = evt.fromX - fromX;
+                if (val == 0) {
+                    val = evt.fromY - fromY;
+                    if (val == 0) {
+                        val = evt.toX - toX;
+                        if (val == 0) {
+                            val = evt.toY - toY;
+                        }
+                    }
+                }
+            }
+        }
+
+        return val;
+    }
+
+    /**
      * Get the character being moved
      *
      * @return character

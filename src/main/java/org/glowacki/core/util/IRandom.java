@@ -43,5 +43,10 @@ public interface IRandom
     int nextInt(int n)
         throws IllegalArgumentException;
 
+    /**
+     * Generate the next random long value
+     *
+     * @return next random long value
+     */
     long nextLong();
 }

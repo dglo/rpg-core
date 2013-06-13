@@ -218,6 +218,9 @@ class Connection
     }
 }
 
+/**
+ * Room creator
+ */
 class RoomCreator
 {
     private int gridWidth;
