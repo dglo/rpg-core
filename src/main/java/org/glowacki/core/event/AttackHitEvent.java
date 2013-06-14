@@ -31,11 +31,11 @@ public class AttackHitEvent
      *
      * @return the usual comparison values
      */
-    public int compareTo(Object obj)
+    public int compareTo(IEvent evt)
     {
-        int val = super.compareBasic(obj);
+        int val = super.compareBasic(evt);
         if (val == 0) {
-            val = ((AttackHitEvent) obj).damage - damage;
+            val = ((AttackHitEvent) evt).damage - damage;
         }
 
         return val;

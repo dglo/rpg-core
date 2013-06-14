@@ -36,17 +36,17 @@ public class StateEvent
      *
      * @return the usual comparison values
      */
-    public int compareTo(Object obj)
+    public int compareTo(IEvent evt)
     {
-        int val = compareBasic(obj);
+        int val = compareBasic(evt);
         if (val == 0) {
-            StateEvent evt = (StateEvent) obj;
+            StateEvent se = (StateEvent) evt;
 
-            val = eChar.compareTo(evt.eChar);
+            val = eChar.compareTo(se.eChar);
             if (val == 0) {
-                val = fromState.compareTo(evt.fromState);
+                val = fromState.compareTo(se.fromState);
                 if (val == 0) {
-                    val = toState.compareTo(evt.toState);
+                    val = toState.compareTo(se.toState);
                 }
             }
         }

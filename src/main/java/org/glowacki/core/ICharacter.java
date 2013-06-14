@@ -7,7 +7,7 @@ import org.glowacki.core.util.IRandom;
  * Character methods.
  */
 public interface ICharacter
-    extends Comparable, IMapObject
+    extends Comparable<ICharacter>, IMapObject
 {
     /** Character states */
     public enum State { ASLEEP, MEANDER, IN_PURSUIT };

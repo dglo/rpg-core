@@ -4,26 +4,8 @@ package org.glowacki.core.event;
  * Base event
  */
 public abstract class CoreEvent
-    implements Comparable, IEvent
+    implements Comparable<IEvent>, IEvent
 {
-    /** All possible event types */
-    public enum Type {
-        /** Character hit event */
-        ATTACK_HIT_EVENT,
-        /** Character killed event */
-        ATTACK_KILLED_EVENT,
-        /** Missed attack event */
-        ATTACK_MISSED_EVENT,
-        /** Parried attack event */
-        ATTACK_PARRIED_EVENT,
-        /** Change level event */
-        CHANGE_LEVEL,
-        /** Move event */
-        MOVE,
-        /** Change state event */
-        STATE,
-    };
-
     private Type type;
 
     /**
@@ -43,17 +25,13 @@ public abstract class CoreEvent
      *
      * @return the usual comparison values
      */
-    public int compareBasic(Object obj)
+    public int compareBasic(IEvent evt)
     {
-        if (obj == null) {
+        if (evt == null) {
             return 1;
         }
 
-        if (!(obj instanceof CoreEvent)) {
-            return getClass().getName().compareTo(obj.getClass().getName());
-        }
-
-        return type.compareTo(((CoreEvent) obj).type);
+        return type.compareTo(evt.getType());
     }
 
     /**
@@ -63,9 +41,9 @@ public abstract class CoreEvent
      *
      * @return <tt>true</tt> if objects are equal
      */
-    public boolean equals(Object obj)
+    public boolean equals(IEvent evt)
     {
-        return compareTo(obj) == 0;
+        return compareTo(evt) == 0;
     }
 
     /**

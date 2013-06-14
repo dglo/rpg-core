@@ -407,7 +407,7 @@ public class Map
      * MapEntry iterator.
      */
     class EntryIterable
-        implements Iterable, Iterator
+        implements Iterable<MapEntry>, Iterator<MapEntry>
     {
         private int x;
         private int y;

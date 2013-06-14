@@ -33,15 +33,15 @@ public abstract class AttackEvent
      *
      * @return the usual comparison values
      */
-    public int compareBasic(Object obj)
+    public int compareBasic(IEvent evt)
     {
-        int val = super.compareBasic(obj);
+        int val = super.compareBasic(evt);
         if (val == 0) {
-            AttackEvent evt = (AttackEvent) obj;
+            AttackEvent ae = (AttackEvent) evt;
 
-            val = attacker.compareTo(evt.attacker);
+            val = attacker.compareTo(ae.attacker);
             if (val == 0) {
-                val = defender.compareTo(evt.defender);
+                val = defender.compareTo(ae.defender);
             }
         }
 

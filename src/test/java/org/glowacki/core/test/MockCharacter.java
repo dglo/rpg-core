@@ -79,17 +79,13 @@ public class MockCharacter
      *
      * @return the usual comparison values
      */
-    public int compareTo(Object obj)
+    public int compareTo(ICharacter ch)
     {
-        if (obj == null) {
+        if (ch == null) {
             return 1;
         }
 
-        if (!(obj instanceof MockCharacter)) {
-            return getClass().getName().compareTo(obj.getClass().getName());
-        }
-
-        return ((MockCharacter) obj).id - id;
+        return ch.getId() - id;
     }
 
     public int getAttackPercent(IWeapon weapon)

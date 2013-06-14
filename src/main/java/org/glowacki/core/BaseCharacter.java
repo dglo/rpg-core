@@ -132,17 +132,13 @@ public abstract class BaseCharacter
      *
      * @return the usual comparison values
      */
-    public int compareTo(Object obj)
+    public int compareTo(ICharacter ch)
     {
-        if (obj == null) {
+        if (ch == null) {
             return 1;
         }
 
-        if (!(obj instanceof BaseCharacter)) {
-            return getClass().getName().compareTo(obj.getClass().getName());
-        }
-
-        return ((BaseCharacter) obj).id - id;
+        return ch.getId() - id;
     }
 
     /**
@@ -162,9 +158,9 @@ public abstract class BaseCharacter
      *
      * @return <tt>true</tt> if objects are equal
      */
-    public boolean equals(Object obj)
+    public boolean equals(ICharacter ch)
     {
-        return compareTo(obj) == 0;
+        return compareTo(ch) == 0;
     }
 
     /**

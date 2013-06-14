@@ -26,8 +26,8 @@ public class AttackKilledEvent
      *
      * @return the usual comparison values
      */
-    public int compareTo(Object obj)
+    public int compareTo(IEvent evt)
     {
-        return super.compareBasic(obj);
+        return super.compareBasic(evt);
     }
 }

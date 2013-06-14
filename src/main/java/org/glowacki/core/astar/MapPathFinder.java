@@ -14,7 +14,7 @@ import org.glowacki.core.MapEntry;
  * Node base class
  */
 class BaseNode
-    implements Comparable, INode
+    implements Comparable<INode>, INode
 {
     private int x;
     private int y;
@@ -49,13 +49,11 @@ class BaseNode
         passThroughCost = Double.MIN_VALUE;
     }
 
-    public int compareTo(Object obj)
+    public int compareTo(INode node)
     {
-        if (obj == null) {
+        if (node == null) {
             return 1;
         }
-
-        INode node = (INode) obj;
 
         int val = x - node.getX();
         if (val == 0) {
@@ -65,9 +63,9 @@ class BaseNode
         return val;
     }
 
-    public boolean equals(Object obj)
+    public boolean equals(INode node)
     {
-        return compareTo(obj) == 0;
+        return compareTo(node) == 0;
     }
 
     public INode getParent()

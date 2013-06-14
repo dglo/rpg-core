@@ -57,21 +57,21 @@ public class MoveEvent
      *
      * @return the usual comparison values
      */
-    public int compareTo(Object obj)
+    public int compareTo(IEvent evt)
     {
-        int val = compareBasic(obj);
+        int val = compareBasic(evt);
         if (val == 0) {
-            MoveEvent evt = (MoveEvent) obj;
+            MoveEvent me = (MoveEvent) evt;
 
-            val = eChar.compareTo(evt.eChar);
+            val = eChar.compareTo(me.eChar);
             if (val == 0) {
-                val = evt.fromX - fromX;
+                val = me.fromX - fromX;
                 if (val == 0) {
-                    val = evt.fromY - fromY;
+                    val = me.fromY - fromY;
                     if (val == 0) {
-                        val = evt.toX - toX;
+                        val = me.toX - toX;
                         if (val == 0) {
-                            val = evt.toY - toY;
+                            val = me.toY - toY;
                         }
                     }
                 }
