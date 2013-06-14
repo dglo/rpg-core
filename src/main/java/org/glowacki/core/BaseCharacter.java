@@ -288,14 +288,10 @@ public abstract class BaseCharacter
     int move(IMap map, Direction dir)
         throws MapException
     {
-        try {
-            final int fromX = x;
-            final int fromY = y;
-            map.moveDirection(this, dir);
-            sendEvent(new MoveEvent(this, fromX, fromY, x, y));
-        } catch (MapException me) {
-            return -1;
-        }
+        final int fromX = x;
+        final int fromY = y;
+        map.moveDirection(this, dir);
+        sendEvent(new MoveEvent(this, fromX, fromY, x, y));
 
         return subtractMoveCost(map, dir);
     }

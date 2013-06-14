@@ -259,7 +259,13 @@ public class BaseCharacterTest
                 break;
             }
 
-            int turns = ch.move(map, dir);
+            int turns;
+            try {
+                turns = ch.move(map, dir);
+            } catch (MapException me) {
+                turns = -1;
+            }
+
             assertEquals("Bad " + dir + " X", x, ch.getX());
             assertEquals("Bad " + dir + " Y", y, ch.getY());
             assertEquals("Bad " + dir + " number of turns", expTurns, turns);
@@ -309,7 +315,13 @@ public class BaseCharacterTest
                 break;
             }
 
-            int turns = ch.move(map, dir);
+            int turns;
+            try {
+                turns = ch.move(map, dir);
+            } catch (MapException me) {
+                turns = -1;
+            }
+
             assertEquals("Bad " + dir + " X", x, ch.getX());
             assertEquals("Bad " + dir + " Y", y, ch.getY());
             assertEquals("Bad " + dir + " number of turns", expTurns, turns);
