@@ -12,7 +12,7 @@ public class ComputerCharacter
     private static final int MAX_ATTEMPTS = 20;
 
     private IRandom random;
-    private Level level;
+    private ILevel level;
     private State state;
 
     /**
@@ -65,7 +65,7 @@ public class ComputerCharacter
      *
      * @return never
      */
-    public Level getLevel()
+    public ILevel getLevel()
     {
         throw new UnimplementedError();
     }
@@ -197,7 +197,7 @@ public class ComputerCharacter
      *
      * @throws CoreException if there is a problem
      */
-    public void setLevel(Level lvl)
+    public void setLevel(ILevel lvl)
         throws CoreException
     {
         boolean positioned = false;
@@ -228,7 +228,7 @@ public class ComputerCharacter
      *
      * @throws CoreException if there is a problem
      */
-    public void setLevel(Level lvl, int x, int y)
+    public void setLevel(ILevel lvl, int x, int y)
         throws CoreException
     {
         lvl.addNonplayer(this, x, y);

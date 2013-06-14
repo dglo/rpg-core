@@ -263,7 +263,7 @@ public class PlayerCharacterTest
 
         bottomLvl.enterDown(ch);
 
-        final Level expLvl = ch.getLevel();
+        final ILevel expLvl = ch.getLevel();
         final int expX = ch.getX();
         final int expY = ch.getY();
 
@@ -373,7 +373,7 @@ public class PlayerCharacterTest
 
         topLvl.enterUp(ch);
 
-        final Level expLvl = ch.getLevel();
+        final ILevel expLvl = ch.getLevel();
         final int expX = ch.getX();
         final int expY = ch.getY();
 

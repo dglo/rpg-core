@@ -3,6 +3,7 @@ package org.glowacki.core.test;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
+import org.glowacki.core.ILevel;
 import org.glowacki.core.IMapPoint;
 import org.glowacki.core.IWeapon;
 import org.glowacki.core.Level;
@@ -20,7 +21,7 @@ public class MockCharacter
     private boolean player;
     private int x;
     private int y;
-    private Level level;
+    private ILevel level;
 
     public MockCharacter(String name)
     {
@@ -103,7 +104,7 @@ public class MockCharacter
         return id;
     }
 
-    public Level getLevel()
+    public ILevel getLevel()
     {
         return level;
     }
@@ -160,7 +161,7 @@ public class MockCharacter
         throw new UnimplementedError();
     }
 
-    public void setLevel(Level level)
+    public void setLevel(ILevel level)
     {
         this.level = level;
     }

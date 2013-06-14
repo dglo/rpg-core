@@ -26,11 +26,11 @@ public class PlayerCharacter
 {
     private String name;
 
-    private Level level;
+    private ILevel level;
 
     private List<IMapPoint> path;
 
-    private HashMap<Level, boolean[][]> seenMap;
+    private HashMap<ILevel, boolean[][]> seenMap;
 
     /**
      * Create a player character.
@@ -84,12 +84,12 @@ public class PlayerCharacter
     private int climbStairs()
         throws CoreException
     {
-        Level prevLevel = level.getPreviousLevel();
+        ILevel prevLevel = level.getPreviousLevel();
         if (prevLevel == null) {
             throw new PlayerException("You cannot exit here");
         }
 
-        final Level oldLevel = level;
+        final ILevel oldLevel = level;
         final int oldX = getX();
         final int oldY = getY();
 
@@ -114,12 +114,12 @@ public class PlayerCharacter
     private int descendStairs()
         throws CoreException
     {
-        Level nextLevel = level.getNextLevel();
+        ILevel nextLevel = level.getNextLevel();
         if (nextLevel == null) {
             throw new PlayerException("You are at the bottom");
         }
 
-        final Level oldLevel = level;
+        final ILevel oldLevel = level;
         final int oldX = getX();
         final int oldY = getY();
 
@@ -188,7 +188,7 @@ public class PlayerCharacter
      *
      * @return level
      */
-    public Level getLevel()
+    public ILevel getLevel()
     {
         return level;
     }
@@ -216,7 +216,7 @@ public class PlayerCharacter
         }
 
         if (seenMap == null) {
-            seenMap = new HashMap<Level, boolean[][]>();
+            seenMap = new HashMap<ILevel, boolean[][]>();
         }
 
         boolean[][] seen = seenMap.get(level);
@@ -333,7 +333,7 @@ public class PlayerCharacter
      *
      * @param l level
      */
-    public void setLevel(Level l)
+    public void setLevel(ILevel l)
     {
         this.level = l;
     }

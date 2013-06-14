@@ -14,6 +14,7 @@ import org.glowacki.core.ComputerCharacter;
 import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
+import org.glowacki.core.ILevel;
 import org.glowacki.core.IMapPoint;
 import org.glowacki.core.Level;
 import org.glowacki.core.Map;
@@ -115,7 +116,7 @@ class AsciiView
 
     private char[][] buildMap(PlayerCharacter player)
     {
-        Level level = player.getLevel();
+        ILevel level = player.getLevel();
 
         final int maxX = level.getMaxX();
         final int maxY = level.getMaxY();
@@ -509,7 +510,7 @@ public class Runner
         lvl.enterDown(ch);
     }
 
-    private void populate(Level lvl, IRandom random, int max)
+    private void populate(ILevel lvl, IRandom random, int max)
         throws CoreException
     {
         for (int i = 0; i < max; i++) {

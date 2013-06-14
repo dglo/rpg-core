@@ -20,7 +20,7 @@ class MyCharacter
     extends BaseCharacter
 {
     private String name;
-    private Level level;
+    private ILevel level;
     private boolean player;
 
     MyCharacter(String name, int str, int dex, int pcp, int spd)
@@ -51,7 +51,7 @@ class MyCharacter
         throw new UnimplementedError();
     }
 
-    public Level getLevel()
+    public ILevel getLevel()
     {
         return level;
     }
@@ -93,7 +93,7 @@ class MyCharacter
         throw new UnimplementedError();
     }
 
-    public void setLevel(Level level)
+    public void setLevel(ILevel level)
     {
         this.level = level;
     }

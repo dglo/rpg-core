@@ -73,7 +73,7 @@ public interface ICharacter
      *
      * @return level
      */
-    Level getLevel();
+    ILevel getLevel();
 
     /**
      * Get the boolean array indicating which cells in the current level
@@ -140,7 +140,7 @@ public interface ICharacter
      *
      * @throws CoreException if there is a problem
      */
-    void setLevel(Level lvl)
+    void setLevel(ILevel lvl)
         throws CoreException;
 
     /**
