@@ -112,6 +112,16 @@ public interface ICharacter
     boolean isPlayer();
 
     /**
+     * Has the specified point been seen?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point has been seen
+     */
+    boolean isSeen(int px, int py);
+
+    /**
      * Is the specified point visible?
      *
      * @param px X coordinate

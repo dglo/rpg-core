@@ -163,6 +163,19 @@ public class ComputerCharacter
     }
 
     /**
+     * Has the specified point been seen?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point has been seen
+     */
+    public boolean isSeen(int px, int py)
+    {
+        throw new UnimplementedError();
+    }
+
+    /**
      * Is the specified point visible?
      *
      * @param px X coordinate

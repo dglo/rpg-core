@@ -276,6 +276,24 @@ public class PlayerCharacter
     }
 
     /**
+     * Has the specified point been seen?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point has been seen
+     */
+    public boolean isSeen(int px, int py)
+    {
+        boolean[][] seen = getSeenArray();
+        if (seen == null) {
+            return false;
+        }
+
+        return seen[px][py];
+    }
+
+    /**
      * Is the specified point visible?
      *
      * @param px X coordinate
