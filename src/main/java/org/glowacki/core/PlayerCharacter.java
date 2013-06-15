@@ -27,6 +27,7 @@ public class PlayerCharacter
     private String name;
 
     private ILevel level;
+    private VisibleMap vmap;
 
     private List<IMapPoint> path;
 
@@ -101,14 +102,14 @@ public class PlayerCharacter
         try {
             prevLevel.enterUp(this);
 
-            level = prevLevel;
+            setLevel(prevLevel);
 
             sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
                                            prevLevel, getX(), getY()));
         } catch (CoreException ce) {
             oldLevel.moveTo(this, oldX, oldY);
             setPosition(oldX, oldY);
-            level = oldLevel;
+            setLevel(oldLevel);
             throw ce;
         }
 
@@ -135,14 +136,14 @@ public class PlayerCharacter
         try {
             nextLevel.enterDown(this);
 
-            level = nextLevel;
+            setLevel(nextLevel);
 
             sendEvent(new ChangeLevelEvent(this, oldLevel, oldX, oldY,
                                            nextLevel, getX(), getY()));
         } catch (CoreException ce) {
             oldLevel.moveTo(this, oldX, oldY);
             setPosition(oldX, oldY);
-            level = oldLevel;
+            setLevel(oldLevel);
             throw ce;
         }
 
@@ -237,6 +238,24 @@ public class PlayerCharacter
     }
 
     /**
+     * Get the visible cell array
+     *
+     * @return array of visible cells
+     */
+    public boolean[][] getVisible()
+    {
+        if (level == null) {
+            return null;
+        }
+
+        if (vmap == null) {
+            vmap = new VisibleMap(level.getMap());
+        }
+
+        return vmap.getVisible(getX(), getY(), getSightDistance());
+    }
+
+    /**
      * Does this character have an existing path?
      *
      * @return <tt>true</tt> if this character has an ongoing path
@@ -254,6 +273,24 @@ public class PlayerCharacter
     public boolean isPlayer()
     {
         return true;
+    }
+
+    /**
+     * Is the specified point visible?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point is visible
+     */
+    public boolean isVisible(int px, int py)
+    {
+        boolean[][] visible = getVisible();
+        if (visible == null) {
+            return false;
+        }
+
+        return visible[px][py];
     }
 
     /**
@@ -350,6 +387,9 @@ public class PlayerCharacter
     public void setLevel(ILevel l)
     {
         this.level = l;
+
+        vmap = null;
+        clearPath();
     }
 
     /**

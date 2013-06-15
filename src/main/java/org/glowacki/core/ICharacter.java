@@ -91,6 +91,13 @@ public interface ICharacter
     int getSightDistance();
 
     /**
+     * Get the visible cell array
+     *
+     * @return array of visible cells
+     */
+    boolean[][] getVisible();
+
+    /**
      * Does this character have an existing path?
      *
      * @return <tt>true</tt> if this character has an ongoing path
@@ -103,6 +110,16 @@ public interface ICharacter
      * @return <tt>true</tt> if this character is a player
      */
     boolean isPlayer();
+
+    /**
+     * Is the specified point visible?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point is visible
+     */
+    boolean isVisible(int px, int py);
 
     /**
      * Move the computer character.

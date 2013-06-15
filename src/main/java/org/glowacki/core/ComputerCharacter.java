@@ -91,6 +91,16 @@ public class ComputerCharacter
         throw new UnimplementedError();
     }
 
+    /**
+     * Get the visible cell array
+     *
+     * @return array of visible cells
+     */
+    public boolean[][] getVisible()
+    {
+        throw new UnimplementedError();
+    }
+
     private void handleAsleepTurn()
     {
         double pct = random.nextDouble();
@@ -150,6 +160,19 @@ public class ComputerCharacter
     public boolean isPlayer()
     {
         return false;
+    }
+
+    /**
+     * Is the specified point visible?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point is visible
+     */
+    public boolean isVisible(int px, int py)
+    {
+        throw new UnimplementedError();
     }
 
     /**

@@ -11,6 +11,11 @@ public class VisibleMap
     private IMap map;
     private ShadowCasting algorithm;
 
+    private int vx = Integer.MIN_VALUE;
+    private int vy = Integer.MIN_VALUE;
+    private int vdist = Integer.MIN_VALUE;
+    private boolean[][] visible;
+
     /**
      * Create a map of the visible squares.
      *
@@ -65,11 +70,20 @@ public class VisibleMap
      */
     public boolean[][] getVisible(int x, int y, int distance)
     {
-        TemporaryMap tmp = new TemporaryMap();
+        // only recalculate when position changes
+        if (x != vx || y != vy || distance != vdist) {
+            TemporaryMap tmp = new TemporaryMap();
 
-        algorithm.findVisible(tmp, x, y, distance);
+            algorithm.findVisible(tmp, x, y, distance);
 
-        return tmp.getVisible();
+            visible = tmp.getVisible();
+
+            vx = x;
+            vy = y;
+            vdist = distance;
+        }
+
+        return visible;
     }
 
     /**

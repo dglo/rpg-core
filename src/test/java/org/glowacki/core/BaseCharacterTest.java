@@ -67,6 +67,16 @@ class MyCharacter
         throw new UnimplementedError();
     }
 
+    /**
+     * Get the visible cell array
+     *
+     * @return array of visible cells
+     */
+    public boolean[][] getVisible()
+    {
+        throw new UnimplementedError();
+    }
+
     public boolean hasPath()
     {
         return false;
@@ -75,6 +85,19 @@ class MyCharacter
     public boolean isPlayer()
     {
         return player;
+    }
+
+    /**
+     * Is the specified point visible?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point is visible
+     */
+    public boolean isVisible(int px, int py)
+    {
+        throw new UnimplementedError();
     }
 
     public int move(Direction dir)
