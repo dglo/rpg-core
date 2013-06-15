@@ -68,6 +68,11 @@ class MockMapObject
         this.x = x;
         this.y = y;
     }
+
+    public String toString()
+    {
+        return String.format("%s[%d,%d]", name, x, y);
+    }
 }
 
 public class MapTest
@@ -404,6 +409,35 @@ public class MapTest
         }
     }
 
+    public void testMoveFromNowhere()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|..|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockMapObject movie = new MockMapObject("movie");
+        movie.setPosition(-1, -1);
+
+        tmap.moveTo(movie, 1, 1);
+        assertEquals("Bad X position", 1, movie.getX());
+        assertEquals("Bad Y position", 1, movie.getY());
+
+        tmap.removeObject(movie);
+        assertEquals("Bad X position", -1, movie.getX());
+        assertEquals("Bad Y position", -1, movie.getY());
+
+        movie.setPosition(1, -1);
+
+        tmap.moveTo(movie, 1, 1);
+        assertEquals("Bad X position", 1, movie.getX());
+        assertEquals("Bad Y position", 1, movie.getY());
+    }
+
     public void testMoveTo()
         throws CoreException
     {
@@ -484,14 +518,85 @@ public class MapTest
             tmap.enterDown(entry);
             fail("Should not be able to enter with no up staircase");
         } catch (CoreException ce) {
-            // expect this to fail
+            assertNotNull("Null exception message", ce.getMessage());
+            assertEquals("Bad exception message",
+                         "Map has no up staircase", ce.getMessage());
         }
 
         try {
             tmap.enterUp(entry);
             fail("Should not be able to enter with no up staircase");
         } catch (CoreException ce) {
-            // expect this to fail
+            assertNotNull("Null exception message", ce.getMessage());
+            assertEquals("Bad exception message",
+                         "Map has no down staircase", ce.getMessage());
+        }
+    }
+
+    public void testEnterDownOccupied()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|<.|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockMapObject occupier = new MockMapObject("occupier");
+        MockMapObject entry = new MockMapObject("entry");
+
+        tmap.enterDown(occupier);
+
+        try {
+            tmap.enterDown(entry);
+            fail("Should not be able to enter occupied down staircase");
+        } catch (CoreException ce) {
+            assertNotNull("Null exception message", ce.getMessage());
+            assertEquals("Bad exception message",
+                         "Up staircase is occupied", ce.getMessage());
+        }
+    }
+
+    public void testEnterUpOccupied()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|.>|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockMapObject occupier = new MockMapObject("occupier");
+        MockMapObject entry = new MockMapObject("entry");
+
+        tmap.enterUp(occupier);
+
+        try {
+            tmap.enterUp(entry);
+            fail("Should not be able to enter occupied up staircase");
+        } catch (CoreException ce) {
+            assertNotNull("Null exception message", ce.getMessage());
+            assertEquals("Bad exception message",
+                         "Down staircase is occupied", ce.getMessage());
+        }
+    }
+
+    public void testGetEntries()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "----",
+            "|.>|",
+            "----",
+        };
+
+        Map tmap = new Map(map);
+
+        for (MapEntry e : tmap.getEntries()) {
         }
     }
 

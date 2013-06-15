@@ -8,11 +8,6 @@ import java.util.Iterator;
 class OccupiedException
     extends MapException
 {
-    OccupiedException()
-    {
-        super();
-    }
-
     OccupiedException(String msg)
     {
         super(msg);
