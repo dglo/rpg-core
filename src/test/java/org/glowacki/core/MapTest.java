@@ -17,6 +17,8 @@ class MockMapObject
     MockMapObject(String name)
     {
         this.name = name;
+
+        clearPosition();
     }
 
     /**
@@ -597,6 +599,100 @@ public class MapTest
         Map tmap = new Map(map);
 
         for (MapEntry e : tmap.getEntries()) {
+        }
+    }
+
+    public void testBadMove()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            ".",
+        };
+
+        Map tmap = new Map(map);
+
+        MockMapObject entry = new MockMapObject("entry");
+
+        for (int i = 0; i < 8; i++) {
+            Direction dir = Direction.getDirection(i);
+
+            if (entry.getX() >= 0 && entry.getY() >= 0) {
+                tmap.removeObject(entry);
+            }
+
+            tmap.insertObject(entry, 0, 0);
+
+            try {
+                tmap.moveDirection(entry, dir);
+                fail("Should not be able to moveDirection");
+            } catch (CoreException ce) {
+                assertNotNull("Null exception message", ce.getMessage());
+                assertEquals("Bad exception message",
+                             "Cannot move " + entry.getName() + " to " + dir,
+                             ce.getMessage());
+            }
+
+            assertEquals("Bad X coordinate for " + dir, 0, entry.getX());
+            assertEquals("Bad Y coordinate for " + dir, 0, entry.getY());
+        }
+    }
+
+    public void testMoveDirection()
+        throws CoreException
+    {
+        final String[] map = new String[] {
+            "-----",
+            "|...|",
+            "|...|",
+            "|...|",
+            "-----",
+        };
+
+        Map tmap = new Map(map);
+
+        MockMapObject entry = new MockMapObject("entry");
+
+        for (int i = 0; i < 8; i++) {
+            Direction dir = Direction.getDirection(i);
+
+            if (entry.getX() > 0 && entry.getY() > 0) {
+                tmap.removeObject(entry);
+            }
+
+            int centerX = 2;
+            int centerY = 2;
+
+            tmap.insertObject(entry, centerX, centerY);
+
+            tmap.moveDirection(entry, dir);
+
+            int expX = centerX;
+            int expY = centerY;
+
+            if (dir == Direction.LEFT_UP || dir == Direction.LEFT ||
+                dir == Direction.LEFT_DOWN)
+            {
+                expX -= 1;
+            } else if (dir == Direction.RIGHT_UP ||
+                       dir == Direction.RIGHT ||
+                       dir == Direction.RIGHT_DOWN)
+            {
+                expX += 1;
+            }
+
+            if (dir == Direction.LEFT_UP || dir == Direction.UP ||
+                dir == Direction.RIGHT_UP)
+            {
+                expY -= 1;
+            } else if (dir == Direction.LEFT_DOWN ||
+                       dir == Direction.DOWN ||
+                       dir == Direction.RIGHT_DOWN)
+            {
+                expY += 1;
+            }
+
+            assertEquals("Bad X coordinate for " + dir, expX, entry.getX());
+            assertEquals("Bad Y coordinate for " + dir, expY, entry.getY());
         }
     }
 
