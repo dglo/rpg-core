@@ -15,6 +15,7 @@ import org.glowacki.core.CoreException;
 import org.glowacki.core.Direction;
 import org.glowacki.core.ICharacter;
 import org.glowacki.core.ILevel;
+import org.glowacki.core.IMap;
 import org.glowacki.core.IMapPoint;
 import org.glowacki.core.Level;
 import org.glowacki.core.Map;
@@ -206,7 +207,7 @@ class AsciiController
         view.close();
     }
 
-    private IMapPoint findGoal(Map map, Direction dir)
+    private IMapPoint findGoal(IMap map, Direction dir)
         throws CoreException
     {
         Terrain t;

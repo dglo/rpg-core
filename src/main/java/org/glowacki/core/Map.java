@@ -244,7 +244,7 @@ public class Map
      *
      * @throws MapException if there is a problem
      */
-    void insertObject(IMapObject obj, int x, int y)
+    public void insertObject(IMapObject obj, int x, int y)
         throws MapException
     {
         if (y < 0 || y >= map.length || x < 0 || x >= map[0].length) {
@@ -377,7 +377,7 @@ public class Map
      *
      * @throws MapException if there is a problem
      */
-    void removeObject(IMapObject obj)
+    public void removeObject(IMapObject obj)
         throws MapException
     {
         if (obj.getY() < 0 || obj.getY() >= map.length ||

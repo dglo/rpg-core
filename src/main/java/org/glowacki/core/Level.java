@@ -10,10 +10,10 @@ public class Level
     implements ILevel
 {
     private String name;
-    private Map map;
+    private IMap map;
 
-    private Level prevLevel;
-    private Level nextLevel;
+    private ILevel prevLevel;
+    private ILevel nextLevel;
 
     private List<ICharacter> players = new ArrayList<ICharacter>();
     private List<ICharacter> nonplayers = new ArrayList<ICharacter>();
@@ -24,7 +24,7 @@ public class Level
      * @param name level name
      * @param map map of this level
      */
-    public Level(String name, Map map)
+    public Level(String name, IMap map)
     {
         this.name = name;
         this.map = map;
@@ -204,7 +204,7 @@ public class Level
      *
      * @return map
      */
-    public Map getMap()
+    public IMap getMap()
     {
         return map;
     }
@@ -244,7 +244,7 @@ public class Level
      *
      * @return next level
      */
-    public Level getNextLevel()
+    public ILevel getNextLevel()
     {
         return nextLevel;
     }
@@ -264,7 +264,7 @@ public class Level
      *
      * @return previous level
      */
-    public Level getPreviousLevel()
+    public ILevel getPreviousLevel()
     {
         return prevLevel;
     }

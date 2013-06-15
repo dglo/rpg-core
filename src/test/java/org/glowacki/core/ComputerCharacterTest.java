@@ -5,7 +5,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.glowacki.core.test.MapBuilder;
+import org.glowacki.core.test.MockLevel;
+import org.glowacki.core.test.MockMap;
 import org.glowacki.core.test.MockRandom;
 
 public class ComputerCharacterTest
@@ -64,7 +65,8 @@ public class ComputerCharacterTest
     {
         MockRandom random = new MockRandom();
 
-        Map map = new Map(MapBuilder.buildMap(2, 2, -1, -1));
+        MockMap map = new MockMap(4, 4);
+        map.setTerrain(Terrain.FLOOR);
 
         Direction dir = Direction.LEFT;
         do {
@@ -72,7 +74,7 @@ public class ComputerCharacterTest
 
             ComputerCharacter ch = new ComputerCharacter(random, 1, 2, 10, 10);
 
-            Level lvl = new Level("empty", map);
+            MockLevel lvl = new MockLevel("empty", map);
             ch.setLevel(lvl, 2, 2);
 
             int turns;

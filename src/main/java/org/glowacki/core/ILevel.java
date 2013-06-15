@@ -65,7 +65,7 @@ public interface ILevel
      *
      * @return map
      */
-    Map getMap();
+    IMap getMap();
 
     /**
      * Get the maximum X coordinate.
@@ -93,14 +93,14 @@ public interface ILevel
      *
      * @return next level
      */
-    Level getNextLevel();
+    ILevel getNextLevel();
 
     /**
      * Get the previous level.
      *
      * @return previous level
      */
-    Level getPreviousLevel();
+    ILevel getPreviousLevel();
 
     /**
      * Get the terrain at the specified point.

@@ -8,7 +8,7 @@ import org.glowacki.core.fov.ShadowCasting;
  */
 public class VisibleMap
 {
-    private Map map;
+    private IMap map;
     private ShadowCasting algorithm;
 
     /**
@@ -16,7 +16,7 @@ public class VisibleMap
      *
      * @param map source map
      */
-    public VisibleMap(Map map)
+    public VisibleMap(IMap map)
     {
         this.map = map;
 

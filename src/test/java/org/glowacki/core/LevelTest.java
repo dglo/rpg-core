@@ -5,8 +5,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import org.glowacki.core.test.MapBuilder;
 import org.glowacki.core.test.MockCharacter;
+import org.glowacki.core.test.MockMap;
 
 public class LevelTest
     extends TestCase
@@ -42,7 +42,7 @@ public class LevelTest
     public void testNextLevel()
         throws CoreException
     {
-        Map map1 = new Map(MapBuilder.buildMap(-1, -1, 2, 2));
+        MockMap map1 = new MockMap(2, 2);
         Level l1 = new Level("1", map1);
 
         try {
@@ -54,7 +54,7 @@ public class LevelTest
                          "Next level cannot be null", ce.getMessage());
         }
 
-        Map map2 = new Map(MapBuilder.buildMap(2, 2, -1, -1));
+        MockMap map2 = new MockMap(2, 2);
         Level l2 = new Level("2", map2);
 
         assertNull("Next level for level 1 is not null", l1.getNextLevel());
@@ -74,7 +74,7 @@ public class LevelTest
         assertEquals("Bad previous level for level 2",
                      l1, l2.getPreviousLevel());
 
-        Map map3 = new Map(MapBuilder.buildMap(4, 3, 2, 1));
+        MockMap map3 = new MockMap(5, 4);
         Level l3 = new Level("Extra", map3);
 
         try {
@@ -101,7 +101,7 @@ public class LevelTest
     public void testPreviousLevel()
         throws CoreException
     {
-        Map map1 = new Map(MapBuilder.buildMap(-1, -1, 2, 2));
+        MockMap map1 = new MockMap(3, 3);
         Level l1 = new Level("1", map1);
 
         try {
@@ -113,7 +113,7 @@ public class LevelTest
                          "Previous level cannot be null", ce.getMessage());
         }
 
-        Map map2 = new Map(MapBuilder.buildMap(2, 2, -1, -1));
+        MockMap map2 = new MockMap(4, 4);
         Level l2 = new Level("2", map2);
 
         assertNull("Previous level for level 1 is not null",
@@ -136,7 +136,7 @@ public class LevelTest
         assertEquals("Bad next level for level 2",
                      l1, l2.getNextLevel());
 
-        Map map3 = new Map(MapBuilder.buildMap(4, 3, 2, 1));
+        MockMap map3 = new MockMap(5, 4);
         Level l3 = new Level("Extra", map3);
 
         try {
@@ -168,7 +168,10 @@ public class LevelTest
         final int upX = 2;
         final int downX = 3;
 
-        Map map = new Map(MapBuilder.buildMap(upX, row, downX, row));
+        MockMap map = new MockMap(downX + 2, row + 2);
+        map.setUpStaircase(upX, row);
+        map.setDownStaircase(downX, row);
+
         Level lvl = new Level("enterExit", map);
         assertNotNull("Null character list", lvl.getCharacters());
         assertEquals("Non-empty character list",
@@ -202,15 +205,7 @@ public class LevelTest
     public void testNoEnterExit()
         throws CoreException
     {
-        String[] mapData = new String[] {
-            "------",
-            "|....|",
-            "|....|",
-            "|....|",
-            "------",
-        };
-
-        Map map = new Map(mapData);
+        MockMap map = new MockMap(5, 5);
         Level lvl = new Level("godot", map);
 
         final String name = "xyz";
@@ -253,7 +248,10 @@ public class LevelTest
         final int upX = 2;
         final int downX = 3;
 
-        Map map = new Map(MapBuilder.buildMap(upX, row, downX, row));
+        MockMap map = new MockMap(downX + 2, row + 2);
+        map.setUpStaircase(upX, row);
+        map.setDownStaircase(downX, row);
+
         Level lvl = new Level("enterExit", map);
         assertNotNull("Null character list", lvl.getCharacters());
         assertEquals("Non-empty character list",

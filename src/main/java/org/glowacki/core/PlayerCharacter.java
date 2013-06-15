@@ -84,6 +84,10 @@ public class PlayerCharacter
     private int climbStairs()
         throws CoreException
     {
+        if (level == null) {
+            throw new PlayerException("Level has not been set for " + name);
+        }
+
         ILevel prevLevel = level.getPreviousLevel();
         if (prevLevel == null) {
             throw new PlayerException("You cannot exit here");
@@ -114,6 +118,10 @@ public class PlayerCharacter
     private int descendStairs()
         throws CoreException
     {
+        if (level == null) {
+            throw new PlayerException("Level has not been set for " + name);
+        }
+
         ILevel nextLevel = level.getNextLevel();
         if (nextLevel == null) {
             throw new PlayerException("You are at the bottom");
@@ -293,7 +301,9 @@ public class PlayerCharacter
     public int movePath()
         throws CoreException
     {
-        if (path == null || path.size() == 0) {
+        if (level == null) {
+            throw new PlayerException("Level has not been set for " + name);
+        } else if  (path == null || path.size() == 0) {
             throw new PlayerException("No current path");
         }
 
@@ -318,6 +328,10 @@ public class PlayerCharacter
      */
     public boolean onStaircase()
     {
+        if (level == null) {
+            return false;
+        }
+
         Terrain t;
         try {
             t = level.getTerrain(getX(), getY());
@@ -356,6 +370,10 @@ public class PlayerCharacter
     public int useStaircase()
         throws CoreException
     {
+        if (level == null) {
+            throw new PlayerException("Level has not been set for " + name);
+        }
+
         Terrain t = level.getTerrain(getX(), getY());
         if (t == Terrain.UPSTAIRS) {
             return climbStairs();

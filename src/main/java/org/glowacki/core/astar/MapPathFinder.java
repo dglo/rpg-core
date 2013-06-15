@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.glowacki.core.IMapPoint;
-import org.glowacki.core.Map;
+import org.glowacki.core.IMap;
 import org.glowacki.core.MapEntry;
 
 /**
@@ -192,7 +192,7 @@ public class MapPathFinder
      *
      * @param map map
      */
-    public MapPathFinder(Map map)
+    public MapPathFinder(IMap map)
     {
         nodes = new MapNode[map.getMaxX() + 1][map.getMaxY() + 1];
 

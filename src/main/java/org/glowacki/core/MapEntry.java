@@ -18,7 +18,7 @@ public class MapEntry
      * @param y Y coordinate
      * @param t terrain
      */
-    MapEntry(int x, int y, Terrain t)
+    public MapEntry(int x, int y, Terrain t)
     {
         this.x = x;
         this.y = y;

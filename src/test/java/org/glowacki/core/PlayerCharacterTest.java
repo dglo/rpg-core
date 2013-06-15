@@ -7,6 +7,8 @@ import junit.textui.TestRunner;
 
 import org.glowacki.core.test.MapBuilder;
 import org.glowacki.core.test.MockCharacter;
+import org.glowacki.core.test.MockLevel;
+import org.glowacki.core.test.MockMap;
 
 class PlayerPoint
     implements IMapPoint
@@ -66,6 +68,7 @@ public class PlayerCharacterTest
         assertEquals("Bad starting Y", fromY, ch.getY());
 
         ch.buildPath(new PlayerPoint(toX, toY));
+        assertTrue("Player should have a path", ch.hasPath());
 
         int moves = 0;
         while (ch.hasPath()) {
@@ -110,8 +113,8 @@ public class PlayerCharacterTest
         ICharacter ch = new PlayerCharacter("joe", 1, 2, 3, 4);
         assertNull("Initial level is not null", ch.getLevel());
 
-        Map map = new Map(MapBuilder.buildMap(-1, -1, -1, -2));
-        Level lvl = new Level("empty", map);
+        MockMap map = new MockMap(1, 1);
+        MockLevel lvl = new MockLevel("empty", map);
 
         ch.setLevel(lvl);
         assertNotNull("Level is null", ch.getLevel());
@@ -147,14 +150,17 @@ public class PlayerCharacterTest
     public void testMove2D()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, -1, -1));
+        MockMap map = new MockMap(3, 3);
+        map.setTerrain(Terrain.FLOOR);
 
         Direction dir = Direction.LEFT;
         do {
-            ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
+            MockLevel lvl = new MockLevel("empty", map);
+            lvl.setMap(map);
 
-            Level lvl = new Level("empty", map);
-            lvl.enterDown(ch);
+            ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
+            ch.setLevel(lvl);
+            ch.setPosition(1, 1);
 
             int turns;
             try {
@@ -182,15 +188,18 @@ public class PlayerCharacterTest
     public void testClimb()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(3, 3);
+        map.setUpStaircase(1, 1);
+        map.setDownStaircase(2, 2);
+
+        MockLevel topLvl = new MockLevel("top", map);
+        MockLevel bottomLvl = new MockLevel("bottom", map);
+        topLvl.setNextLevel(bottomLvl);
+        bottomLvl.setPreviousLevel(topLvl);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-        Level bottomLvl = new Level("bottom", map);
-        topLvl.addNextLevel(bottomLvl);
-
-        bottomLvl.enterDown(ch);
+        ch.setLevel(bottomLvl);
+        ch.setPosition(1, 1);
 
         Direction dir = Direction.CLIMB;
 
@@ -205,15 +214,19 @@ public class PlayerCharacterTest
     public void testNoClimbOnUp()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(4, 4);
+        map.setDownStaircase(2, 2);
+        map.setUpStaircase(3, 3);
+
+        MockLevel topLvl = new MockLevel("top", map);
+        MockLevel bottomLvl = new MockLevel("bottom", map);
+
+        topLvl.setNextLevel(bottomLvl);
+        bottomLvl.setPreviousLevel(topLvl);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-        Level bottomLvl = new Level("bottom", map);
-        topLvl.addNextLevel(bottomLvl);
-
-        bottomLvl.enterUp(ch);
+        ch.setLevel(bottomLvl);
+        ch.setPosition(1, 1);
 
         Direction dir = Direction.CLIMB;
 
@@ -230,13 +243,14 @@ public class PlayerCharacterTest
     public void testNoClimbOnTopLevel()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(4, 4);
+        map.setUpStaircase(3, 3);
+
+        MockLevel lvl = new MockLevel("lvl", map);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-
-        topLvl.enterDown(ch);
+        ch.setLevel(lvl);
+        ch.setPosition(3, 3);
 
         Direction dir = Direction.CLIMB;
 
@@ -253,23 +267,24 @@ public class PlayerCharacterTest
     public void testNoClimbToOccupied()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(4, 4);
+        map.setUpStaircase(2, 2);
+        map.setDownStaircase(3, 3);
+
+        MockLevel topLvl = new MockLevel("top", map);
+        MockLevel bottomLvl = new MockLevel("bottom", map);
+        topLvl.setNextLevel(bottomLvl);
+        bottomLvl.setPreviousLevel(topLvl);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-        Level bottomLvl = new Level("bottom", map);
-        topLvl.addNextLevel(bottomLvl);
-
-        bottomLvl.enterDown(ch);
+        ch.setLevel(bottomLvl);
+        ch.setPosition(2, 2);
 
         final ILevel expLvl = ch.getLevel();
         final int expX = ch.getX();
         final int expY = ch.getY();
 
-        MockCharacter squatter = new MockCharacter("squatter");
-
-        topLvl.enterUp(squatter);
+        topLvl.setOccupied();
 
         Direction dir = Direction.CLIMB;
 
@@ -280,7 +295,7 @@ public class PlayerCharacterTest
         } catch (CoreException ex) {
             assertNotNull("Null exception message", ex.getMessage());
 
-            final String msg = "Down staircase is occupied";
+            final String msg = "Occupied";
             assertEquals("Bad message", msg, ex.getMessage());
         }
 
@@ -292,15 +307,18 @@ public class PlayerCharacterTest
     public void testDescend()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(4, 4);
+        map.setUpStaircase(2, 2);
+        map.setDownStaircase(3, 3);
+
+        MockLevel topLvl = new MockLevel("top", map);
+        MockLevel bottomLvl = new MockLevel("bottom", map);
+        topLvl.setNextLevel(bottomLvl);
+        bottomLvl.setPreviousLevel(topLvl);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-        Level bottomLvl = new Level("bottom", map);
-        topLvl.addNextLevel(bottomLvl);
-
-        topLvl.enterUp(ch);
+        ch.setLevel(topLvl);
+        ch.setPosition(3, 3);
 
         Direction dir = Direction.DESCEND;
 
@@ -315,15 +333,18 @@ public class PlayerCharacterTest
     public void testNoDescendOnDown()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(4, 4);
+        map.setUpStaircase(1, 1);
+        map.setDownStaircase(2, 2);
+
+        MockLevel topLvl = new MockLevel("top", map);
+        MockLevel bottomLvl = new MockLevel("bottom", map);
+        topLvl.setNextLevel(bottomLvl);
+        bottomLvl.setPreviousLevel(topLvl);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-        Level bottomLvl = new Level("bottom", map);
-        topLvl.addNextLevel(bottomLvl);
-
-        topLvl.enterDown(ch);
+        ch.setLevel(bottomLvl);
+        ch.setPosition(1, 1);
 
         Direction dir = Direction.DESCEND;
 
@@ -340,13 +361,14 @@ public class PlayerCharacterTest
     public void testNoDescendOnBottomLevel()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(4, 4);
+        map.setDownStaircase(3, 3);
+
+        MockLevel topLvl = new MockLevel("top", map);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-
-        topLvl.enterUp(ch);
+        ch.setLevel(topLvl);
+        ch.setPosition(3, 3);
 
         Direction dir = Direction.DESCEND;
 
@@ -363,23 +385,24 @@ public class PlayerCharacterTest
     public void testNoDescendToOccupied()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 3));
+        MockMap map = new MockMap(4, 4);
+        map.setUpStaircase(2, 2);
+        map.setDownStaircase(3, 3);
+
+        MockLevel topLvl = new MockLevel("top", map);
+        MockLevel bottomLvl = new MockLevel("bottom", map);
+        topLvl.setNextLevel(bottomLvl);
+        bottomLvl.setPreviousLevel(topLvl);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
-
-        Level topLvl = new Level("top", map);
-        Level bottomLvl = new Level("bottom", map);
-        topLvl.addNextLevel(bottomLvl);
-
-        topLvl.enterUp(ch);
+        ch.setLevel(topLvl);
+        ch.setPosition(3, 3);
 
         final ILevel expLvl = ch.getLevel();
         final int expX = ch.getX();
         final int expY = ch.getY();
 
-        MockCharacter squatter = new MockCharacter("squatter");
-
-        bottomLvl.enterDown(squatter);
+        bottomLvl.setOccupied();
 
         Direction dir = Direction.DESCEND;
 
@@ -390,7 +413,7 @@ public class PlayerCharacterTest
         } catch (CoreException ex) {
             assertNotNull("Null exception message", ex.getMessage());
 
-            final String msg = "Up staircase is occupied";
+            final String msg = "Occupied";
             assertEquals("Bad message", msg, ex.getMessage());
         }
 
@@ -402,15 +425,16 @@ public class PlayerCharacterTest
     public void testSeenArray()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 4, 4));
+        MockMap map = new MockMap(4, 4);
+
+        MockLevel lvl = new MockLevel("level", map);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
 
-        Level lvl = new Level("level", map);
-
         assertNull("'Seen' array is not null", ch.getSeenArray());
 
-        lvl.enterDown(ch);
+        ch.setLevel(lvl);
+        ch.setPosition(2, 2);
 
         boolean[][] seen = ch.getSeenArray();
         assertNotNull("'Seen' array should not be null", seen);
@@ -434,13 +458,14 @@ public class PlayerCharacterTest
     public void testBuildPathBad()
         throws CoreException
     {
-        Map map = new Map(MapBuilder.buildMap(2, 2, 2, 4));
+        MockMap map = new MockMap(4, 4);
+
+        MockLevel lvl = new MockLevel("level", map);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
+        ch.setLevel(lvl);
+        ch.setPosition(2, 2);
 
-        Level lvl = new Level("level", map);
-
-        lvl.enterDown(ch);
         assertFalse("Player should not have a defined path", ch.hasPath());
 
         try {
@@ -500,11 +525,14 @@ public class PlayerCharacterTest
                          ex.getMessage());
         }
 
-        Map map = new Map(MapBuilder.buildMap(2, 2, 10, 10));
+        MockMap map = new MockMap(4, 4);
+        map.setTerrain(Terrain.FLOOR);
 
-        Level lvl = new Level("level", map);
+        MockLevel lvl = new MockLevel("level", map);
 
-        lvl.enterDown(ch);
+        ch.setLevel(lvl);
+        ch.setPosition(2, 2);
+
         assertFalse("Player should not have a defined path", ch.hasPath());
 
         ch.buildPath(goal);
@@ -517,7 +545,12 @@ public class PlayerCharacterTest
     public void testMovePathBad()
         throws CoreException
     {
+        MockMap map = new MockMap(4, 4);
+
+        MockLevel lvl = new MockLevel("level", map);
+
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
+        ch.setLevel(lvl);
 
         try {
             ch.movePath();
@@ -537,15 +570,18 @@ public class PlayerCharacterTest
         final int downX = 4;
         final int downY = 4;
 
-        Map map = new Map(MapBuilder.buildMap(upX, upY, downX, downY));
+        MockMap map = new MockMap(4, 4);
+        map.setTerrain(Terrain.FLOOR);
+
+        MockLevel lvl = new MockLevel("level", map);
 
         ICharacter ch = new PlayerCharacter("foo", 1, 2, 10, 10);
         assertEquals("Bad initial X", -1, ch.getX());
         assertEquals("Bad initial Y", -1, ch.getY());
 
-        Level lvl = new Level("level", map);
+        ch.setLevel(lvl);
+        ch.setPosition(1, 1);
 
-        lvl.enterDown(ch);
         assertFalse("Player should not have a defined path", ch.hasPath());
 
         runPath(ch, 1, 1, 2, 3, 2);

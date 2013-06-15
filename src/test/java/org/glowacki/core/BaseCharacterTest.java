@@ -13,6 +13,7 @@ import org.glowacki.core.event.EventListener;
 import org.glowacki.core.test.MapBuilder;
 import org.glowacki.core.test.MockCharacter;
 import org.glowacki.core.test.MockListener;
+import org.glowacki.core.test.MockMap;
 import org.glowacki.core.test.MockRandom;
 import org.glowacki.core.test.MockWeapon;
 
@@ -106,86 +107,6 @@ class MyCharacter
     public int useStaircase()
     {
         throw new UnimplementedError();
-    }
-}
-
-class MockMap
-    implements IMap
-{
-    private int maxX;
-    private int maxY;
-    private Terrain terrain;
-
-    MockMap(int maxX, int maxY)
-    {
-        this.maxX = maxX;
-        this.maxY = maxY;
-    }
-
-    public int getMaxX()
-    {
-        return maxX;
-    }
-
-    public int getMaxY()
-    {
-        return maxY;
-    }
-
-    public Terrain getTerrain(int x, int y)
-        throws MapException
-    {
-        return terrain;
-    }
-
-    public void moveDirection(IMapObject obj, Direction dir)
-        throws MapException
-    {
-        int newX = obj.getX();
-        int newY = obj.getY();
-
-        boolean moved = true;
-        if (dir == Direction.LEFT_UP || dir == Direction.LEFT ||
-            dir == Direction.LEFT_DOWN)
-        {
-            newX -= 1;
-            moved &= (newX >= 0);
-        } else if (dir == Direction.RIGHT_UP || dir == Direction.RIGHT ||
-                   dir == Direction.RIGHT_DOWN)
-        {
-            newX += 1;
-            moved &= (newX <= getMaxX());
-        }
-
-        if (dir == Direction.LEFT_UP || dir == Direction.UP ||
-            dir == Direction.RIGHT_UP)
-        {
-            newY -= 1;
-            moved &= (newY >= 0);
-        } else if (dir == Direction.LEFT_DOWN || dir == Direction.DOWN ||
-                   dir == Direction.RIGHT_DOWN)
-        {
-            newY += 1;
-            moved &= (newY <= getMaxY());
-        }
-
-        if (!moved) {
-            throw new MapException(String.format("Cannot move %s to %s",
-                                                 obj.getName(), dir));
-        }
-
-        moveTo(obj, newX, newY);
-    }
-
-    public void moveTo(IMapObject obj, int x, int y)
-        throws MapException
-    {
-        obj.setPosition(x, y);
-    }
-
-    public void setTerrain(Terrain t)
-    {
-        terrain = t;
     }
 }
 
