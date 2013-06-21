@@ -33,9 +33,11 @@ public class LevelTest
 
         Level lvl = new Level(name, new Map(map));
         assertEquals("Bad name", name, lvl.getName());
-        assertNotNull("Null character list", lvl.getCharacters());
-        assertEquals("Non-empty character list",
-                     0, lvl.getCharacters().size());
+        assertNotNull("Null character list", lvl.listCharacters());
+        assertEquals("Non-empty non-player character list",
+                     0, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
         assertNotNull("Null string", lvl.toString());
     }
 
@@ -173,33 +175,45 @@ public class LevelTest
         map.setDownStaircase(downX, row);
 
         Level lvl = new Level("enterExit", map);
-        assertNotNull("Null character list", lvl.getCharacters());
-        assertEquals("Non-empty character list",
-                     0, lvl.getCharacters().size());
+        assertNotNull("Null character list", lvl.listCharacters());
+        assertEquals("Non-empty non-player character list",
+                     0, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         MockCharacter ch = new MockCharacter("joe");
 
         lvl.enterDown(ch);
         assertEquals("Bad X from enterDown", upX, ch.getX());
         assertEquals("Bad Y from enterDown", row, ch.getY());
-        assertEquals("Empty character list", 1, lvl.getCharacters().size());
+        assertEquals("Empty character list",
+                     1, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         lvl.exit(ch);
         assertEquals("Bad X after exit", -1, ch.getX());
         assertEquals("Bad Y after exit", -1, ch.getY());
         assertEquals("Non-empty character list",
-                     0, lvl.getCharacters().size());
+                     0, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         lvl.enterUp(ch);
         assertEquals("Bad X from enterDown", downX, ch.getX());
         assertEquals("Bad Y from enterDown", row, ch.getY());
-        assertEquals("Empty character list", 1, lvl.getCharacters().size());
+        assertEquals("Empty character list",
+                     1, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         lvl.exit(ch);
         assertEquals("Bad X after exit", -1, ch.getX());
         assertEquals("Bad Y after exit", -1, ch.getY());
         assertEquals("Non-empty character list",
-                     0, lvl.getCharacters().size());
+                     0, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
     }
 
     public void testNoEnterExit()
@@ -253,33 +267,45 @@ public class LevelTest
         map.setDownStaircase(downX, row);
 
         Level lvl = new Level("enterExit", map);
-        assertNotNull("Null character list", lvl.getCharacters());
-        assertEquals("Non-empty character list",
-                     0, lvl.getCharacters().size());
+        assertNotNull("Null character list", lvl.listCharacters());
+        assertEquals("Non-empty non-player character list",
+                     0, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         ICharacter ch = new MockCharacter("joe");
 
         lvl.enterDown(ch);
         assertEquals("Bad X from enterDown", upX, ch.getX());
         assertEquals("Bad Y from enterDown", row, ch.getY());
-        assertEquals("Bad character list", 1, lvl.getCharacters().size());
+        assertEquals("Bad non-player character list",
+                     1, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         lvl.exit(ch);
         assertEquals("Bad X after exit", -1, ch.getX());
         assertEquals("Bad Y after exit", -1, ch.getY());
-        assertEquals("Non-empty character list",
-                     0, lvl.getCharacters().size());
+        assertEquals("Non-empty non-player character list",
+                     0, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         lvl.enterUp(ch);
         assertEquals("Bad X from enterDown", downX, ch.getX());
         assertEquals("Bad Y from enterDown", row, ch.getY());
-        assertEquals("Empty character list", 1, lvl.getCharacters().size());
+        assertEquals("Empty character list",
+                     1, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
 
         lvl.exit(ch);
         assertEquals("Bad X after exit", -1, ch.getX());
         assertEquals("Bad Y after exit", -1, ch.getY());
         assertEquals("Non-empty character list",
-                     0, lvl.getCharacters().size());
+                     0, lvl.getNumberOfNonPlayerCharacters());
+        assertEquals("Non-empty player character list",
+                     0, lvl.getNumberOfPlayerCharacters());
     }
 
     public static void main(String[] args)

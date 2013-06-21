@@ -259,7 +259,7 @@ class AsciiController
                 view.drawScreen(ch);
                 int turns = handleInput(ch);
                 while (turns > 0) {
-                    for (ICharacter npc : ch.getLevel().getCharacters()) {
+                    for (ICharacter npc : ch.getLevel().listCharacters()) {
                         if (!npc.isPlayer()) {
                             npcs.put(npc, npc);
                         }

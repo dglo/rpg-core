@@ -187,19 +187,6 @@ public class Level
     }
 
     /**
-     * Get a list of characters on this level.
-     *
-     * @return list of characters
-     */
-    public List<ICharacter> getCharacters()
-    {
-        List<ICharacter> characters =
-            new ArrayList<ICharacter>(players);
-        characters.addAll(nonplayers);
-        return characters;
-    }
-
-    /**
      * Get the map of this level.
      *
      * @return map
@@ -247,6 +234,26 @@ public class Level
     public ILevel getNextLevel()
     {
         return nextLevel;
+    }
+
+    /**
+     * Get the number of non-player characters on this level
+     *
+     * @return number of non-player characters
+     */
+    public int getNumberOfNonPlayerCharacters()
+    {
+        return nonplayers.size();
+    }
+
+    /**
+     * Get the number of player characters on this level
+     *
+     * @return number of player characters
+     */
+    public int getNumberOfPlayerCharacters()
+    {
+        return players.size();
     }
 
     /**
@@ -299,6 +306,19 @@ public class Level
         throws MapException
     {
         return map.isOccupied(x, y);
+    }
+
+    /**
+     * Get a list of characters on this level.
+     *
+     * @return list of characters
+     */
+    public Iterable<ICharacter> listCharacters()
+    {
+        List<ICharacter> characters =
+            new ArrayList<ICharacter>(players);
+        characters.addAll(nonplayers);
+        return characters;
     }
 
     /**

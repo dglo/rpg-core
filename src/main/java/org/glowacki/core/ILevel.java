@@ -54,13 +54,6 @@ public interface ILevel
         throws CoreException;
 
     /**
-     * Get a list of characters on this level.
-     *
-     * @return list of characters
-     */
-    List<ICharacter> getCharacters();
-
-    /**
      * Get the map of this level.
      *
      * @return map
@@ -96,6 +89,20 @@ public interface ILevel
     ILevel getNextLevel();
 
     /**
+     * Get the number of non-player characters on this level
+     *
+     * @return number of non-player characters
+     */
+    int getNumberOfNonPlayerCharacters();
+
+    /**
+     * Get the number of player characters on this level
+     *
+     * @return number of player characters
+     */
+    int getNumberOfPlayerCharacters();
+
+    /**
      * Get the previous level.
      *
      * @return previous level
@@ -127,6 +134,13 @@ public interface ILevel
      */
     boolean isOccupied(int x, int y)
         throws MapException;
+
+    /**
+     * Get a list of characters on this level.
+     *
+     * @return list of characters
+     */
+    Iterable<ICharacter> listCharacters();
 
     /**
      * Move the character to the specified point.

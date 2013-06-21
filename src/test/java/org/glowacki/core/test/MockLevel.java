@@ -69,7 +69,7 @@ public class MockLevel
         ch.setLevel(null);
     }
 
-    public List getCharacters()
+    public Iterable<ICharacter> listCharacters()
     {
         throw new UnimplementedError();
     }
@@ -105,6 +105,26 @@ public class MockLevel
     public ILevel getNextLevel()
     {
         return nextLevel;
+    }
+
+    /**
+     * Get the number of non-player characters on this level
+     *
+     * @return number of non-player characters
+     */
+    public int getNumberOfNonPlayerCharacters()
+    {
+        throw new UnimplementedError();
+    }
+
+    /**
+     * Get the number of player characters on this level
+     *
+     * @return number of player characters
+     */
+    public int getNumberOfPlayerCharacters()
+    {
+        throw new UnimplementedError();
     }
 
     public ILevel getPreviousLevel()
