@@ -26,9 +26,6 @@ public class PlayerCharacter
 {
     private String name;
 
-    private ILevel level;
-    private VisibleMap vmap;
-
     private List<IMapPoint> path;
 
     private HashMap<ILevel, boolean[][]> seenMap;
@@ -60,6 +57,7 @@ public class PlayerCharacter
     public void buildPath(IMapPoint goal)
         throws CoreException
     {
+        ILevel level = getLevel();
         if (level == null) {
             throw new PlayerException("Level has not been set for " + name);
         } else if (goal.getX() < 0 || goal.getX() > level.getMap().getMaxX() ||
@@ -85,6 +83,7 @@ public class PlayerCharacter
     private int climbStairs()
         throws CoreException
     {
+        ILevel level = getLevel();
         if (level == null) {
             throw new PlayerException("Level has not been set for " + name);
         }
@@ -119,6 +118,7 @@ public class PlayerCharacter
     private int descendStairs()
         throws CoreException
     {
+        ILevel level = getLevel();
         if (level == null) {
             throw new PlayerException("Level has not been set for " + name);
         }
@@ -193,16 +193,6 @@ public class PlayerCharacter
     }
 
     /**
-     * Get character's current level
-     *
-     * @return level
-     */
-    public ILevel getLevel()
-    {
-        return level;
-    }
-
-    /**
      * Return character's name.
      *
      * @return name
@@ -220,6 +210,7 @@ public class PlayerCharacter
      */
     public boolean[][] getSeenArray()
     {
+        ILevel level = getLevel();
         if (level == null) {
             return null;
         }
@@ -235,24 +226,6 @@ public class PlayerCharacter
         }
 
         return seen;
-    }
-
-    /**
-     * Get the visible cell array
-     *
-     * @return array of visible cells
-     */
-    public boolean[][] getVisible()
-    {
-        if (level == null) {
-            return null;
-        }
-
-        if (vmap == null) {
-            vmap = new VisibleMap(level.getMap());
-        }
-
-        return vmap.getVisible(getX(), getY(), getSightDistance());
     }
 
     /**
@@ -323,6 +296,7 @@ public class PlayerCharacter
     public int move(Direction dir)
         throws CoreException
     {
+        ILevel level = getLevel();
         if (level == null) {
             throw new PlayerException("Level has not been set for " + name);
         }
@@ -342,7 +316,7 @@ public class PlayerCharacter
 
             return descendStairs();
         } else {
-            return move(level.getMap(), dir);
+            return super.move(dir);
         }
     }
 
@@ -356,9 +330,7 @@ public class PlayerCharacter
     public int movePath()
         throws CoreException
     {
-        if (level == null) {
-            throw new PlayerException("Level has not been set for " + name);
-        } else if  (path == null || path.size() == 0) {
+        if (path == null || path.size() == 0) {
             throw new PlayerException("No current path");
         }
 
@@ -367,7 +339,7 @@ public class PlayerCharacter
 
         int rtnval;
         try {
-            rtnval = move(level.getMap(), dir);
+            rtnval = move(dir);
         } catch (CoreException ce) {
             path = null;
             throw ce;
@@ -383,6 +355,7 @@ public class PlayerCharacter
      */
     public boolean onStaircase()
     {
+        ILevel level = getLevel();
         if (level == null) {
             return false;
         }
@@ -400,13 +373,12 @@ public class PlayerCharacter
     /**
      * Set character's current level
      *
-     * @param l level
+     * @param lvl level
      */
-    public void setLevel(ILevel l)
+    public void setLevel(ILevel lvl)
+        throws CoreException
     {
-        this.level = l;
-
-        vmap = null;
+        super.setLevel(lvl);
         clearPath();
     }
 
@@ -428,6 +400,7 @@ public class PlayerCharacter
     public int useStaircase()
         throws CoreException
     {
+        ILevel level = getLevel();
         if (level == null) {
             throw new PlayerException("Level has not been set for " + name);
         }

@@ -34,15 +34,17 @@ public abstract class BaseCharacter
     public static final double SQRT_2 = 1.41421356;
 
     private static int nextId;
+    private int id;
 
     private List<EventListener> listeners = new ArrayList<EventListener>();
-
-    private int id;
 
     private int str;
     private int dex;
     private int pcp;
     private int spd;
+
+    private ILevel level;
+    private VisibleMap vmap;
 
     private int x;
     private int y;
@@ -114,6 +116,15 @@ public abstract class BaseCharacter
         } else {
             ch.takeDamage(random, this, weapon);
         }
+    }
+
+    /**
+     * Clear the current level.
+     */
+    public void clearLevel()
+    {
+        level = null;
+        clearPosition();
     }
 
     /**
@@ -226,6 +237,16 @@ public abstract class BaseCharacter
     }
 
     /**
+     * Get character's current level
+     *
+     * @return level
+     */
+    public ILevel getLevel()
+    {
+        return level;
+    }
+
+    /**
      * Get maximum hit points.
      *
      * @return maximum hit points
@@ -243,6 +264,24 @@ public abstract class BaseCharacter
     public int getSightDistance()
     {
         return pcp / 2;
+    }
+
+    /**
+     * Get the visible cell array
+     *
+     * @return array of visible cells
+     */
+    public boolean[][] getVisible()
+    {
+        if (level == null) {
+            return null;
+        }
+
+        if (vmap == null) {
+            vmap = new VisibleMap(level.getMap());
+        }
+
+        return vmap.getVisible(getX(), getY(), getSightDistance());
     }
 
     /**
@@ -276,18 +315,40 @@ public abstract class BaseCharacter
     }
 
     /**
-     * Move in the specified direction.
+     * Move the computer character.
      *
-     * @param map current map
      * @param dir direction
      *
      * @return number of turns
      *
-     * @throws MapException if there is a problem
+     * @throws CoreException if there is a problem
      */
-    int move(IMap map, Direction dir)
-        throws MapException
+/*
+    public int move(Direction dir)
+        throws CoreException
     {
+        return move(level.getMap(), dir);
+    }
+*/
+
+    /**
+     * Move in the specified direction.
+     *
+     * @param dir direction
+     *
+     * @return number of turns
+     *
+     * @throws CoreException if there is a problem
+     */
+    public int move(Direction dir)
+        throws CoreException
+    {
+        if (level == null) {
+            throw new PlayerException("Level has not been set");
+        }
+
+        IMap map = level.getMap();
+
         final int fromX = x;
         final int fromY = y;
         map.moveDirection(this, dir);
@@ -318,6 +379,19 @@ public abstract class BaseCharacter
     {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Set character's current level
+     *
+     * @param lvl level
+     */
+    public void setLevel(ILevel lvl)
+        throws CoreException
+    {
+        level = lvl;
+
+        vmap = null;
     }
 
     /**

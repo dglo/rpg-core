@@ -12,6 +12,7 @@ import org.glowacki.core.event.AttackParriedEvent;
 import org.glowacki.core.event.EventListener;
 import org.glowacki.core.test.MapBuilder;
 import org.glowacki.core.test.MockCharacter;
+import org.glowacki.core.test.MockLevel;
 import org.glowacki.core.test.MockListener;
 import org.glowacki.core.test.MockMap;
 import org.glowacki.core.test.MockRandom;
@@ -21,7 +22,6 @@ class MyCharacter
     extends BaseCharacter
 {
     private String name;
-    private ILevel level;
     private boolean player;
 
     MyCharacter(String name, int str, int dex, int pcp, int spd)
@@ -50,11 +50,6 @@ class MyCharacter
     public void clearPath()
     {
         throw new UnimplementedError();
-    }
-
-    public ILevel getLevel()
-    {
-        return level;
     }
 
     public String getName()
@@ -113,12 +108,6 @@ class MyCharacter
         throw new UnimplementedError();
     }
 
-    public int move(Direction dir)
-        throws CoreException
-    {
-        throw new UnimplementedError();
-    }
-
     public int movePath()
         throws CoreException
     {
@@ -128,11 +117,6 @@ class MyCharacter
     public boolean onStaircase()
     {
         throw new UnimplementedError();
-    }
-
-    public void setLevel(ILevel level)
-    {
-        this.level = level;
     }
 
     public void takeTurn()
@@ -182,12 +166,15 @@ public class BaseCharacterTest
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
 
+        MockLevel lvl = new MockLevel("move", map);
+
         Direction dir = Direction.LEFT;
         do {
             int x = 0;
             int y = 0;
 
             ch.setPosition(x, y);
+            ch.setLevel(lvl);
 
             int expTurns = -1;
             switch (dir) {
@@ -218,7 +205,7 @@ public class BaseCharacterTest
 
             int turns;
             try {
-                turns = ch.move(map, dir);
+                turns = ch.move(dir);
             } catch (MapException me) {
                 turns = -1;
             }
@@ -238,12 +225,15 @@ public class BaseCharacterTest
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
 
+        MockLevel lvl = new MockLevel("move", map);
+
         Direction dir = Direction.LEFT;
         do {
             int x = 3;
             int y = 3;
 
             ch.setPosition(x, y);
+            ch.setLevel(lvl);
 
             int expTurns = -1;
             switch (dir) {
@@ -274,7 +264,7 @@ public class BaseCharacterTest
 
             int turns;
             try {
-                turns = ch.move(map, dir);
+                turns = ch.move(dir);
             } catch (MapException me) {
                 turns = -1;
             }
@@ -294,12 +284,15 @@ public class BaseCharacterTest
         MockMap map = new MockMap(3, 3);
         map.setTerrain(Terrain.FLOOR);
 
+        MockLevel lvl = new MockLevel("move", map);
+
         Direction dir = Direction.LEFT;
         do {
             int x = 2;
             int y = 2;
 
             ch.setPosition(x, y);
+            ch.setLevel(lvl);
 
             switch (dir) {
             case LEFT:
@@ -332,7 +325,7 @@ public class BaseCharacterTest
                 break;
             }
 
-            ch.move(map, dir);
+            ch.move(dir);
             assertEquals("Bad X", x, ch.getX());
             assertEquals("Bad Y", y, ch.getY());
 

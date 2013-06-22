@@ -12,7 +12,6 @@ public class ComputerCharacter
     private static final int MAX_ATTEMPTS = 20;
 
     private IRandom random;
-    private ILevel level;
     private State state;
 
     /**
@@ -56,16 +55,6 @@ public class ComputerCharacter
      * Clear the stored path.
      */
     public void clearPath()
-    {
-        throw new UnimplementedError();
-    }
-
-    /**
-     * Unimplemented
-     *
-     * @return never
-     */
-    public ILevel getLevel()
     {
         throw new UnimplementedError();
     }
@@ -127,7 +116,7 @@ public class ComputerCharacter
             Direction dir = startDir;
             do {
                 try {
-                    move(level.getMap(), dir);
+                    move(dir);
                     return;
                 } catch (CoreException ce) {
                     // not that way!
@@ -189,21 +178,6 @@ public class ComputerCharacter
     }
 
     /**
-     * Move the computer character.
-     *
-     * @param dir direction
-     *
-     * @return number of turns
-     *
-     * @throws CoreException if there is a problem
-     */
-    public int move(Direction dir)
-        throws CoreException
-    {
-        return move(level.getMap(), dir);
-    }
-
-    /**
      * Unimplemented
      *
      * @return number of turns
@@ -245,8 +219,8 @@ public class ComputerCharacter
                 setLevel(lvl, cx, cy);
                 positioned = true;
             } catch (CoreException ce) {
-                this.level = null;
                 // ignore exceptions
+                clearLevel();
             }
         }
 
@@ -269,7 +243,7 @@ public class ComputerCharacter
     {
         lvl.addNonplayer(this, x, y);
 
-        this.level = lvl;
+        super.setLevel(lvl);
 
         setPosition(x, y);
     }

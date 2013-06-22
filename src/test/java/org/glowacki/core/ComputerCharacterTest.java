@@ -36,13 +36,7 @@ public class ComputerCharacterTest
         ComputerCharacter ch =
             new ComputerCharacter(random, str, dex, spd, pcp);
 
-        try {
-            ch.getLevel();
-            fail("This should not succeed");
-        } catch (Error err) {
-            assertEquals("Unexpected error",
-                         "Unimplemented", err.getMessage());
-        }
+        assertNull("Level should be null", ch.getLevel());
 
         try {
             ch.getName();
