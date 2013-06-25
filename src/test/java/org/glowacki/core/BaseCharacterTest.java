@@ -62,16 +62,6 @@ class MyCharacter
         throw new UnimplementedError();
     }
 
-    /**
-     * Get the visible cell array
-     *
-     * @return array of visible cells
-     */
-    public boolean[][] getVisible()
-    {
-        throw new UnimplementedError();
-    }
-
     public boolean hasPath()
     {
         return false;
@@ -96,14 +86,12 @@ class MyCharacter
     }
 
     /**
-     * Is the specified point visible?
+     * List all characters which can be seen by this character
      *
-     * @param px X coordinate
-     * @param py Y coordinate
-     *
-     * @return <tt>true</tt> if the point is visible
+     * @return iterable list of visible characters
      */
-    public boolean isVisible(int px, int py)
+    public Iterable<ICharacter> listVisibleCharacters()
+        throws CoreException
     {
         throw new UnimplementedError();
     }
@@ -334,6 +322,7 @@ public class BaseCharacterTest
     }
 
     public void testAttackFail()
+        throws CoreException
     {
         MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
 
@@ -356,6 +345,7 @@ public class BaseCharacterTest
     }
 
     public void testAttackParried()
+        throws CoreException
     {
         MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
 
@@ -378,6 +368,7 @@ public class BaseCharacterTest
     }
 
     public void testAttackHit()
+        throws CoreException
     {
         MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
 
@@ -404,6 +395,7 @@ public class BaseCharacterTest
     }
 
     public void testAttackKilled()
+        throws CoreException
     {
         MyCharacter attacker = new MyCharacter("att", 11, 10, 3, 4);
 
@@ -414,6 +406,14 @@ public class BaseCharacterTest
 
         MockListener dlistener = new MockListener("DListener");
         defender.addEventListener(dlistener);
+
+        MockMap map = new MockMap(3, 3);
+        map.setTerrain(Terrain.FLOOR);
+
+        MockLevel lvl = new MockLevel("move", map);
+
+        defender.setLevel(lvl);
+        defender.setPosition(1, 1);
 
         MockRandom random = new MockRandom();
 
@@ -465,6 +465,71 @@ public class BaseCharacterTest
 
             assertEquals("Bad defend percent for dex " + dex,
                          expPct, guy.getDefendPercent(weapon));
+        }
+    }
+
+    public void testLevel()
+        throws CoreException
+    {
+        MyCharacter ch = new MyCharacter("l", 1, 2, 3, 4);
+        assertNull("Level should be null", ch.getLevel());
+
+        MockMap map = new MockMap(3, 3);
+        map.setTerrain(Terrain.FLOOR);
+
+        MockLevel lvl = new MockLevel("move", map);
+
+        ch.setLevel(lvl);
+        assertNotNull("Level should not be null", ch.getLevel());
+        assertEquals("Bad level", lvl, ch.getLevel());
+
+        ch.clearLevel();
+        assertNull("Level should be null", ch.getLevel());
+    }
+
+    public void testCompareTo()
+    {
+        MyCharacter ch = new MyCharacter("one", 1, 2, 3, 4);
+        assertEquals("Bad compare result", 1, ch.compareTo(null));
+        assertEquals("Bad compare result", 0, ch.compareTo(ch));
+        assertFalse("Bad equals result", ch.equals(null));
+        assertTrue("Bad equals result", ch.equals(ch));
+
+        MyCharacter ch2 = new MyCharacter("two", 2, 3, 4, 5);
+        assertEquals("Bad compare result", 1, ch.compareTo(ch2));
+        assertEquals("Bad compare result", -1, ch2.compareTo(ch));
+        assertFalse("Bad equals result", ch.equals(ch2));
+        assertFalse("Bad equals result", ch2.equals(ch));
+    }
+
+    public void testVisible()
+        throws CoreException
+    {
+        final int pcp = 3;
+
+        MyCharacter ch = new MyCharacter("l", 1, 2, pcp, 4);
+        assertNull("Level should be null", ch.getLevel());
+        assertNull("Visible map should be null", ch.getVisible());
+
+        final int maxX = 3;
+        final int maxY = 5;
+
+        MockMap map = new MockMap(maxX, maxY);
+        map.setTerrain(Terrain.FLOOR);
+
+        MockLevel lvl = new MockLevel("move", map);
+
+        ch.setLevel(lvl);
+        ch.setPosition(1, 1);
+
+        boolean[][] visible = ch.getVisible();
+        assertNotNull("Visible map is null", visible);
+
+        for (int y = 0; y < maxY; y++) {
+            for (int x = 0; x < maxX; x++) {
+                assertEquals(String.format("Bad visibility for %d,%d", x, y),
+                             visible[x][y], ch.isVisible(x, y));
+            }
         }
     }
 

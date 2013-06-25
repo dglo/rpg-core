@@ -66,7 +66,7 @@ public class ComputerCharacter
      */
     public String getName()
     {
-        throw new UnimplementedError();
+        return "XXX#" + getId();
     }
 
     /**
@@ -165,14 +165,11 @@ public class ComputerCharacter
     }
 
     /**
-     * Is the specified point visible?
+     * List all characters which can be seen by this character
      *
-     * @param px X coordinate
-     * @param py Y coordinate
-     *
-     * @return <tt>true</tt> if the point is visible
+     * @return iterable list of visible characters
      */
-    public boolean isVisible(int px, int py)
+    public Iterable<ICharacter> listVisibleCharacters()
     {
         throw new UnimplementedError();
     }
@@ -210,22 +207,27 @@ public class ComputerCharacter
     public void setLevel(ILevel lvl)
         throws CoreException
     {
-        boolean positioned = false;
-        for (int i = 0; !positioned && i < MAX_ATTEMPTS; i++) {
-            int cx = random.nextInt(lvl.getMaxX());
-            int cy = random.nextInt(lvl.getMaxY());
+        if (lvl == null) {
+            clearLevel();
+        } else {
+            boolean positioned = false;
+            for (int i = 0; !positioned && i < MAX_ATTEMPTS; i++) {
+                int cx = random.nextInt(lvl.getMaxX());
+                int cy = random.nextInt(lvl.getMaxY());
 
-            try {
-                setLevel(lvl, cx, cy);
-                positioned = true;
-            } catch (CoreException ce) {
-                // ignore exceptions
-                clearLevel();
+                try {
+                    setLevel(lvl, cx, cy);
+                    positioned = true;
+                } catch (CoreException ce) {
+                    // ignore exceptions
+                    clearLevel();
+                }
             }
-        }
 
-        if (!positioned) {
-            throw new CharacterException("Failed to position " + toString());
+            if (!positioned) {
+                throw new CharacterException("Failed to position " +
+                                             toString());
+            }
         }
     }
 

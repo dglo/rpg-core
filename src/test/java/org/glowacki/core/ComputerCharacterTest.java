@@ -38,13 +38,9 @@ public class ComputerCharacterTest
 
         assertNull("Level should be null", ch.getLevel());
 
-        try {
-            ch.getName();
-            fail("This should not succeed");
-        } catch (Error err) {
-            assertEquals("Unexpected error",
-                         "Unimplemented", err.getMessage());
-        }
+        String name = ch.getName();
+        assertNotNull("Name should not be null", name);
+        assertTrue("Unexpected name " + name, name.startsWith("XXX#"));
 
 
         assertFalse("Bad isPlayer() value", ch.isPlayer());
@@ -92,6 +88,81 @@ public class ComputerCharacterTest
 
             dir = dir.next();
         } while (dir != Direction.LEFT);
+    }
+
+    public void testUnimplemented()
+        throws CoreException
+    {
+        MockRandom random = new MockRandom();
+
+        random.addDouble(0.111);
+
+        ComputerCharacter ch = new ComputerCharacter(random, 1, 2, 10, 10);
+
+        try {
+            ch.buildPath(null);
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        try {
+            ch.clearPath();
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        try {
+            ch.getSeenArray();
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        try {
+            ch.getVisible();
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        assertFalse("hasPath should return false", ch.hasPath());
+
+        try {
+            ch.isSeen(0, 0);
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        try {
+            ch.listVisibleCharacters();
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        try {
+            ch.movePath();
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        try {
+            ch.onStaircase();
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
+
+        try {
+            ch.useStaircase();
+            fail("Should not succeed");
+        } catch (UnimplementedError ue) {
+            // expect this to fail
+        }
     }
 
     public static void main(String[] args)

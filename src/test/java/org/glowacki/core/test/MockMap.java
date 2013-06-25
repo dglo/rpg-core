@@ -157,6 +157,20 @@ public class MockMap
     }
 
     /**
+     * Get the object which occupies the specified position
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return <tt>null</tt> if no object is at the specified position
+     */
+    public IMapObject getOccupant(int x, int y)
+        throws MapException
+    {
+        throw new UnimplementedError();
+    }
+
+    /**
      * Get a graphic representation of this level.
      *
      * @return string representation of level with embedded newlines
@@ -212,7 +226,7 @@ public class MockMap
     public boolean isOccupied(int x, int y)
         throws MapException
     {
-        throw new UnimplementedError();
+        return false;
     }
 
     public void moveDirection(IMapObject obj, Direction dir)

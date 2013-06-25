@@ -169,6 +169,28 @@ public class Map
     }
 
     /**
+     * Get the object which occupies the specified position
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return <tt>null</tt> if no object is at the specified position
+     */
+    public IMapObject getOccupant(int x, int y)
+        throws MapException
+    {
+        if (y < 0 || y >= map.length) {
+            throw new MapException("Bad Y coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxY());
+        } else if (x < 0 || x >= map[y].length) {
+            throw new MapException("Bad X coordinate in (" + x + "," +
+                                   y + "), max is " + getMaxX());
+        }
+
+        return map[y][x].getObject();
+    }
+
+    /**
      * Get a graphic representation of this level.
      *
      * @return string representation of level with embedded newlines
@@ -279,15 +301,7 @@ public class Map
     public boolean isOccupied(int x, int y)
         throws MapException
     {
-        if (y < 0 || y >= map.length) {
-            throw new MapException("Bad Y coordinate in (" + x + "," +
-                                   y + "), max is " + getMaxY());
-        } else if (x < 0 || x >= map[y].length) {
-            throw new MapException("Bad X coordinate in (" + x + "," +
-                                   y + "), max is " + getMaxX());
-        }
-
-        return map[y][x].getObject() != null;
+        return getOccupant(x, y) != null;
     }
 
     /**

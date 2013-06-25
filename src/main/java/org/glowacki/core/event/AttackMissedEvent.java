@@ -16,7 +16,7 @@ public class AttackMissedEvent
      */
     public AttackMissedEvent(ICharacter attacker, ICharacter defender)
     {
-        super(Type.ATTACK_MISSED_EVENT, attacker, defender);
+        super(Type.ATTACK_MISSED, attacker, defender);
     }
 
     /**

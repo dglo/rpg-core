@@ -1,5 +1,6 @@
 package org.glowacki.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,6 +46,8 @@ public class PlayerCharacter
         super(str, dex, pcp, spd);
 
         this.name = name;
+
+        wield(new FistWeapon());
     }
 
     /**
@@ -60,15 +63,18 @@ public class PlayerCharacter
         ILevel level = getLevel();
         if (level == null) {
             throw new PlayerException("Level has not been set for " + name);
-        } else if (goal.getX() < 0 || goal.getX() > level.getMap().getMaxX() ||
-            goal.getY() < 0 || goal.getY() > level.getMap().getMaxY())
+        }
+
+        IMap map = level.getMap();
+        if (goal.getX() < 0 || goal.getX() > map.getMaxX() ||
+            goal.getY() < 0 || goal.getY() > map.getMaxY())
         {
             final String msg =
                 String.format("Bad goal [%d,%d]", goal.getX(), goal.getY());
             throw new PlayerException(msg);
         }
 
-        MapPathFinder pathFinder = new MapPathFinder(level.getMap());
+        MapPathFinder pathFinder = new MapPathFinder(map);
         path = pathFinder.findBestPath(this, goal);
     }
 
@@ -267,21 +273,26 @@ public class PlayerCharacter
     }
 
     /**
-     * Is the specified point visible?
+     * List all characters which can be seen by this character
      *
-     * @param px X coordinate
-     * @param py Y coordinate
-     *
-     * @return <tt>true</tt> if the point is visible
+     * @return iterable list of visible characters
      */
-    public boolean isVisible(int px, int py)
+    public Iterable<ICharacter> listVisibleCharacters()
+        throws CoreException
     {
-        boolean[][] visible = getVisible();
-        if (visible == null) {
-            return false;
+        ILevel level = getLevel();
+        if (level == null) {
+            throw new PlayerException("Level has not been set for " + name);
         }
 
-        return visible[px][py];
+        ArrayList<ICharacter> visible = new ArrayList<ICharacter>();
+        for (ICharacter ch : level.listCharacters()) {
+            if (isVisible(ch.getX(), ch.getY())) {
+                visible.add(ch);
+            }
+        }
+
+        return visible;
     }
 
     /**

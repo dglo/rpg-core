@@ -56,6 +56,8 @@ public abstract class BaseCharacter
 
     private int armorPoints;
 
+    private IWeapon weapon;
+
     /**
      * Create a character.
      *
@@ -94,10 +96,32 @@ public abstract class BaseCharacter
      *
      * @param random random number generator
      * @param ch character to attack
+     *
+     * @throws CoreException if there is a problem
+     */
+    public void attack(IRandom random, ICharacter ch)
+        throws CoreException
+    {
+        attack(random, ch, weapon);
+    }
+
+    /**
+     * Attack the character
+     *
+     * @param random random number generator
+     * @param ch character to attack
      * @param weapon weapon used for the attack
+     *
+     * @throws CoreException if there is a problem
      */
     public void attack(IRandom random, ICharacter ch, IWeapon weapon)
+        throws CoreException
     {
+        if (weapon == null) {
+            throw new CharacterException(getName() +
+                                         " does not have a weapon");
+        }
+
         final int attackPct = getAttackPercent(weapon);
 
         // TODO: handle critical hits and failures
@@ -315,21 +339,63 @@ public abstract class BaseCharacter
     }
 
     /**
-     * Move the computer character.
+     * Is this character in a neighboring cell?
      *
-     * @param dir direction
+     * @param ch character
      *
-     * @return number of turns
-     *
-     * @throws CoreException if there is a problem
+     * @return <tt>true</tt> if this character is a neighbor
      */
-/*
-    public int move(Direction dir)
+    public boolean isNeighbor(ICharacter ch)
+    {
+        if (ch.getX() < x - 1 || ch.getX() > x + 1) {
+            return false;
+        } else if (ch.getY() < y - 1 || ch.getY() > y + 1) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get the character which occupies the specified point
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>null</tt> if the point is not occupied
+     */
+    public ICharacter getOccupant(int px, int py)
         throws CoreException
     {
-        return move(level.getMap(), dir);
+        if (level == null) {
+            throw new CharacterException("Level has not been set");
+        }
+
+        Object obj = level.getMap().getOccupant(px, py);
+        if (obj == null || !(obj instanceof ICharacter)) {
+            return null;
+        }
+
+        return (ICharacter) obj;
     }
-*/
+
+    /**
+     * Is the specified point visible?
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>true</tt> if the point is visible
+     */
+    public boolean isVisible(int px, int py)
+    {
+        boolean[][] visible = getVisible();
+        if (visible == null) {
+            return false;
+        }
+
+        return visible[px][py];
+    }
 
     /**
      * Move in the specified direction.
@@ -344,7 +410,7 @@ public abstract class BaseCharacter
         throws CoreException
     {
         if (level == null) {
-            throw new PlayerException("Level has not been set");
+            throw new CharacterException("Level has not been set");
         }
 
         IMap map = level.getMap();
@@ -440,6 +506,7 @@ public abstract class BaseCharacter
      * @param weapon attacker's weapon
      */
     public void takeDamage(IRandom random, ICharacter ch, IWeapon weapon)
+        throws CoreException
     {
         int damage = weapon.getDamage(random) - armorPoints;
         if (damage < 0) {
@@ -450,8 +517,30 @@ public abstract class BaseCharacter
         if (hitPoints > 0) {
             sendEvent(new AttackHitEvent(ch, this, damage));
         } else {
+            CoreException delayed = null;
+            try {
+                level.exit(this);
+            } catch (CoreException cex) {
+                delayed = cex;
+            }
+
+            clearLevel();
             sendEvent(new AttackKilledEvent(ch, this));
+
+            if (delayed != null) {
+                throw delayed;
+            }
         }
+    }
+
+    /**
+     * Wield a weapon.
+     *
+     * @param weapon weapon to wield
+     */
+    public void wield(IWeapon weapon)
+    {
+        this.weapon = weapon;
     }
 
     /**
@@ -461,7 +550,7 @@ public abstract class BaseCharacter
      */
     public String toString()
     {
-        return String.format("(%d/%d/%d/%d)@[%d,%d]",
-                             str, dex, pcp, spd, x, y);
+        return String.format("(%d/%d/%d/%d)hp%d@[%d,%d]",
+                             str, dex, pcp, spd, hitPoints, x, y);
     }
 }

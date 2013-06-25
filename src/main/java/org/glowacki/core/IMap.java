@@ -60,6 +60,17 @@ public interface IMap
     int getMaxY();
 
     /**
+     * Get the object which occupies the specified position
+     *
+     * @param x X coordinate
+     * @param y Y coordinate
+     *
+     * @return <tt>null</tt> if no object is at the specified position
+     */
+    IMapObject getOccupant(int x, int y)
+        throws MapException;
+
+    /**
      * Get a graphic representation of this level.
      *
      * @return string representation of level with embedded newlines

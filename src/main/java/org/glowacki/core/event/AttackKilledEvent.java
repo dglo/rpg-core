@@ -16,7 +16,7 @@ public class AttackKilledEvent
      */
     public AttackKilledEvent(ICharacter attacker, ICharacter defender)
     {
-        super(Type.ATTACK_KILLED_EVENT, attacker, defender);
+        super(Type.ATTACK_KILLED, attacker, defender);
     }
 
     /**

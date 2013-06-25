@@ -45,6 +45,11 @@ public class MockCharacter
         throw new UnimplementedError();
     }
 
+    public void attack(IRandom random, ICharacter ch)
+    {
+        attack(random, ch, null);
+    }
+
     public void attack(IRandom random, ICharacter ch, IWeapon weapon)
     {
         throw new UnimplementedError();
@@ -114,6 +119,20 @@ public class MockCharacter
         return name;
     }
 
+    /**
+     * Get the character which occupies the specified point
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>null</tt> if the point is not occupied
+     */
+    public ICharacter getOccupant(int px, int py)
+        throws CoreException
+    {
+        throw new UnimplementedError();
+    }
+
     public boolean[][] getSeenArray()
     {
         throw new UnimplementedError();
@@ -149,6 +168,18 @@ public class MockCharacter
         return false;
     }
 
+    /**
+     * Is this character in a neighboring cell?
+     *
+     * @param ch character
+     *
+     * @return <tt>true</tt> if this character is a neighbor
+     */
+    public boolean isNeighbor(ICharacter ch)
+    {
+        throw new UnimplementedError();
+    }
+
     public boolean isPlayer()
     {
         return player;
@@ -176,6 +207,17 @@ public class MockCharacter
      * @return <tt>true</tt> if the point is visible
      */
     public boolean isVisible(int px, int py)
+    {
+        throw new UnimplementedError();
+    }
+
+    /**
+     * List all characters which can be seen by this character
+     *
+     * @return iterable list of visible characters
+     */
+    public Iterable<ICharacter> listVisibleCharacters()
+        throws CoreException
     {
         throw new UnimplementedError();
     }

@@ -24,9 +24,23 @@ public interface ICharacter
      *
      * @param random random number generator
      * @param ch character to attack
-     * @param weapon weapon used for the attack
+     *
+     * @throws CoreException if there is a problem
      */
-    void attack(IRandom random, ICharacter ch, IWeapon weapon);
+    void attack(IRandom random, ICharacter ch)
+        throws CoreException;
+
+    /**
+     * Attack the character
+     *
+     * @param random random number generator
+     * @param ch character to attack
+     * @param weapon weapon used for the attack
+     *
+     * @throws CoreException if there is a problem
+     */
+    void attack(IRandom random, ICharacter ch, IWeapon weapon)
+        throws CoreException;
 
     /**
      * Build a path from the current position to the goal.
@@ -76,6 +90,17 @@ public interface ICharacter
     ILevel getLevel();
 
     /**
+     * Get the character which occupies the specified point
+     *
+     * @param px X coordinate
+     * @param py Y coordinate
+     *
+     * @return <tt>null</tt> if the point is not occupied
+     */
+    ICharacter getOccupant(int px, int py)
+        throws CoreException;
+
+    /**
      * Get the boolean array indicating which cells in the current level
      * have been seen.
      *
@@ -98,11 +123,34 @@ public interface ICharacter
     boolean[][] getVisible();
 
     /**
+     * Return X coordinate.
+     *
+     * @return x coordinate
+     */
+    int getX();
+
+    /**
+     * Return Y coordinate.
+     *
+     * @return y coordinate
+     */
+    int getY();
+
+    /**
      * Does this character have an existing path?
      *
      * @return <tt>true</tt> if this character has an ongoing path
      */
     boolean hasPath();
+
+    /**
+     * Is this character in a neighboring cell?
+     *
+     * @param ch character
+     *
+     * @return <tt>true</tt> if this character is a neighbor
+     */
+    boolean isNeighbor(ICharacter ch);
 
     /**
      * Is this character a player?
@@ -130,6 +178,16 @@ public interface ICharacter
      * @return <tt>true</tt> if the point is visible
      */
     boolean isVisible(int px, int py);
+
+    /**
+     * List all characters which can be seen by this character
+     *
+     * @return iterable list of visible characters
+     *
+     * @throws CoreException if there is a problem
+     */
+    Iterable<ICharacter> listVisibleCharacters()
+        throws CoreException;
 
     /**
      * Move the computer character.
@@ -176,8 +234,11 @@ public interface ICharacter
      * @param random random number generator
      * @param ch attacker
      * @param weapon weapon used for the attack
+     *
+     * @throws CoreException if there is a problem
      */
-    void takeDamage(IRandom random, ICharacter ch, IWeapon weapon);
+    void takeDamage(IRandom random, ICharacter ch, IWeapon weapon)
+        throws CoreException;
 
     /**
      * Take a turn.

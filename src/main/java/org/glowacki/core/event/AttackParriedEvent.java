@@ -16,7 +16,7 @@ public class AttackParriedEvent
      */
     public AttackParriedEvent(ICharacter attacker, ICharacter defender)
     {
-        super(Type.ATTACK_PARRIED_EVENT, attacker, defender);
+        super(Type.ATTACK_PARRIED, attacker, defender);
     }
 
     /**

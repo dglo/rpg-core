@@ -19,7 +19,7 @@ public class AttackHitEvent
      */
     public AttackHitEvent(ICharacter attacker, ICharacter defender, int damage)
     {
-        super(Type.ATTACK_HIT_EVENT, attacker, defender);
+        super(Type.ATTACK_HIT, attacker, defender);
 
         this.damage = damage;
     }

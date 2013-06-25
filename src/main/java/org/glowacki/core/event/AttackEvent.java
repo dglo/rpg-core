@@ -77,16 +77,16 @@ public abstract class AttackEvent
     {
         final String name;
         switch (getType()) {
-        case ATTACK_HIT_EVENT:
+        case ATTACK_HIT:
             name = "AttackHit";
             break;
-        case ATTACK_KILLED_EVENT:
+        case ATTACK_KILLED:
             name = "AttackKilled";
             break;
-        case ATTACK_MISSED_EVENT:
+        case ATTACK_MISSED:
             name = "AttackMissed";
             break;
-        case ATTACK_PARRIED_EVENT:
+        case ATTACK_PARRIED:
             name = "AttackParried";
             break;
         default:

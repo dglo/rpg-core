@@ -8,13 +8,13 @@ public interface IEvent
     /** All possible event types */
     public enum Type {
         /** Character hit event */
-        ATTACK_HIT_EVENT,
+        ATTACK_HIT,
         /** Character killed event */
-        ATTACK_KILLED_EVENT,
+        ATTACK_KILLED,
         /** Missed attack event */
-        ATTACK_MISSED_EVENT,
+        ATTACK_MISSED,
         /** Parried attack event */
-        ATTACK_PARRIED_EVENT,
+        ATTACK_PARRIED,
         /** Change level event */
         CHANGE_LEVEL,
         /** Move event */
