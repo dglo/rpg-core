@@ -56,6 +56,10 @@ public enum Direction
      */
     public static Direction getDirection(int val)
     {
+        if (val < 0) {
+            throw new Error("Direction cannot be negative");
+        }
+
         return VALUES.get(val % 8);
     }
 }
