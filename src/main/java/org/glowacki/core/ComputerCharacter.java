@@ -111,7 +111,7 @@ public class ComputerCharacter
             sendEvent(new StateEvent(this, oldState, state));
         } else {
             final Direction startDir =
-                Direction.getDirection(random.nextInt());
+                Direction.getDirection(random.nextInt(8));
 
             Direction dir = startDir;
             do {
